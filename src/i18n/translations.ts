@@ -1,0 +1,213 @@
+export type Locale = "tr" | "en" | "ru";
+
+export const translations = {
+  tr: {
+    nav: {
+      courses: "Kurslar",
+      gallery: "Galeri",
+      booking: "Rezervasyon",
+      about: "Hakkımızda",
+      contact: "İletişim",
+    },
+    hero: {
+      badge: "Alanya'nın #1 Sanat Stüdyosu",
+      headline: "Sanatı Keşfet,\nKendinizi İfade Edin",
+      sub: "Profesyonel resim ve çizim dersleri. Tüm yaşlar ve seviyeler için.",
+      cta: "Hemen Rezervasyon Yap",
+      ctaSecondary: "Kursları Gör",
+    },
+    problem: {
+      badge: "Neden Make Art Studio?",
+      headline: "Sanat yeteneği öğretilir,\ndoğuştan gelmez.",
+      items: [
+        { icon: "🎨", text: "Yapılandırılmış ders programı" },
+        { icon: "👩‍🎨", text: "Deneyimli profesyonel eğitmen" },
+        { icon: "🌍", text: "Türkçe, İngilizce, Rusça destek" },
+      ],
+    },
+    packages: {
+      badge: "Kurs Paketleri",
+      headline: "Sana Uygun\nPaketi Seç",
+      popular: "En Popüler",
+      perLesson: "ders başına",
+      buyNow: "Şimdi Al",
+      lessons: "Ders",
+      validity: "geçerlilik süresi yok",
+    },
+    gallery: {
+      badge: "Galeri",
+      headline: "Öğrencilerimizin\nEserleri",
+    },
+    booking: {
+      badge: "Rezervasyon",
+      headline: "İlk Dersinizi\nAyırtın",
+      name: "Ad Soyad",
+      email: "E-posta",
+      phone: "Telefon",
+      language: "Tercih Edilen Dil",
+      package: "Paket Seçin",
+      message: "Mesajınız (isteğe bağlı)",
+      submit: "Rezervasyon Gönder",
+      success: "Teşekkürler! En kısa sürede sizinle iletişime geçeceğiz.",
+    },
+    about: {
+      badge: "Eğitmenimiz",
+      headline: "Sanatı Sevgiyle\nÖğreten Uzman",
+    },
+    location: {
+      badge: "Konum",
+      headline: "Bizi Ziyaret Edin",
+      address: "Alanya, Antalya, Türkiye",
+      hours: "Pazartesi – Cumartesi: 10:00 – 20:00",
+    },
+    footer: {
+      tagline: "Alanya'nın sanat merkezi.",
+      privacy: "Gizlilik Politikası",
+      imprint: "Künye",
+      rights: "Tüm hakları saklıdır.",
+    },
+  },
+
+  en: {
+    nav: {
+      courses: "Courses",
+      gallery: "Gallery",
+      booking: "Book Now",
+      about: "About",
+      contact: "Contact",
+    },
+    hero: {
+      badge: "Alanya's #1 Art Studio",
+      headline: "Discover Art,\nExpress Yourself",
+      sub: "Professional painting and drawing lessons for all ages and levels.",
+      cta: "Book Your First Lesson",
+      ctaSecondary: "View Courses",
+    },
+    problem: {
+      badge: "Why Make Art Studio?",
+      headline: "Artistic talent is taught,\nnot born.",
+      items: [
+        { icon: "🎨", text: "Structured lesson curriculum" },
+        { icon: "👩‍🎨", text: "Experienced professional instructor" },
+        { icon: "🌍", text: "Turkish, English & Russian support" },
+      ],
+    },
+    packages: {
+      badge: "Course Packages",
+      headline: "Choose the Package\nThat Fits You",
+      popular: "Most Popular",
+      perLesson: "per lesson",
+      buyNow: "Buy Now",
+      lessons: "Lessons",
+      validity: "no expiry",
+    },
+    gallery: {
+      badge: "Gallery",
+      headline: "Student\nArtwork",
+    },
+    booking: {
+      badge: "Booking",
+      headline: "Reserve Your\nFirst Lesson",
+      name: "Full Name",
+      email: "Email",
+      phone: "Phone",
+      language: "Preferred Language",
+      package: "Select Package",
+      message: "Message (optional)",
+      submit: "Send Booking Request",
+      success: "Thank you! We'll contact you shortly.",
+    },
+    about: {
+      badge: "Our Instructor",
+      headline: "An Expert Who\nTeaches Art with Passion",
+    },
+    location: {
+      badge: "Location",
+      headline: "Visit Us",
+      address: "Alanya, Antalya, Turkey",
+      hours: "Monday – Saturday: 10:00 – 20:00",
+    },
+    footer: {
+      tagline: "Alanya's art hub.",
+      privacy: "Privacy Policy",
+      imprint: "Imprint",
+      rights: "All rights reserved.",
+    },
+  },
+
+  ru: {
+    nav: {
+      courses: "Курсы",
+      gallery: "Галерея",
+      booking: "Запись",
+      about: "О нас",
+      contact: "Контакты",
+    },
+    hero: {
+      badge: "Студия искусств №1 в Алании",
+      headline: "Откройте для себя искусство,\nвыразите себя",
+      sub: "Профессиональные уроки живописи и рисунка. Для всех возрастов и уровней.",
+      cta: "Записаться на первый урок",
+      ctaSecondary: "Смотреть курсы",
+    },
+    problem: {
+      badge: "Почему Make Art Studio?",
+      headline: "Художественный талант\nразвивается, а не дарится.",
+      items: [
+        { icon: "🎨", text: "Структурированная программа занятий" },
+        { icon: "👩‍🎨", text: "Опытный профессиональный преподаватель" },
+        { icon: "🌍", text: "Поддержка на турецком, английском и русском" },
+      ],
+    },
+    packages: {
+      badge: "Пакеты занятий",
+      headline: "Выберите подходящий\nпакет",
+      popular: "Самый популярный",
+      perLesson: "за занятие",
+      buyNow: "Купить",
+      lessons: "занятий",
+      validity: "без срока действия",
+    },
+    gallery: {
+      badge: "Галерея",
+      headline: "Работы\nнаших учеников",
+    },
+    booking: {
+      badge: "Запись",
+      headline: "Запишитесь\nна первое занятие",
+      name: "Имя и Фамилия",
+      email: "Email",
+      phone: "Телефон",
+      language: "Предпочитаемый язык",
+      package: "Выберите пакет",
+      message: "Сообщение (необязательно)",
+      submit: "Отправить заявку",
+      success: "Спасибо! Мы свяжемся с вами в ближайшее время.",
+    },
+    about: {
+      badge: "Наш преподаватель",
+      headline: "Эксперт, влюблённый\nв своё дело",
+    },
+    location: {
+      badge: "Местоположение",
+      headline: "Приходите к нам",
+      address: "Аланья, Анталья, Турция",
+      hours: "Понедельник – Суббота: 10:00 – 20:00",
+    },
+    footer: {
+      tagline: "Центр искусства в Алании.",
+      privacy: "Политика конфиденциальности",
+      imprint: "Импрессум",
+      rights: "Все права защищены.",
+    },
+  },
+};
+
+export const packages = [
+  { id: "single", lessons: 1, pricePerLesson: 45, popular: false },
+  { id: "pack2", lessons: 2, pricePerLesson: 42, popular: false },
+  { id: "pack4", lessons: 4, pricePerLesson: 40, popular: false },
+  { id: "pack8", lessons: 8, pricePerLesson: 37, popular: true },
+  { id: "pack12", lessons: 12, pricePerLesson: 35, popular: false },
+  { id: "pack16", lessons: 16, pricePerLesson: 32, popular: false },
+];

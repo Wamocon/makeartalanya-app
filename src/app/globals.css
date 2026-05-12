@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Make Art Studio Brand Colors */
+  --pink: #DCA8B2;
+  --pink-light: #f5e6ea;
+  --pink-dark: #c48a96;
+  --blue: #A9C7E5;
+  --blue-light: #dceef8;
+  --blue-dark: #7aa8cc;
+
+  --background: #fdfaf9;
+  --foreground: #1a1412;
+  --muted: #6b5b57;
+  --border: #ede4e0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-pink: var(--pink);
+  --color-pink-light: var(--pink-light);
+  --color-blue: var(--blue);
+  --color-blue-light: var(--blue-light);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Georgia', serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Utility classes */
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pink-dark);
+  margin-bottom: 1rem;
+}
+
+.section-badge::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--pink);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
