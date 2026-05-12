@@ -31,6 +31,7 @@ const LANGUAGES = [
 export default function BookingSection({ t, locale }: BookingProps) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -42,11 +43,38 @@ export default function BookingSection({ t, locale }: BookingProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    // TODO: Wire to /api/booking Supabase insert
-    await new Promise((r) => setTimeout(r, 800));
-    setSubmitted(true);
-    setLoading(false);
+
+    try {
+      const res = await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = (await res.json()) as { ok: boolean; error?: string };
+
+      if (!res.ok || !data.ok) {
+        setError(data.error || "Booking request failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      setSubmitted(true);
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        language: locale,
+        package: "",
+        message: "",
+      });
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -167,6 +195,10 @@ export default function BookingSection({ t, locale }: BookingProps) {
               >
                 {loading ? "..." : t.booking.submit}
               </button>
+
+              {error && (
+                <p className="text-sm text-red-600 text-center font-medium">{error}</p>
+              )}
             </form>
           )}
         </div>
