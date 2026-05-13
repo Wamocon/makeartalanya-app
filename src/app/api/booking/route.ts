@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 type BookingPayload = {
   name?: string;
@@ -19,7 +20,7 @@ function isValidEmail(email: string) {
 
 export async function POST(req: Request) {
   try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    if (!SUPABASE_URL || (!SUPABASE_ANON_KEY && !SUPABASE_SERVICE_ROLE_KEY)) {
       return NextResponse.json(
         { ok: false, error: "Missing Supabase environment variables." },
         { status: 500 }
@@ -49,7 +50,16 @@ export async function POST(req: Request) {
       );
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabase = createClient(
+      SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY!,
+      {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false,
+        },
+      }
+    );
 
     const finalMessage = selectedPackage
       ? `${message}${message ? "\n\n" : ""}Selected package: ${selectedPackage}`
