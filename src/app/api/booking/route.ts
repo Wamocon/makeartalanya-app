@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 type BookingPayload = {
@@ -20,9 +19,13 @@ function isValidEmail(email: string) {
 
 export async function POST(req: Request) {
   try {
-    if (!SUPABASE_URL || (!SUPABASE_ANON_KEY && !SUPABASE_SERVICE_ROLE_KEY)) {
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       return NextResponse.json(
-        { ok: false, error: "Missing Supabase environment variables." },
+        {
+          ok: false,
+          error:
+            "Server setup incomplete. Missing SUPABASE_SERVICE_ROLE_KEY in deployment environment.",
+        },
         { status: 500 }
       );
     }
@@ -50,30 +53,33 @@ export async function POST(req: Request) {
       );
     }
 
-    const supabase = createClient(
-      SUPABASE_URL,
-      SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY!,
-      {
-        auth: {
-          persistSession: false,
-          autoRefreshToken: false,
-        },
-      }
-    );
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    });
 
-    const finalMessage = selectedPackage
-      ? `${message}${message ? "\n\n" : ""}Selected package: ${selectedPackage}`
-      : message;
+    let packageId: number | null = null;
+    if (selectedPackage) {
+      const { data: packageRow } = await supabase
+        .from("packages")
+        .select("id")
+        .eq("name", selectedPackage)
+        .maybeSingle();
+
+      packageId = packageRow?.id ?? null;
+    }
 
     const { error } = await supabase.from("bookings").insert({
       guest_name: guestName,
       guest_email: guestEmail,
       guest_phone: guestPhone,
       preferred_language: preferredLanguage,
-      message: finalMessage || null,
+      package_id: packageId,
+      message: message || null,
       status: "pending",
       user_id: null,
-      package_id: null,
     });
 
     if (error) {
@@ -84,7 +90,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (err) {
+    console.error("Booking API error:", err);
     return NextResponse.json(
       { ok: false, error: "Unexpected server error." },
       { status: 500 }
