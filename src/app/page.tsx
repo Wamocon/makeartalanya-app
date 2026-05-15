@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Navbar from "@/components/sections/Navbar";
 import Hero from "@/components/sections/Hero";
 import ProblemSection from "@/components/sections/ProblemSection";
@@ -12,9 +12,50 @@ import LocationSection from "@/components/sections/LocationSection";
 import Footer from "@/components/sections/Footer";
 import { translations, type Locale } from "@/i18n/translations";
 
+type ContentOverrides = Record<string, Record<string, string>>;
+
+function deepMerge(base: Record<string, unknown>, overrides: ContentOverrides): Record<string, unknown> {
+  const result = { ...base };
+  for (const [section, fields] of Object.entries(overrides)) {
+    if (typeof result[section] === "object" && result[section] !== null) {
+      result[section] = { ...(result[section] as Record<string, unknown>) };
+      for (const [field, value] of Object.entries(fields)) {
+        if (value) (result[section] as Record<string, unknown>)[field] = value;
+      }
+    }
+  }
+  return result;
+}
+
 export default function Home() {
   const [locale, setLocale] = useState<Locale>("tr");
-  const t = translations[locale];
+  const [overrides, setOverrides] = useState<Record<Locale, ContentOverrides | null>>({
+    tr: null,
+    en: null,
+    ru: null,
+  });
+
+  const loadOverrides = useCallback((l: Locale) => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    if (!url) return;
+    fetch(`${url}/storage/v1/object/public/content/${l}.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data) setOverrides((prev) => ({ ...prev, [l]: data }));
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    loadOverrides(locale);
+  }, [locale, loadOverrides]);
+
+  const t = useMemo(() => {
+    const base = translations[locale];
+    const ov = overrides[locale];
+    if (!ov) return base;
+    return deepMerge(base as unknown as Record<string, unknown>, ov) as typeof base;
+  }, [locale, overrides]);
 
   return (
     <main className="min-h-screen">

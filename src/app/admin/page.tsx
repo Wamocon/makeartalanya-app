@@ -67,6 +67,9 @@ export default async function AdminPage() {
             <p className="text-sm text-[var(--muted)]">Booking requests overview</p>
           </div>
           <div className="flex gap-4">
+            <Link href="/admin/content" className="text-sm bg-[var(--blue-light)] hover:bg-blue-200 text-blue-800 px-4 py-2 rounded-full transition-colors">
+              Edit Content
+            </Link>
             <Link href="/admin/media" className="text-sm bg-[var(--pink)] hover:bg-[var(--pink-dark)] text-white px-4 py-2 rounded-full transition-colors">
               Upload Media
             </Link>
