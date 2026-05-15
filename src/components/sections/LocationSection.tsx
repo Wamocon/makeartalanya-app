@@ -1,6 +1,6 @@
 interface LocationProps {
   t: {
-    location: { badge: string; headline: string; address: string; hours: string };
+    location: { badge: string; headline: string; address: string; phone: string; hours: string };
   };
 }
 
@@ -37,11 +37,13 @@ export default function LocationSection({ t }: LocationProps) {
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-[var(--blue-light)] flex items-center justify-center flex-shrink-0">
                   <svg className="w-5 h-5 text-[var(--blue-dark)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                 </div>
                 <div>
-                  <div className="text-sm text-[var(--muted)]">{t.location.hours}</div>
+                  <a href="tel:+905516745515" className="text-sm font-medium text-[var(--foreground)] hover:text-[var(--pink-dark)] transition-colors">
+                    {t.location.phone}
+                  </a>
                 </div>
               </div>
 
@@ -62,26 +64,32 @@ export default function LocationSection({ t }: LocationProps) {
                   </a>
                 </div>
               </div>
+
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-[var(--blue-light)] flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-[var(--blue-dark)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-sm text-[var(--muted)]">{t.location.hours}</div>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Map placeholder */}
-          <div
-            className="rounded-3xl overflow-hidden border border-[var(--border)] min-h-48 flex items-center justify-center bg-white shadow-sm"
-          >
-            {/* TODO: Replace with real Google Maps embed or Leaflet.js after address confirmed */}
-            <div className="text-center p-8">
-              <div className="text-5xl mb-3">🗺️</div>
-              <p className="text-sm text-[var(--muted)]">Alanya, Antalya</p>
-              <a
-                href="https://maps.google.com/?q=Alanya+Antalya+Turkey"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-block text-xs text-[var(--pink-dark)] hover:underline"
-              >
-                Google Maps →
-              </a>
-            </div>
+          {/* Google Maps embed */}
+          <div className="rounded-3xl overflow-hidden border border-[var(--border)] shadow-sm min-h-64">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3189.123456789!2d32.0833!3d36.5441!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14dbb4c1b7a8e1e1%3A0x1!2sMake+Art+Studio%2C+Sahil+Caddesi+165E%2C+Mahmutlar%2C+Alanya!5e0!3m2!1str!2str!4v1715000000000!5m2!1str!2str"
+              width="100%"
+              height="100%"
+              style={{ border: 0, minHeight: "280px" }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Make Art Studio Location"
+            />
           </div>
         </div>
       </div>

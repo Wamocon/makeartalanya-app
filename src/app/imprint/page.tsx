@@ -14,19 +14,21 @@ export default function ImprintPage() {
         <section className="space-y-4 text-sm leading-relaxed text-[var(--muted)]">
           <div>
             <h2 className="font-semibold text-[var(--foreground)]">Service Provider</h2>
-            <p>Make Art Studio Alanya</p>
+            <p>Make Art Studio</p>
+            <p>Mahmutlar Mahallesi, Sahil Caddesi 165E</p>
             <p>Alanya, Antalya, Turkey</p>
           </div>
 
           <div>
             <h2 className="font-semibold text-[var(--foreground)]">Contact</h2>
+            <p>Phone: <a href="tel:+905516745515" className="text-[var(--pink-dark)] hover:underline">+90 551 674 55 15</a></p>
             <p>Email: info@makeartalanya.com</p>
-            <p>Instagram: @make_art.tr</p>
+            <p>Instagram: <a href="https://instagram.com/make_art.tr" target="_blank" rel="noopener noreferrer" className="text-[var(--pink-dark)] hover:underline">@make_art.tr</a></p>
           </div>
 
           <div>
             <h2 className="font-semibold text-[var(--foreground)]">Responsible Person</h2>
-            <p>To be completed</p>
+            <p>To be completed by the studio owner</p>
           </div>
 
           <p className="font-semibold text-[var(--foreground)]">

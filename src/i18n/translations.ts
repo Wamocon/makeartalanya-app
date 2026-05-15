@@ -57,7 +57,8 @@ export const translations = {
     location: {
       badge: "Konum",
       headline: "Bizi Ziyaret Edin",
-      address: "Alanya, Antalya, Türkiye",
+      address: "Mahmutlar Mahallesi, Sahil Caddesi 165E, Alanya, Antalya",
+      phone: "+90 551 674 55 15",
       hours: "Pazartesi – Cumartesi: 10:00 – 20:00",
     },
     footer: {
@@ -124,7 +125,8 @@ export const translations = {
     location: {
       badge: "Location",
       headline: "Visit Us",
-      address: "Alanya, Antalya, Turkey",
+      address: "Mahmutlar, Sahil Avenue 165E, Alanya, Antalya, Turkey",
+      phone: "+90 551 674 55 15",
       hours: "Monday – Saturday: 10:00 – 20:00",
     },
     footer: {
@@ -191,7 +193,8 @@ export const translations = {
     location: {
       badge: "Местоположение",
       headline: "Приходите к нам",
-      address: "Аланья, Анталья, Турция",
+      address: "Махмутлар, Береговой проспект 165E, Алания, Анталья, Турция",
+      phone: "+90 551 674 55 15",
       hours: "Понедельник – Суббота: 10:00 – 20:00",
     },
     footer: {

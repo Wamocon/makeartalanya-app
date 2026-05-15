@@ -1,4 +1,6 @@
-// Placeholder gallery - real images will be added via Supabase Storage
+import { createClient } from "@supabase/supabase-js";
+import Image from "next/image";
+
 const PLACEHOLDER_ITEMS = [
   { id: 1, label: "Akrilik · Acrylic · Акрил" },
   { id: 2, label: "Yağlı boya · Oil · Масло" },
@@ -8,13 +10,37 @@ const PLACEHOLDER_ITEMS = [
   { id: 6, label: "Karışık teknik · Mixed · Смешанная" },
 ];
 
+async function getGalleryImages(): Promise<string[]> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return [];
+  try {
+    const supabase = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+    const { data } = await supabase.storage.from("gallery").list("", {
+      limit: 24,
+      sortBy: { column: "created_at", order: "desc" },
+    });
+    if (!data || data.length === 0) return [];
+    return data
+      .filter((f) => f.name !== ".emptyFolderPlaceholder")
+      .map((f) => supabase.storage.from("gallery").getPublicUrl(f.name).data.publicUrl);
+  } catch {
+    return [];
+  }
+}
+
 interface GalleryProps {
   t: {
     gallery: { badge: string; headline: string };
   };
 }
 
-export default function GallerySection({ t }: GalleryProps) {
+export default async function GallerySection({ t }: GalleryProps) {
+  const images = await getGalleryImages();
+  const hasRealImages = images.length > 0;
+
   return (
     <section id="gallery" className="py-20 sm:py-28 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -30,21 +56,35 @@ export default function GallerySection({ t }: GalleryProps) {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {PLACEHOLDER_ITEMS.map((item) => (
-            <div
-              key={item.id}
-              className="aspect-square rounded-2xl overflow-hidden relative group cursor-pointer"
-              style={{
-                background: `linear-gradient(${120 + item.id * 40}deg, var(--pink-light), var(--blue-light))`,
-              }}
-            >
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-                <div className="text-4xl mb-2">🎨</div>
-                <div className="text-xs text-[var(--muted)] font-medium">{item.label}</div>
-              </div>
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-2xl" />
-            </div>
-          ))}
+          {hasRealImages
+            ? images.map((url, i) => (
+                <div
+                  key={i}
+                  className="aspect-square rounded-2xl overflow-hidden relative group"
+                >
+                  <Image
+                    src={url}
+                    alt={`Gallery image ${i + 1}`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                  />
+                </div>
+              ))
+            : PLACEHOLDER_ITEMS.map((item) => (
+                <div
+                  key={item.id}
+                  className="aspect-square rounded-2xl overflow-hidden relative group cursor-pointer"
+                  style={{
+                    background: `linear-gradient(${120 + item.id * 40}deg, var(--pink-light), var(--blue-light))`,
+                  }}
+                >
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                    <div className="text-4xl mb-2">🎨</div>
+                    <div className="text-xs text-[var(--muted)] font-medium">{item.label}</div>
+                  </div>
+                </div>
+              ))}
         </div>
 
         <p className="text-center text-sm text-[var(--muted)] mt-8">

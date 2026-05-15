@@ -66,9 +66,14 @@ export default async function AdminPage() {
             <h1 className="text-2xl sm:text-3xl font-bold">Make Art Studio Admin</h1>
             <p className="text-sm text-[var(--muted)]">Booking requests overview</p>
           </div>
-          <Link href="/" className="text-sm text-[var(--pink-dark)] hover:underline">
-            Open Landing Page
-          </Link>
+          <div className="flex gap-4">
+            <Link href="/admin/media" className="text-sm bg-[var(--pink)] hover:bg-[var(--pink-dark)] text-white px-4 py-2 rounded-full transition-colors">
+              Upload Media
+            </Link>
+            <Link href="/" className="text-sm text-[var(--pink-dark)] hover:underline">
+              Open Site
+            </Link>
+          </div>
         </div>
 
         <div className="grid sm:grid-cols-3 gap-4 mb-6">
