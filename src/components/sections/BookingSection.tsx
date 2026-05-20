@@ -35,6 +35,7 @@ export default function BookingSection({ t, locale }: BookingProps) {
     name: "",
     phone: "",
     language: locale,
+    isTrial: false,
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -62,6 +63,7 @@ export default function BookingSection({ t, locale }: BookingProps) {
         name: "",
         phone: "",
         language: locale,
+        isTrial: false,
       });
     } catch {
       setError(t.booking.errorNetwork);
@@ -146,6 +148,24 @@ export default function BookingSection({ t, locale }: BookingProps) {
                   ))}
                 </select>
               </div>
+
+              {/* Trial class option */}
+              <label className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] bg-[var(--background)] cursor-pointer hover:border-[var(--pink)] transition-colors">
+                <input
+                  type="checkbox"
+                  checked={form.isTrial}
+                  onChange={(e) => setForm({ ...form, isTrial: e.target.checked })}
+                  className="w-4 h-4 rounded accent-[#DCA8B2]"
+                />
+                <div>
+                  <span className="text-sm font-medium text-[var(--foreground)]">
+                    {locale === "tr" ? "🎨 Deneme Dersi İstiyorum" : locale === "ru" ? "🎨 Хочу пробный урок" : "🎨 I want a Trial Class"}
+                  </span>
+                  <span className="block text-[11px] text-[var(--muted)]">
+                    {locale === "tr" ? "Ücretsiz ilk ders" : locale === "ru" ? "Бесплатный первый урок" : "Free first lesson"}
+                  </span>
+                </div>
+              </label>
 
               <button
                 type="submit"

@@ -42,6 +42,16 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
+  // Protected: /trainer/* requires auth (role check done in page)
+  if (pathname.startsWith("/trainer")) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/login";
+      url.searchParams.set("redirect", pathname);
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Protected: /admin/* requires admin/trainer role (Supabase auth OR legacy cookie)
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     if (!user) {

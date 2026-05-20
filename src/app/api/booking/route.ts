@@ -10,6 +10,7 @@ type BookingPayload = {
   name?: string;
   phone?: string;
   language?: "tr" | "en" | "ru";
+  isTrial?: boolean;
 };
 
 export async function POST(req: Request) {
@@ -42,6 +43,7 @@ export async function POST(req: Request) {
     const guestName = payload.name?.trim() || "";
     const guestPhone = payload.phone?.trim() || "";
     const preferredLanguage = payload.language || "tr";
+    const isTrial = payload.isTrial === true;
 
     if (!guestName || !guestPhone) {
       return NextResponse.json(
@@ -62,6 +64,7 @@ export async function POST(req: Request) {
       guest_phone: guestPhone,
       preferred_language: preferredLanguage,
       status: "pending",
+      notes: isTrial ? "TRIAL CLASS REQUEST" : null,
     });
 
     if (error) {
