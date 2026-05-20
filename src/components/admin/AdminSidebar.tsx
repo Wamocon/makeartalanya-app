@@ -19,45 +19,48 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-
-const navSections = [
-  {
-    title: "Overview",
-    items: [
-      { href: "/admin", icon: LayoutDashboard, label: "Dashboard" },
-      { href: "/admin/today", icon: CalendarCheck, label: "Today" },
-    ],
-  },
-  {
-    title: "Classes",
-    items: [
-      { href: "/admin/schedule", icon: Calendar, label: "Schedule" },
-      { href: "/admin/sessions", icon: CalendarCheck, label: "Sessions" },
-      { href: "/admin/attendance", icon: ClipboardCheck, label: "Attendance" },
-    ],
-  },
-  {
-    title: "Clients",
-    items: [
-      { href: "/admin/clients", icon: Users, label: "Clients" },
-      { href: "/admin/subscriptions", icon: CreditCard, label: "Subscriptions" },
-      { href: "/admin/payments", icon: Banknote, label: "Payments" },
-    ],
-  },
-  {
-    title: "System",
-    items: [
-      { href: "/admin/notifications", icon: Bell, label: "Notifications" },
-      { href: "/admin/content", icon: FileText, label: "Content" },
-      { href: "/admin/media", icon: ImageIcon, label: "Media" },
-      { href: "/admin/settings", icon: Settings, label: "Settings" },
-    ],
-  },
-];
+import { useAdminLocale } from "./AdminLocaleProvider";
+import type { AdminLocale } from "@/i18n/admin-translations";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { locale, setLocale, t } = useAdminLocale();
+
+  const navSections = [
+    {
+      title: t.sidebar.overview,
+      items: [
+        { href: "/admin", icon: LayoutDashboard, label: t.sidebar.dashboard },
+        { href: "/admin/today", icon: CalendarCheck, label: t.sidebar.today },
+      ],
+    },
+    {
+      title: t.sidebar.classes,
+      items: [
+        { href: "/admin/schedule", icon: Calendar, label: t.sidebar.schedule },
+        { href: "/admin/sessions", icon: CalendarCheck, label: t.sidebar.sessions },
+        { href: "/admin/attendance", icon: ClipboardCheck, label: t.sidebar.attendance },
+      ],
+    },
+    {
+      title: t.sidebar.clients,
+      items: [
+        { href: "/admin/clients", icon: Users, label: t.sidebar.clients },
+        { href: "/admin/subscriptions", icon: CreditCard, label: t.sidebar.subscriptions },
+        { href: "/admin/payments", icon: Banknote, label: t.sidebar.payments },
+      ],
+    },
+    {
+      title: t.sidebar.system,
+      items: [
+        { href: "/admin/notifications", icon: Bell, label: t.sidebar.notifications },
+        { href: "/admin/content", icon: FileText, label: t.sidebar.content },
+        { href: "/admin/media", icon: ImageIcon, label: t.sidebar.media },
+        { href: "/admin/settings", icon: Settings, label: t.sidebar.settings },
+      ],
+    },
+  ];
 
   return (
     <>
@@ -134,16 +137,20 @@ export default function AdminSidebar() {
           ))}
         </nav>
 
-        {/* Language Selector - opens site preview in new window */}
+        {/* Language Selector */}
         <div className="absolute bottom-0 left-0 right-0 px-4 py-3 border-t border-[#F0E8EB] bg-white">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#9B8A8F] mb-2">Preview Site</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#9B8A8F] mb-2">{t.sidebar.language}</p>
           <div className="flex gap-1">
             {(["en", "tr", "ru"] as const).map((lang) => (
               <button
                 key={lang}
                 type="button"
-                onClick={() => window.open(`/?lang=${lang}`, "_blank")}
-                className="flex-1 text-center px-2 py-1.5 text-[10px] font-medium rounded-lg border border-[#F0E8EB] hover:border-[#DCA8B2] hover:bg-[#F5E6EA] text-[#9B8A8F] hover:text-[#B87A88] transition-colors cursor-pointer"
+                onClick={() => setLocale(lang as AdminLocale)}
+                className={`flex-1 text-center px-2 py-1.5 text-[10px] font-medium rounded-lg border transition-colors cursor-pointer ${
+                  locale === lang
+                    ? "border-[#DCA8B2] bg-[#F5E6EA] text-[#B87A88]"
+                    : "border-[#F0E8EB] hover:border-[#DCA8B2] hover:bg-[#F5E6EA] text-[#9B8A8F] hover:text-[#B87A88]"
+                }`}
               >
                 {lang === "en" ? "🇬🇧 EN" : lang === "tr" ? "🇹🇷 TR" : "🇷🇺 RU"}
               </button>

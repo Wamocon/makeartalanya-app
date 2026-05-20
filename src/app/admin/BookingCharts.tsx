@@ -1,18 +1,20 @@
 "use client";
 
+import { useAdminLocale } from "@/components/admin/AdminLocaleProvider";
+
 interface ChartData {
   statusCounts: { pending: number; confirmed: number; cancelled: number; completed: number };
   weeklyData: { label: string; count: number }[];
   languageData: { lang: string; count: number }[];
 }
 
-function StatusDonutChart({ data }: { data: ChartData["statusCounts"] }) {
+function StatusDonutChart({ data, labels }: { data: ChartData["statusCounts"]; labels: { pending: string; confirmed: string; cancelled: string; completed: string; total: string } }) {
   const total = data.pending + data.confirmed + data.cancelled + data.completed || 1;
   const segments = [
-    { label: "Pending", count: data.pending, color: "#f59e0b" },
-    { label: "Confirmed", count: data.confirmed, color: "#10b981" },
-    { label: "Cancelled", count: data.cancelled, color: "#ef4444" },
-    { label: "Completed", count: data.completed, color: "#3b82f6" },
+    { label: labels.pending, count: data.pending, color: "#f59e0b" },
+    { label: labels.confirmed, count: data.confirmed, color: "#10b981" },
+    { label: labels.cancelled, count: data.cancelled, color: "#ef4444" },
+    { label: labels.completed, count: data.completed, color: "#3b82f6" },
   ];
 
   let cumulativePercent = 0;
@@ -48,7 +50,7 @@ function StatusDonutChart({ data }: { data: ChartData["statusCounts"] }) {
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
             <div className="text-lg font-bold leading-none">{total}</div>
-            <div className="text-[9px] text-[var(--muted)] mt-0.5">total</div>
+            <div className="text-[9px] text-[var(--muted)] mt-0.5">{labels.total}</div>
           </div>
         </div>
       </div>
@@ -115,23 +117,25 @@ function LanguageBarChart({ data }: { data: ChartData["languageData"] }) {
 }
 
 export default function BookingCharts({ data }: { data: ChartData }) {
+  const { t } = useAdminLocale();
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       {/* Status Distribution */}
       <div className="bg-white rounded-2xl border border-[#F0E8EB] p-6">
-        <h3 className="text-[11px] font-semibold text-[#9B8A8F] uppercase tracking-wider mb-5">Status Distribution</h3>
-        <StatusDonutChart data={data.statusCounts} />
+        <h3 className="text-[11px] font-semibold text-[#9B8A8F] uppercase tracking-wider mb-5">{t.charts.statusDistribution}</h3>
+        <StatusDonutChart data={data.statusCounts} labels={{ pending: t.charts.pending, confirmed: t.charts.confirmed, cancelled: t.charts.cancelled, completed: t.charts.completed, total: t.charts.total }} />
       </div>
 
       {/* Weekly Bookings */}
       <div className="bg-white rounded-2xl border border-[#F0E8EB] p-6">
-        <h3 className="text-[11px] font-semibold text-[#9B8A8F] uppercase tracking-wider mb-5">Last 7 Days</h3>
+        <h3 className="text-[11px] font-semibold text-[#9B8A8F] uppercase tracking-wider mb-5">{t.charts.last7Days}</h3>
         <WeeklyBarChart data={data.weeklyData} />
       </div>
 
       {/* Language Breakdown */}
       <div className="bg-white rounded-2xl border border-[#F0E8EB] p-6">
-        <h3 className="text-[11px] font-semibold text-[#9B8A8F] uppercase tracking-wider mb-5">By Language</h3>
+        <h3 className="text-[11px] font-semibold text-[#9B8A8F] uppercase tracking-wider mb-5">{t.charts.byLanguage}</h3>
         <LanguageBarChart data={data.languageData} />
       </div>
     </div>
