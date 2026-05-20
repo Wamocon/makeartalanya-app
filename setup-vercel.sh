@@ -58,12 +58,23 @@ add_env() {
 }
 
 # ── Environment Variables ────────────────────────────────────
-add_env "NEXT_PUBLIC_SUPABASE_URL"      "https://vnldsyjkhofofellwuiq.supabase.co"
-add_env "NEXT_PUBLIC_SUPABASE_ANON_KEY" "sb_publishable_s5Bwenh9Hb7egmyahBswLg_1Qdw8uWe"
-add_env "SUPABASE_DB_PASSWORD"          "***REMOVED***"  "production"
-add_env "SUPABASE_SERVICE_ROLE_KEY"      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZubGRzeWpraG9mb2ZlbGx3dWlxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODYwNzc0MCwiZXhwIjoyMDk0MTgzNzQwfQ.OzBOX9kGwDXbXGBJQlupIlaJzAbs6DrKeDGhL3Qi8JM"
+# IMPORTANT: Set these env vars before running this script:
+#   SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_DB_PASSWORD,
+#   SUPABASE_SERVICE_ROLE_KEY, ADMIN_DASHBOARD_PASSWORD
+
+if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+  echo "❌  Error: Required secret env vars are not set."
+  echo "   Set: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_DB_PASSWORD,"
+  echo "        SUPABASE_SERVICE_ROLE_KEY, ADMIN_DASHBOARD_PASSWORD"
+  exit 1
+fi
+
+add_env "NEXT_PUBLIC_SUPABASE_URL"      "${SUPABASE_URL:-https://vnldsyjkhofofellwuiq.supabase.co}"
+add_env "NEXT_PUBLIC_SUPABASE_ANON_KEY" "${SUPABASE_ANON_KEY}"
+add_env "SUPABASE_DB_PASSWORD"          "${SUPABASE_DB_PASSWORD}"  "production"
+add_env "SUPABASE_SERVICE_ROLE_KEY"     "${SUPABASE_SERVICE_ROLE_KEY}"
 add_env "ADMIN_DASHBOARD_USER"          "admin"
-add_env "ADMIN_DASHBOARD_PASSWORD"      "***REMOVED***"
+add_env "ADMIN_DASHBOARD_PASSWORD"      "${ADMIN_DASHBOARD_PASSWORD}"
 add_env "NEXT_PUBLIC_SITE_URL"          "https://makeartalanya.com"
 add_env "NEXT_PUBLIC_DEFAULT_LOCALE"    "tr"
 

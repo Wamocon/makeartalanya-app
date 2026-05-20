@@ -30,7 +30,7 @@ test.describe("Admin Login API", () => {
 
   test("POST with valid credentials returns ok:true", async ({ request }) => {
     const res = await request.post("/api/admin/login", {
-      data: { username: "admin", password: "***REMOVED***" },
+      data: { username: process.env.ADMIN_DASHBOARD_USER || "admin", password: process.env.ADMIN_DASHBOARD_PASSWORD || "test-password" },
     });
     expect(res.status()).toBe(200);
     const body = await res.json();
@@ -47,7 +47,7 @@ test.describe("Admin Login API", () => {
 
   test("cookie has proper security attributes", async ({ request }) => {
     const res = await request.post("/api/admin/login", {
-      data: { username: "admin", password: "***REMOVED***" },
+      data: { username: process.env.ADMIN_DASHBOARD_USER || "admin", password: process.env.ADMIN_DASHBOARD_PASSWORD || "test-password" },
     });
     const cookie = res.headers()["set-cookie"] || "";
     expect(cookie).toContain("HttpOnly");

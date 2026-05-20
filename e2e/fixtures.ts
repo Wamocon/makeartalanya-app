@@ -7,7 +7,7 @@ import { test as base, expect } from "@playwright/test";
 // Admin credentials from env (same as the app uses)
 const ADMIN_USER = process.env.ADMIN_DASHBOARD_USER || "admin";
 const ADMIN_PASSWORD = process.env.ADMIN_DASHBOARD_PASSWORD || "admin";
-const ADMIN_PANEL_PASSWORD = process.env.ADMIN_PANEL_PASSWORD || "***REMOVED***";
+const ADMIN_PANEL_PASSWORD = process.env.ADMIN_PANEL_PASSWORD || "test-password";
 
 export type TestFixtures = {
   /** Navigates to the homepage and waits for hydration */

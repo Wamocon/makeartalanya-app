@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-const ADMIN_USER = "admin";
-const ADMIN_PASSWORD = "***REMOVED***";
+const ADMIN_USER = process.env.ADMIN_DASHBOARD_USER || "admin";
+const ADMIN_PASSWORD = process.env.ADMIN_DASHBOARD_PASSWORD || "test-password";
 
 test.describe("Full E2E Journey - Admin Flow", () => {
   test("admin can login and view today's schedule", async ({ page }) => {

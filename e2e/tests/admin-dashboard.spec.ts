@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures";
 
-const ADMIN_USER = "admin";
-const ADMIN_PASSWORD = "***REMOVED***";
+const ADMIN_USER = process.env.ADMIN_DASHBOARD_USER || "admin";
+const ADMIN_PASSWORD = process.env.ADMIN_DASHBOARD_PASSWORD || "test-password";
 
 test.describe("Admin Dashboard - Today Page", () => {
   test.beforeEach(async ({ page, request }) => {

@@ -56,10 +56,12 @@ VERCEL_TOKEN=dein_token bash setup-vercel.sh
 vercel.com → Project → Settings → Environment Variables:
 
 NEXT_PUBLIC_SUPABASE_URL     = https://vnldsyjkhofofellwuiq.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY = sb_publishable_s5Bwenh9Hb7egmyahBswLg_1Qdw8uWe
+NEXT_PUBLIC_SUPABASE_ANON_KEY = (from Supabase dashboard → Settings → API → anon key)
 NEXT_PUBLIC_SITE_URL         = https://makeartalanya.com
 NEXT_PUBLIC_DEFAULT_LOCALE   = tr
-SUPABASE_DB_PASSWORD         = ***REMOVED***  (nur Production)
+SUPABASE_DB_PASSWORD         = (from Supabase dashboard → Settings → Database → password)
+SUPABASE_SERVICE_ROLE_KEY    = (from Supabase dashboard → Settings → API → service_role key)
+ADMIN_DASHBOARD_PASSWORD     = (choose a strong password)
 ```
 
 ### 3. GitHub Repo erstellen + mit Vercel verbinden
