@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth-guard";
+import { notifyBookingStatusChange } from "@/lib/notifications/email";
+import { telegramNotifyStatusChange } from "@/lib/notifications/telegram";
 
 export async function PATCH(request: Request) {
   try {
@@ -30,6 +32,31 @@ export async function PATCH(request: Request) {
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    // Send notifications on status change (fire-and-forget)
+    if (status === "confirmed" || status === "cancelled") {
+      const { data: booking } = await supabase
+        .from("bookings")
+        .select("guest_name, guest_phone, preferred_language, guest_email, telegram_chat_id")
+        .eq("id", id)
+        .single();
+
+      if (booking) {
+        const notifData = {
+          guestName: booking.guest_name,
+          guestPhone: booking.guest_phone,
+          status,
+          language: booking.preferred_language || "en",
+          email: booking.guest_email,
+        };
+        Promise.allSettled([
+          notifyBookingStatusChange(notifData),
+          booking.telegram_chat_id
+            ? telegramNotifyStatusChange(booking.telegram_chat_id, notifData)
+            : Promise.resolve(),
+        ]).catch(() => {});
+      }
     }
 
     return NextResponse.json({ success: true });

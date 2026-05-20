@@ -13,6 +13,7 @@ import TutorialSection from "@/components/sections/TutorialSection";
 import PortalSection from "@/components/sections/PortalSection";
 import Footer from "@/components/sections/Footer";
 import GsapProvider from "@/components/GsapProvider";
+import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import { translations, type Locale } from "@/i18n/translations";
 
 type ContentOverrides = Record<string, Record<string, string>>;
@@ -87,6 +88,7 @@ export default function Home() {
 
   return (
     <GsapProvider>
+      <LocalBusinessJsonLd />
       <main className="min-h-screen">
         <Navbar t={t} locale={locale} setLocale={setLocale} />
         <Hero t={t} />

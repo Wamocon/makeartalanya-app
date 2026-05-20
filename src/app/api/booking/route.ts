@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { rateLimit } from "@/lib/rate-limit";
+import { notifyAdminNewBooking, telegramNotifyAdminNewBooking } from "@/lib/notifications";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -12,6 +14,18 @@ type BookingPayload = {
 
 export async function POST(req: Request) {
   try {
+    // Rate limit: 5 bookings per IP per minute
+    const forwarded = req.headers.get("x-forwarded-for");
+    const ip = forwarded?.split(",")[0]?.trim() || "unknown";
+    const { allowed, resetIn } = rateLimit(ip, { maxRequests: 5, windowMs: 60_000 });
+
+    if (!allowed) {
+      return NextResponse.json(
+        { ok: false, error: "Too many requests. Please try again later." },
+        { status: 429, headers: { "Retry-After": String(Math.ceil(resetIn / 1000)) } }
+      );
+    }
+
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       return NextResponse.json(
         {
@@ -56,6 +70,13 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    // Fire-and-forget notifications (don't block the response)
+    const notificationData = { guestName: guestName, guestPhone: guestPhone, language: preferredLanguage };
+    Promise.allSettled([
+      notifyAdminNewBooking(notificationData),
+      telegramNotifyAdminNewBooking(notificationData),
+    ]).catch(() => {/* silently ignore notification failures */});
 
     return NextResponse.json({ ok: true });
   } catch (err) {
