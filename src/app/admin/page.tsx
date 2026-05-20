@@ -80,12 +80,16 @@ export default async function AdminPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#2D2327]">Dashboard</h1>
-          <p className="text-sm text-[#9B8A8F] mt-1">Booking overview &amp; management</p>
+          <h1 className="text-2xl font-bold text-[#2D2327] tracking-tight">
+            Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"}
+          </h1>
+          <p className="text-sm text-[#9B8A8F] mt-1">
+            {new Date().toLocaleDateString("en", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/" target="_blank" className="px-3 py-2 text-xs font-medium text-[#9B8A8F] hover:text-[#2D2327] border border-[#F0E8EB] rounded-xl hover:bg-white transition-colors">
@@ -95,81 +99,51 @@ export default async function AdminPage() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Key Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white/80 backdrop-blur-sm border border-[var(--border)] rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center">
-                  <svg className="w-4.5 h-4.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                </div>
-                <span className="text-xs font-medium text-[var(--muted)] uppercase tracking-wider">Total</span>
-              </div>
-              <div className="text-3xl font-bold tracking-tight">{totalCount}</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur-sm border border-amber-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
-                  <svg className="w-4.5 h-4.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <span className="text-xs font-medium text-amber-600 uppercase tracking-wider">Pending</span>
-              </div>
-              <div className="text-3xl font-bold tracking-tight text-amber-600">{pendingCount}</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur-sm border border-emerald-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
-                  <svg className="w-4.5 h-4.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <span className="text-xs font-medium text-emerald-600 uppercase tracking-wider">Confirmed</span>
-              </div>
-              <div className="text-3xl font-bold tracking-tight text-emerald-600">{confirmedCount}</div>
-            </div>
-            <div className="bg-white/80 backdrop-blur-sm border border-red-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center">
-                  <svg className="w-4.5 h-4.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </div>
-                <span className="text-xs font-medium text-red-500 uppercase tracking-wider">Cancelled</span>
-              </div>
-              <div className="text-3xl font-bold tracking-tight text-red-500">{cancelledCount}</div>
-            </div>
+        <div className="relative overflow-hidden bg-white rounded-2xl border border-[#F0E8EB] p-5 group hover:shadow-lg transition-all">
+          <div className="absolute -right-3 -top-3 w-16 h-16 bg-slate-50 rounded-full" />
+          <p className="text-[11px] font-semibold text-[#9B8A8F] uppercase tracking-wider mb-3">Total Bookings</p>
+          <p className="text-3xl font-bold text-[#2D2327]">{totalCount}</p>
+          <p className="text-[11px] text-[#9B8A8F] mt-1">All time</p>
+        </div>
+        <div className="relative overflow-hidden bg-gradient-to-br from-amber-50 to-white rounded-2xl border border-amber-100 p-5 group hover:shadow-lg transition-all">
+          <div className="absolute -right-3 -top-3 w-16 h-16 bg-amber-100/50 rounded-full" />
+          <p className="text-[11px] font-semibold text-amber-600 uppercase tracking-wider mb-3">Pending</p>
+          <p className="text-3xl font-bold text-amber-600">{pendingCount}</p>
+          <p className="text-[11px] text-amber-500 mt-1">{totalCount > 0 ? Math.round((pendingCount / totalCount) * 100) : 0}% of total</p>
+        </div>
+        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white rounded-2xl border border-emerald-100 p-5 group hover:shadow-lg transition-all">
+          <div className="absolute -right-3 -top-3 w-16 h-16 bg-emerald-100/50 rounded-full" />
+          <p className="text-[11px] font-semibold text-emerald-600 uppercase tracking-wider mb-3">Confirmed</p>
+          <p className="text-3xl font-bold text-emerald-600">{confirmedCount}</p>
+          <p className="text-[11px] text-emerald-500 mt-1">{completedCount} completed</p>
+        </div>
+        <div className="relative overflow-hidden bg-gradient-to-br from-red-50 to-white rounded-2xl border border-red-100 p-5 group hover:shadow-lg transition-all">
+          <div className="absolute -right-3 -top-3 w-16 h-16 bg-red-100/50 rounded-full" />
+          <p className="text-[11px] font-semibold text-red-500 uppercase tracking-wider mb-3">Cancelled</p>
+          <p className="text-3xl font-bold text-red-500">{cancelledCount}</p>
+          <p className="text-[11px] text-red-400 mt-1">{totalCount > 0 ? Math.round((cancelledCount / totalCount) * 100) : 0}% cancel rate</p>
+        </div>
+      </div>
+
+      {/* Analytics Section */}
+      <div>
+        <h2 className="text-sm font-semibold text-[#2D2327] mb-4">Analytics</h2>
+        <BookingCharts data={chartData} />
+      </div>
+
+      {/* Recent Bookings */}
+      <div>
+        <h2 className="text-sm font-semibold text-[#2D2327] mb-4">Recent Bookings</h2>
+        {error ? (
+          <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-5 text-sm">
+            Error loading bookings: {error.message}
           </div>
-
-          {/* Quick Links to Management Pages */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { href: "/admin/schedule", label: "Schedule", icon: "📅", desc: "Manage weekly classes" },
-              { href: "/admin/attendance", label: "Attendance", icon: "✓", desc: "Mark today's attendance" },
-              { href: "/admin/clients", label: "Clients", icon: "👥", desc: "View all clients" },
-              { href: "/admin/subscriptions", label: "Subscriptions", icon: "💳", desc: "Manage packages" },
-              { href: "/admin/payments", label: "Payments", icon: "💰", desc: "Payment history" },
-              { href: "/admin/sessions", label: "Sessions", icon: "🗓", desc: "14-day overview" },
-              { href: "/admin/notifications", label: "Notifications", icon: "🔔", desc: "Sent messages" },
-              { href: "/admin/settings", label: "Settings", icon: "⚙", desc: "Studio config" },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="bg-white/80 backdrop-blur-sm border border-[var(--border)] rounded-xl p-3.5 hover:shadow-md hover:border-[var(--pink-light)] transition-all group"
-              >
-                <div className="text-lg mb-1">{item.icon}</div>
-                <p className="text-xs font-semibold text-[var(--foreground)] group-hover:text-[var(--pink-dark)] transition-colors">{item.label}</p>
-                <p className="text-[10px] text-[var(--muted)] mt-0.5">{item.desc}</p>
-              </Link>
-            ))}
-          </div>
-
-          {/* Charts */}
-          <BookingCharts data={chartData} />
-
-          {/* Bookings Table */}
-          {error ? (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-5 text-sm">
-              Error loading bookings: {error.message}
-            </div>
-          ) : (
-            <BookingTable bookings={bookings} />
-          )}
+        ) : (
+          <BookingTable bookings={bookings} />
+        )}
+      </div>
     </div>
   );
 }

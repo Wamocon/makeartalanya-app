@@ -76,10 +76,12 @@ export default function BookingTable({ bookings: initial }: { bookings: BookingR
   });
 
   return (
-    <div className="bg-white/80 backdrop-blur-sm border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-[#F0E8EB] overflow-hidden">
       {/* Table header with filters */}
-      <div className="px-5 py-4 border-b border-[var(--border)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-sm font-bold text-[var(--foreground)]">Recent Bookings</h2>
+      <div className="px-5 py-4 border-b border-[#F0E8EB] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-[#9B8A8F]">{filtered.length} bookings</span>
+        </div>
         <div className="flex items-center gap-2">
           <div className="relative">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

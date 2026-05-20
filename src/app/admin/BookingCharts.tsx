@@ -116,22 +116,22 @@ function LanguageBarChart({ data }: { data: ChartData["languageData"] }) {
 
 export default function BookingCharts({ data }: { data: ChartData }) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
       {/* Status Distribution */}
-      <div className="bg-white/80 backdrop-blur-sm border border-[var(--border)] rounded-2xl p-5 shadow-sm">
-        <h3 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Status Distribution</h3>
+      <div className="bg-white rounded-2xl border border-[#F0E8EB] p-6">
+        <h3 className="text-[11px] font-semibold text-[#9B8A8F] uppercase tracking-wider mb-5">Status Distribution</h3>
         <StatusDonutChart data={data.statusCounts} />
       </div>
 
       {/* Weekly Bookings */}
-      <div className="bg-white/80 backdrop-blur-sm border border-[var(--border)] rounded-2xl p-5 shadow-sm">
-        <h3 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">Last 7 Days</h3>
+      <div className="bg-white rounded-2xl border border-[#F0E8EB] p-6">
+        <h3 className="text-[11px] font-semibold text-[#9B8A8F] uppercase tracking-wider mb-5">Last 7 Days</h3>
         <WeeklyBarChart data={data.weeklyData} />
       </div>
 
       {/* Language Breakdown */}
-      <div className="bg-white/80 backdrop-blur-sm border border-[var(--border)] rounded-2xl p-5 shadow-sm">
-        <h3 className="text-xs font-semibold text-[var(--muted)] uppercase tracking-wider mb-4">By Language</h3>
+      <div className="bg-white rounded-2xl border border-[#F0E8EB] p-6">
+        <h3 className="text-[11px] font-semibold text-[#9B8A8F] uppercase tracking-wider mb-5">By Language</h3>
         <LanguageBarChart data={data.languageData} />
       </div>
     </div>
