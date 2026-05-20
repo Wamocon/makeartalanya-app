@@ -31,12 +31,37 @@ function deepMerge(base: Record<string, unknown>, overrides: ContentOverrides): 
 }
 
 export default function Home() {
-  const [locale, setLocale] = useState<Locale>("tr");
+  const [locale, setLocaleState] = useState<Locale>("tr");
   const [overrides, setOverrides] = useState<Record<Locale, ContentOverrides | null>>({
     tr: null,
     en: null,
     ru: null,
   });
+
+  // Read locale from URL ?lang= param or localStorage on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlLang = params.get("lang");
+    if (urlLang && ["tr", "en", "ru"].includes(urlLang)) {
+      setLocaleState(urlLang as Locale);
+      localStorage.setItem("locale", urlLang);
+      return;
+    }
+    const stored = localStorage.getItem("locale");
+    if (stored && ["tr", "en", "ru"].includes(stored)) {
+      setLocaleState(stored as Locale);
+    }
+  }, []);
+
+  // Wrapper that persists locale choice
+  const setLocale = useCallback((l: Locale) => {
+    setLocaleState(l);
+    localStorage.setItem("locale", l);
+    // Update URL without reload
+    const url = new URL(window.location.href);
+    url.searchParams.set("lang", l);
+    window.history.replaceState({}, "", url.toString());
+  }, []);
 
   const loadOverrides = useCallback((l: Locale) => {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
