@@ -134,20 +134,19 @@ export default function AdminSidebar() {
           ))}
         </nav>
 
-        {/* Language Selector */}
+        {/* Language Selector - opens site preview in new window */}
         <div className="absolute bottom-0 left-0 right-0 px-4 py-3 border-t border-[#F0E8EB] bg-white">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#9B8A8F] mb-2">Site Language</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#9B8A8F] mb-2">Preview Site</p>
           <div className="flex gap-1">
             {(["en", "tr", "ru"] as const).map((lang) => (
-              <a
+              <button
                 key={lang}
-                href={`/?lang=${lang}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 text-center px-2 py-1.5 text-[10px] font-medium rounded-lg border border-[#F0E8EB] hover:border-[#DCA8B2] hover:bg-[#F5E6EA] text-[#9B8A8F] hover:text-[#B87A88] transition-colors"
+                type="button"
+                onClick={() => window.open(`/?lang=${lang}`, "_blank")}
+                className="flex-1 text-center px-2 py-1.5 text-[10px] font-medium rounded-lg border border-[#F0E8EB] hover:border-[#DCA8B2] hover:bg-[#F5E6EA] text-[#9B8A8F] hover:text-[#B87A88] transition-colors cursor-pointer"
               >
                 {lang === "en" ? "🇬🇧 EN" : lang === "tr" ? "🇹🇷 TR" : "🇷🇺 RU"}
-              </a>
+              </button>
             ))}
           </div>
         </div>
