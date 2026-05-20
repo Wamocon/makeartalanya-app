@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { packages, type Locale } from "@/i18n/translations";
+import { type Locale } from "@/i18n/translations";
 
 interface BookingProps {
   t: {
@@ -10,17 +10,13 @@ interface BookingProps {
       badge: string;
       headline: string;
       name: string;
-      email: string;
       phone: string;
       language: string;
-      package: string;
-      message: string;
       submit: string;
       success: string;
       errorGeneric: string;
       errorNetwork: string;
     };
-    packages: { lessons: string };
   };
   locale: Locale;
 }
@@ -37,11 +33,8 @@ export default function BookingSection({ t, locale }: BookingProps) {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     name: "",
-    email: "",
     phone: "",
     language: locale,
-    package: "",
-    message: "",
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -67,11 +60,8 @@ export default function BookingSection({ t, locale }: BookingProps) {
       setSubmitted(true);
       setForm({
         name: "",
-        email: "",
         phone: "",
         language: locale,
-        package: "",
-        message: "",
       });
     } catch {
       setError(t.booking.errorNetwork);
@@ -114,93 +104,47 @@ export default function BookingSection({ t, locale }: BookingProps) {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-[var(--muted)] mb-1.5 uppercase tracking-wide">
-                    {t.booking.name} *
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)]"
-                    placeholder="Anna Müller"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-[var(--muted)] mb-1.5 uppercase tracking-wide">
-                    {t.booking.phone} *
-                  </label>
-                  <input
-                    required
-                    type="tel"
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)]"
-                    placeholder="+90 5xx xxx xx xx"
-                  />
-                </div>
-              </div>
-
               <div>
                 <label className="block text-xs font-semibold text-[var(--muted)] mb-1.5 uppercase tracking-wide">
-                  {t.booking.email} *
+                  {t.booking.name} *
                 </label>
                 <input
                   required
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)]"
-                  placeholder="email@example.com"
+                  placeholder="Anna Müller"
                 />
-              </div>
-
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-[var(--muted)] mb-1.5 uppercase tracking-wide">
-                    {t.booking.language}
-                  </label>
-                  <select
-                    value={form.language}
-                    onChange={(e) => setForm({ ...form, language: e.target.value as Locale })}
-                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)]"
-                  >
-                    {LANGUAGES.map((l) => (
-                      <option key={l.value} value={l.value}>{l.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-[var(--muted)] mb-1.5 uppercase tracking-wide">
-                    {t.booking.package}
-                  </label>
-                  <select
-                    value={form.package}
-                    onChange={(e) => setForm({ ...form, package: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)]"
-                  >
-                    <option value="">—</option>
-                    {packages.map((pkg) => (
-                      <option key={pkg.id} value={pkg.id}>
-                        {pkg.lessons} {t.packages.lessons} — {pkg.pricePerLesson}€
-                      </option>
-                    ))}
-                  </select>
-                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-[var(--muted)] mb-1.5 uppercase tracking-wide">
-                  {t.booking.message}
+                  {t.booking.phone} *
                 </label>
-                <textarea
-                  rows={3}
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)] resize-none"
+                <input
+                  required
+                  type="tel"
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)]"
+                  placeholder="+90 5xx xxx xx xx"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[var(--muted)] mb-1.5 uppercase tracking-wide">
+                  {t.booking.language}
+                </label>
+                <select
+                  value={form.language}
+                  onChange={(e) => setForm({ ...form, language: e.target.value as Locale })}
+                  className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)]"
+                >
+                  {LANGUAGES.map((l) => (
+                    <option key={l.value} value={l.value}>{l.label}</option>
+                  ))}
+                </select>
               </div>
 
               <button
