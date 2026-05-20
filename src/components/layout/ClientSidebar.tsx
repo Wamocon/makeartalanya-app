@@ -21,25 +21,37 @@ const LANGUAGES = [
   { code: "ru", label: "RU", flag: "🇷🇺" },
 ];
 
-const navItems = [
-  { href: "/my", icon: CalendarDays, label: "Dashboard", exact: true },
-  { href: "/my/classes", icon: GraduationCap, label: "My Classes" },
-  { href: "/my/subscriptions", icon: CreditCard, label: "Subscriptions" },
-  { href: "/my/children", icon: Users, label: "Children" },
-  { href: "/my/notifications", icon: Bell, label: "Notifications" },
-  { href: "/my/settings", icon: User, label: "Settings" },
-];
+interface NavLabels {
+  dashboard: string;
+  myClasses: string;
+  subscriptions: string;
+  children: string;
+  notifications: string;
+  settings: string;
+  browseSchedule: string;
+  [key: string]: string;
+}
 
 interface ClientSidebarProps {
   userName: string;
   userEmail: string;
   avatarUrl?: string | null;
   unreadCount: number;
+  navLabels: NavLabels;
 }
 
-export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCount }: ClientSidebarProps) {
+export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCount, navLabels }: ClientSidebarProps) {
   const pathname = usePathname();
   const [lang, setLang] = useState("en");
+
+  const navItems = [
+    { href: "/my", icon: CalendarDays, label: navLabels.dashboard, exact: true },
+    { href: "/my/classes", icon: GraduationCap, label: navLabels.myClasses },
+    { href: "/my/subscriptions", icon: CreditCard, label: navLabels.subscriptions },
+    { href: "/my/children", icon: Users, label: navLabels.children },
+    { href: "/my/notifications", icon: Bell, label: navLabels.notifications },
+    { href: "/my/settings", icon: User, label: navLabels.settings },
+  ];
 
   useEffect(() => {
     const cookie = document.cookie.split("; ").find((c) => c.startsWith("lang="));
@@ -114,7 +126,7 @@ export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCo
           className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#A9C7E5] hover:bg-[#EFF6FF] transition-all"
         >
           <CalendarDays className="w-4.5 h-4.5" strokeWidth={1.8} />
-          <span>Browse Schedule</span>
+          <span>{navLabels.browseSchedule}</span>
         </Link>
       </div>
 

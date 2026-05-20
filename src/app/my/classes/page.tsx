@@ -1,36 +1,43 @@
 import { createClient } from "@/lib/supabase/server";
 import { CalendarDays, CheckCircle, XCircle, Clock } from "lucide-react";
 import Link from "next/link";
+import { dashboardTranslations } from "@/i18n/dashboard";
+import { getLocale } from "@/i18n/server";
 
 export default async function MyClassesPage() {
   const supabase = await createClient();
+  const locale = await getLocale();
+  const t = dashboardTranslations[locale].classes;
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Upcoming enrollments
-  const { data: upcoming } = await supabase
-    .from("enrollments")
-    .select("*, class_sessions(starts_at, ends_at, class_types(name_en, color))")
-    .eq("user_id", user!.id)
-    .eq("status", "confirmed")
-    .order("booked_at", { ascending: false });
+  // Run queries in parallel
+  const [upcomingResult, pastResult] = await Promise.all([
+    supabase
+      .from("enrollments")
+      .select("*, class_sessions(starts_at, ends_at, class_types(name_en, color))")
+      .eq("user_id", user!.id)
+      .eq("status", "confirmed")
+      .order("booked_at", { ascending: false }),
+    supabase
+      .from("enrollments")
+      .select("*, class_sessions(starts_at, ends_at, class_types(name_en, color))")
+      .eq("user_id", user!.id)
+      .in("status", ["attended", "no_show", "cancelled"])
+      .order("booked_at", { ascending: false })
+      .limit(20),
+  ]);
 
-  // Past enrollments
-  const { data: past } = await supabase
-    .from("enrollments")
-    .select("*, class_sessions(starts_at, ends_at, class_types(name_en, color))")
-    .eq("user_id", user!.id)
-    .in("status", ["attended", "no_show", "cancelled"])
-    .order("booked_at", { ascending: false })
-    .limit(20);
+  const upcoming = upcomingResult.data;
+  const past = pastResult.data;
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold text-[#2D2327]">My Classes</h1>
+      <h1 className="text-xl font-semibold text-[#2D2327]">{t.title}</h1>
 
       {/* Upcoming */}
       <section>
         <h2 className="text-sm font-medium text-[#9B8A8F] uppercase tracking-wider mb-3">
-          Upcoming
+          {t.upcoming}
         </h2>
         {upcoming && upcoming.length > 0 ? (
           <div className="space-y-2">
@@ -58,9 +65,9 @@ export default async function MyClassesPage() {
         ) : (
           <div className="text-center py-8 bg-white rounded-xl border border-[#F0E8EB]">
             <CalendarDays className="w-8 h-8 text-[#9B8A8F]/40 mx-auto mb-2" />
-            <p className="text-sm text-[#9B8A8F]">No upcoming classes</p>
+            <p className="text-sm text-[#9B8A8F]">{t.noUpcoming}</p>
             <Link href="/schedule" className="text-xs text-[#DCA8B2] hover:underline mt-1 inline-block">
-              Book a class →
+              {t.bookFirst} →
             </Link>
           </div>
         )}

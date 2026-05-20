@@ -46,6 +46,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className={`h-full ${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://vnldsyjkhofofellwuiq.supabase.co" />
+        <link rel="dns-prefetch" href="https://vnldsyjkhofofellwuiq.supabase.co" />
+      </head>
       <body className="min-h-full flex flex-col font-sans">
         {children}
       </body>

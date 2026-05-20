@@ -1,26 +1,35 @@
 import { createClient } from "@/lib/supabase/server";
 import { CreditCard, Clock, Snowflake } from "lucide-react";
+import { dashboardTranslations } from "@/i18n/dashboard";
+import { getLocale } from "@/i18n/server";
 
 export default async function MySubscriptionsPage() {
   const supabase = await createClient();
+  const locale = await getLocale();
+  const t = dashboardTranslations[locale].subscriptions;
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: subscriptions } = await supabase
-    .from("subscriptions")
-    .select("*, packages(name, lessons_count, price_eur, price_per_lesson)")
-    .eq("user_id", user!.id)
-    .order("created_at", { ascending: false });
+  // Run queries in parallel
+  const [subsResult, freezeResult] = await Promise.all([
+    supabase
+      .from("subscriptions")
+      .select("*, packages(name, lessons_count, price_eur, price_per_lesson)")
+      .eq("user_id", user!.id)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("subscription_freezes")
+      .select("*")
+      .eq("user_id", user!.id)
+      .order("start_date", { ascending: false })
+      .limit(5),
+  ]);
 
-  const { data: freezes } = await supabase
-    .from("subscription_freezes")
-    .select("*")
-    .eq("user_id", user!.id)
-    .order("start_date", { ascending: false })
-    .limit(5);
+  const subscriptions = subsResult.data;
+  const freezes = freezeResult.data;
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold text-[#2D2327]">Subscriptions</h1>
+      <h1 className="text-xl font-semibold text-[#2D2327]">{t.title}</h1>
 
       {subscriptions && subscriptions.length > 0 ? (
         <div className="space-y-4">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { Calendar, AlertTriangle, Sparkles, Info, Check, Bell } from "lucide-react";
 import MarkAllReadButton from "./MarkAllReadButton";
+import { getClientLocale, dashboardTranslations } from "@/i18n/dashboard";
 
 interface Notification {
   id: string;
@@ -40,6 +41,8 @@ export default function RealtimeNotifications({
   userId: string;
 }) {
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+  const locale = getClientLocale();
+  const t = dashboardTranslations[locale].notifications;
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -90,12 +93,12 @@ export default function RealtimeNotifications({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-[#2D2327]">Notifications</h1>
+        <h1 className="text-xl font-semibold text-[#2D2327]">{t.title}</h1>
         <div className="flex items-center gap-3">
           {unread.length > 0 && (
             <>
               <span className="text-xs text-[#DCA8B2] font-medium">
-                {unread.length} unread
+                {unread.length} {t.unread}
               </span>
               <MarkAllReadButton />
             </>
@@ -108,7 +111,7 @@ export default function RealtimeNotifications({
           {/* Unread */}
           {unread.length > 0 && (
             <section>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#9B8A8F] mb-2">New</h2>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#9B8A8F] mb-2">{t.newSection}</h2>
               <div className="space-y-2">
                 {unread.map((n) => (
                   <div key={n.id} className="flex items-start gap-3 bg-white rounded-xl border border-[#DCA8B2]/30 p-3 animate-in fade-in">
@@ -132,7 +135,7 @@ export default function RealtimeNotifications({
           {/* Read */}
           {read.length > 0 && (
             <section>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#9B8A8F] mb-2">Earlier</h2>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#9B8A8F] mb-2">{t.earlier}</h2>
               <div className="space-y-2">
                 {read.map((n) => (
                   <div key={n.id} className="flex items-start gap-3 bg-white rounded-xl border border-[#F0E8EB] p-3 opacity-70">
@@ -156,8 +159,8 @@ export default function RealtimeNotifications({
       ) : (
         <div className="text-center py-12 bg-white rounded-xl border border-[#F0E8EB]">
           <Bell className="w-10 h-10 text-[#9B8A8F]/30 mx-auto mb-3" />
-          <p className="text-[#9B8A8F] font-medium">No notifications</p>
-          <p className="text-xs text-[#9B8A8F] mt-1">You&apos;ll see booking confirmations and reminders here</p>
+          <p className="text-[#9B8A8F] font-medium">{t.noNotifications}</p>
+          <p className="text-xs text-[#9B8A8F] mt-1">{t.noNotificationsDesc}</p>
         </div>
       )}
     </div>

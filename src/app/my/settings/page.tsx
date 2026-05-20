@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter } from "next/navigation";
 import { LogOut, Globe, Moon, Sun, User } from "lucide-react";
+import { getClientLocale, dashboardTranslations } from "@/i18n/dashboard";
 
 const LANGUAGES = [
   { code: "en", label: "English", flag: "🇬🇧" },
@@ -15,6 +16,12 @@ export default function MySettingsPage() {
   const router = useRouter();
   const [language, setLanguage] = useState("en");
   const [signingOut, setSigningOut] = useState(false);
+  const locale = getClientLocale();
+  const t = dashboardTranslations[locale].settings;
+
+  useEffect(() => {
+    setLanguage(locale);
+  }, [locale]);
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -31,17 +38,18 @@ export default function MySettingsPage() {
     setLanguage(code);
     // Persist via cookie or profile
     document.cookie = `lang=${code};path=/;max-age=31536000`;
+    window.location.reload();
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold text-[#2D2327]">Settings</h1>
+      <h1 className="text-xl font-semibold text-[#2D2327]">{t.title}</h1>
 
       {/* Language */}
       <section className="bg-white rounded-xl border border-[#F0E8EB] p-4">
         <div className="flex items-center gap-2 mb-3">
           <Globe className="w-4 h-4 text-[#A9C7E5]" />
-          <span className="text-sm font-medium text-[#2D2327]">Language</span>
+          <span className="text-sm font-medium text-[#2D2327]">{t.language}</span>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {LANGUAGES.map((lang) => (
@@ -65,7 +73,7 @@ export default function MySettingsPage() {
       <section className="bg-white rounded-xl border border-[#F0E8EB] p-4">
         <div className="flex items-center gap-2 mb-3">
           <User className="w-4 h-4 text-[#DCA8B2]" />
-          <span className="text-sm font-medium text-[#2D2327]">Account</span>
+          <span className="text-sm font-medium text-[#2D2327]">{t.account}</span>
         </div>
         <div className="space-y-2">
           <button
@@ -75,7 +83,7 @@ export default function MySettingsPage() {
           >
             <LogOut className="w-4 h-4" />
             <span className="text-sm font-medium">
-              {signingOut ? "Signing out..." : "Sign Out"}
+              {signingOut ? t.signingOut : t.signOut}
             </span>
           </button>
         </div>

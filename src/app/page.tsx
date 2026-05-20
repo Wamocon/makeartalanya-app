@@ -46,6 +46,15 @@ export default function Home() {
     if (urlLang && ["tr", "en", "ru"].includes(urlLang)) {
       setLocaleState(urlLang as Locale);
       localStorage.setItem("locale", urlLang);
+      document.cookie = `lang=${urlLang};path=/;max-age=31536000`;
+      return;
+    }
+    // Check cookie first (synced with /my section)
+    const cookieMatch = document.cookie.match(/(?:^|; )lang=([^;]*)/);
+    const cookieLang = cookieMatch?.[1];
+    if (cookieLang && ["tr", "en", "ru"].includes(cookieLang)) {
+      setLocaleState(cookieLang as Locale);
+      localStorage.setItem("locale", cookieLang);
       return;
     }
     const stored = localStorage.getItem("locale");
@@ -58,6 +67,7 @@ export default function Home() {
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);
     localStorage.setItem("locale", l);
+    document.cookie = `lang=${l};path=/;max-age=31536000`;
     // Update URL without reload
     const url = new URL(window.location.href);
     url.searchParams.set("lang", l);

@@ -5,23 +5,31 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { CalendarDays, GraduationCap, Bell, User, Globe } from "lucide-react";
 
-const navItems = [
-  { href: "/my", icon: CalendarDays, label: "Home" },
-  { href: "/my/classes", icon: GraduationCap, label: "Classes" },
-  { href: "/my/notifications", icon: Bell, label: "Alerts" },
-  { href: "/my/settings", icon: User, label: "Profile" },
-];
-
 const LANGUAGES = [
   { code: "en", flag: "🇬🇧" },
   { code: "tr", flag: "🇹🇷" },
   { code: "ru", flag: "🇷🇺" },
 ];
 
-export default function ClientNav({ userName, unreadCount = 0 }: { userName: string; unreadCount?: number }) {
+interface NavLabels {
+  home: string;
+  classes: string;
+  alerts: string;
+  profile: string;
+  [key: string]: string;
+}
+
+export default function ClientNav({ userName, unreadCount = 0, navLabels }: { userName: string; unreadCount?: number; navLabels: NavLabels }) {
   const pathname = usePathname();
   const [lang, setLang] = useState("en");
   const [showLang, setShowLang] = useState(false);
+
+  const navItems = [
+    { href: "/my", icon: CalendarDays, label: navLabels.home },
+    { href: "/my/classes", icon: GraduationCap, label: navLabels.classes },
+    { href: "/my/notifications", icon: Bell, label: navLabels.alerts },
+    { href: "/my/settings", icon: User, label: navLabels.profile },
+  ];
 
   useEffect(() => {
     const cookie = document.cookie.split("; ").find((c) => c.startsWith("lang="));
