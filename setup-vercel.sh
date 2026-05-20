@@ -61,6 +61,9 @@ add_env() {
 add_env "NEXT_PUBLIC_SUPABASE_URL"      "https://vnldsyjkhofofellwuiq.supabase.co"
 add_env "NEXT_PUBLIC_SUPABASE_ANON_KEY" "sb_publishable_s5Bwenh9Hb7egmyahBswLg_1Qdw8uWe"
 add_env "SUPABASE_DB_PASSWORD"          "***REMOVED***"  "production"
+add_env "SUPABASE_SERVICE_ROLE_KEY"      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZubGRzeWpraG9mb2ZlbGx3dWlxIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODYwNzc0MCwiZXhwIjoyMDk0MTgzNzQwfQ.OzBOX9kGwDXbXGBJQlupIlaJzAbs6DrKeDGhL3Qi8JM"
+add_env "ADMIN_DASHBOARD_USER"          "admin"
+add_env "ADMIN_DASHBOARD_PASSWORD"      "***REMOVED***"
 add_env "NEXT_PUBLIC_SITE_URL"          "https://makeartalanya.com"
 add_env "NEXT_PUBLIC_DEFAULT_LOCALE"    "tr"
 

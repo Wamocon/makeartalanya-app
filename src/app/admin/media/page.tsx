@@ -68,11 +68,15 @@ function UploadZone({
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
-        <div className="text-3xl mb-2">{uploading ? "⏳" : "📁"}</div>
+        <div className="text-3xl mb-2">{uploading ? (
+          <svg className="w-8 h-8 animate-spin text-[var(--pink)]" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
+        ) : (
+          <svg className="w-8 h-8 text-[var(--muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+        )}</div>
         <p className="text-sm font-medium text-[var(--foreground)]">
           {uploading ? "Uploading…" : "Click or drag & drop"}
         </p>
-        <p className="text-xs text-[var(--muted)] mt-1">JPEG, PNG, WebP — max 10 MB</p>
+        <p className="text-xs text-[var(--muted)] mt-1">JPEG, PNG, WebP - max 10 MB</p>
       </div>
 
       {error && (
@@ -140,24 +144,25 @@ export default function AdminMediaPage() {
   const [photoUploads, setPhotoUploads] = useState<UploadedFile[]>([]);
 
   return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] p-4 sm:p-8">
-      <div className="max-w-4xl mx-auto space-y-10">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-pink-50/30 text-[var(--foreground)] p-4 sm:p-8">
+      <div className="max-w-4xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Media Upload</h1>
-            <p className="text-sm text-[var(--muted)]">Gallery images &amp; instructor photo</p>
+            <h1 className="text-xl font-bold">Media Upload</h1>
+            <p className="text-xs text-[var(--muted)]">Gallery images and instructor photo</p>
           </div>
-          <div className="flex gap-3">
-            <Link href="/admin" className="text-sm text-[var(--pink-dark)] hover:underline">
-              ← Bookings
+          <div className="flex gap-2">
+            <Link href="/admin" className="flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] bg-white border border-[var(--border)] px-3.5 py-2 rounded-xl transition-all">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              Bookings
             </Link>
-            <Link href="/" className="text-sm text-[var(--muted)] hover:underline">
-              ← Site
+            <Link href="/admin/content" className="flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] bg-white border border-[var(--border)] px-3.5 py-2 rounded-xl transition-all">
+              Content
             </Link>
           </div>
         </div>
 
-        <div className="bg-white border border-[var(--border)] rounded-2xl p-6 sm:p-8">
+        <div className="bg-white/80 backdrop-blur-sm border border-[var(--border)] rounded-2xl p-6 sm:p-8 shadow-sm">
           <UploadZone
             bucket="gallery"
             label="Gallery Images (Student Artwork)"
@@ -167,7 +172,7 @@ export default function AdminMediaPage() {
           />
         </div>
 
-        <div className="bg-white border border-[var(--border)] rounded-2xl p-6 sm:p-8">
+        <div className="bg-white/80 backdrop-blur-sm border border-[var(--border)] rounded-2xl p-6 sm:p-8 shadow-sm">
           <UploadZone
             bucket="instructor"
             label="Instructor Photo"
@@ -177,11 +182,13 @@ export default function AdminMediaPage() {
           />
         </div>
 
-        <div className="bg-[var(--blue-light)] border border-[var(--border)] rounded-2xl p-5 text-sm text-[var(--foreground)] space-y-1">
-          <p className="font-semibold">ℹ️ How it works</p>
-          <p>Images are uploaded to <strong>Supabase Storage</strong> and immediately publicly accessible.</p>
-          <p>Gallery bucket: <code className="bg-white px-1 rounded">gallery</code> — Instructor bucket: <code className="bg-white px-1 rounded">instructor</code></p>
-          <p>After uploading gallery images, the gallery section on the website will automatically show them on the next visit.</p>
+        <div className="bg-white/60 border border-blue-100 rounded-2xl p-5 text-sm text-[var(--foreground)] space-y-1.5">
+          <p className="font-semibold flex items-center gap-2">
+            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            How it works
+          </p>
+          <p className="text-xs text-[var(--muted)]">Images are uploaded to <strong>Supabase Storage</strong> and immediately publicly accessible.</p>
+          <p className="text-xs text-[var(--muted)]">Gallery images will automatically appear on the website. The instructor photo replaces the default placeholder.</p>
         </div>
       </div>
     </main>

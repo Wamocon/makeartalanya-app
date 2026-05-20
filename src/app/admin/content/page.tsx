@@ -9,6 +9,7 @@ type ContentOverrides = Record<string, Record<string, string>>;
 const EDITABLE_SECTIONS = [
   { key: "hero", fields: ["badge", "headline", "sub", "cta", "ctaSecondary"] },
   { key: "problem", fields: ["badge", "headline"] },
+  { key: "tutorial", fields: ["badge", "headline"] },
   { key: "packages", fields: ["badge", "headline"] },
   { key: "gallery", fields: ["badge", "headline"] },
   { key: "booking", fields: ["badge", "headline"] },
@@ -72,18 +73,19 @@ export default function ContentAdmin() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] p-4 sm:p-8">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-pink-50/30 text-[var(--foreground)] p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold">Edit Content</h1>
-            <p className="text-sm text-[var(--muted)]">Update texts on the landing page</p>
+            <h1 className="text-xl font-bold">Edit Content</h1>
+            <p className="text-xs text-[var(--muted)]">Update texts on the landing page per language</p>
           </div>
-          <div className="flex gap-3 items-center">
-            <Link href="/admin" className="text-sm text-[var(--pink-dark)] hover:underline">
-              ← Bookings
+          <div className="flex gap-2 items-center">
+            <Link href="/admin" className="flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] bg-white border border-[var(--border)] px-3.5 py-2 rounded-xl transition-all">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              Bookings
             </Link>
-            <Link href="/admin/media" className="text-sm text-[var(--pink-dark)] hover:underline">
+            <Link href="/admin/media" className="flex items-center gap-1.5 text-xs font-medium text-[var(--muted)] hover:text-[var(--foreground)] bg-white border border-[var(--border)] px-3.5 py-2 rounded-xl transition-all">
               Media
             </Link>
           </div>
@@ -95,13 +97,13 @@ export default function ContentAdmin() {
             <button
               key={l}
               onClick={() => setLocale(l)}
-              className={`px-4 py-2 text-sm rounded-full font-medium transition-colors ${
+              className={`px-4 py-2 text-sm rounded-xl font-medium transition-all ${
                 locale === l
-                  ? "bg-[var(--pink)] text-white"
-                  : "bg-[var(--pink-light)] text-[var(--pink-dark)] hover:bg-[var(--pink)]/20"
+                  ? "bg-[var(--foreground)] text-white shadow-sm"
+                  : "bg-white border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:border-slate-300"
               }`}
             >
-              {l === "tr" ? "🇹🇷 Türkçe" : l === "en" ? "🇬🇧 English" : "🇷🇺 Русский"}
+              {l === "tr" ? "TR Turkce" : l === "en" ? "EN English" : "RU Russkiy"}
             </button>
           ))}
         </div>

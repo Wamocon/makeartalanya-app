@@ -1,29 +1,65 @@
 @import "tailwindcss";
 
 :root {
-  /* Make Art Studio Brand Colors */
-  --pink: #DCA8B2;
-  --pink-light: #f5e6ea;
-  --pink-dark: #c48a96;
-  --blue: #A9C7E5;
-  --blue-light: #dceef8;
-  --blue-dark: #7aa8cc;
+  /* Make Art Studio Brand Colors - Enhanced */
+  --pink: #E8A0B0;
+  --pink-light: #fdf2f5;
+  --pink-dark: #c4748a;
+  --pink-glow: rgba(232, 160, 176, 0.3);
+  --blue: #8CB8D9;
+  --blue-light: #edf5fb;
+  --blue-dark: #5a9bc4;
+  --blue-glow: rgba(140, 184, 217, 0.3);
 
-  --background: #fdfaf9;
-  --foreground: #1a1412;
-  --muted: #6b5b57;
-  --border: #ede4e0;
+  --background: #faf8f7;
+  --foreground: #1a1115;
+  --muted: #6b5f5c;
+  --border: #ede6e3;
+  --card: #ffffff;
+  --card-hover: #fefcfb;
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+
+  /* Gradients */
+  --gradient-pink: linear-gradient(135deg, #E8A0B0 0%, #c4748a 100%);
+  --gradient-blue: linear-gradient(135deg, #8CB8D9 0%, #5a9bc4 100%);
+  --gradient-hero: linear-gradient(160deg, #fdf2f5 0%, #ffffff 40%, #edf5fb 100%);
+  --gradient-mesh: radial-gradient(at 40% 20%, rgba(232, 160, 176, 0.15) 0px, transparent 50%),
+                   radial-gradient(at 80% 0%, rgba(140, 184, 217, 0.12) 0px, transparent 50%),
+                   radial-gradient(at 0% 50%, rgba(232, 160, 176, 0.08) 0px, transparent 50%);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.1);
+  --shadow-pink: 0 8px 32px rgba(232, 160, 176, 0.3);
+  --shadow-blue: 0 8px 32px rgba(140, 184, 217, 0.3);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-2xl: 36px;
 }
 
 @theme inline {
+  --font-sans: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-playfair), 'Playfair Display', Georgia, serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-pink: var(--pink);
   --color-pink-light: var(--pink-light);
+  --color-pink-dark: var(--pink-dark);
   --color-blue: var(--blue);
   --color-blue-light: var(--blue-light);
+  --color-blue-dark: var(--blue-dark);
   --color-muted: var(--muted);
   --color-border: var(--border);
+  --color-card: var(--card);
 }
 
 html {
@@ -33,38 +69,79 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Georgia', serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* Utility classes */
+/* Modern utility classes */
 .section-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+  gap: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--pink-dark);
-  margin-bottom: 1rem;
+  background: var(--pink-light);
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1px solid rgba(232, 160, 176, 0.2);
+  margin-bottom: 1.25rem;
 }
 
-.section-badge::before {
-  content: '';
-  display: block;
-  width: 20px;
-  height: 2px;
-  background: var(--pink);
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px) saturate(1.8);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  border: 1px solid var(--glass-border);
 }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+.mesh-gradient {
+  background-image: var(--gradient-mesh);
 }
 
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
+/* Smooth scroll offset for fixed nav */
+[id] {
+  scroll-margin-top: 80px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Animation keyframes for non-framer elements */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 6s ease-in-out infinite 2s;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
 }

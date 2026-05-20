@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { packages, type Locale } from "@/i18n/translations";
 
 interface BookingProps {
@@ -16,6 +17,8 @@ interface BookingProps {
       message: string;
       submit: string;
       success: string;
+      errorGeneric: string;
+      errorNetwork: string;
     };
     packages: { lessons: string };
   };
@@ -56,7 +59,7 @@ export default function BookingSection({ t, locale }: BookingProps) {
       const data = (await res.json()) as { ok: boolean; error?: string };
 
       if (!res.ok || !data.ok) {
-        setError(data.error || "Booking request failed. Please try again.");
+        setError(data.error || t.booking.errorGeneric);
         setLoading(false);
         return;
       }
@@ -71,27 +74,39 @@ export default function BookingSection({ t, locale }: BookingProps) {
         message: "",
       });
     } catch {
-      setError("Network error. Please try again.");
+      setError(t.booking.errorNetwork);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <section id="booking" className="py-20 sm:py-28" style={{ background: "var(--blue-light)" }}>
-      <div className="max-w-2xl mx-auto px-4 sm:px-6">
+    <section id="booking" className="py-24 sm:py-32 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--blue-light)] via-white to-[var(--background)]" />
+      
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="max-w-2xl mx-auto px-4 sm:px-6 relative"
+      >
         <div className="text-center mb-10">
-          <div className="section-badge justify-center">{t.booking.badge}</div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[var(--foreground)] leading-tight">
+          <div className="section-badge mx-auto justify-center">{t.booking.badge}</div>
+          <h2
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--foreground)] leading-[1.15] tracking-tight"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
             {t.booking.headline.split("\n").map((line, i) => (
-              <span key={i} className={i === 1 ? "block text-[var(--pink-dark)]" : "block"}>
+              <span key={i} className={i === 1 ? "block bg-gradient-to-r from-[var(--pink-dark)] to-[var(--pink)] bg-clip-text text-transparent" : "block"}>
                 {line}
               </span>
             ))}
           </h2>
         </div>
 
-        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-[var(--border)]">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-[var(--shadow-lg)] border border-[var(--border)]">
           {submitted ? (
             <div className="text-center py-8">
               <div className="text-5xl mb-4">🎉</div>
@@ -191,7 +206,7 @@ export default function BookingSection({ t, locale }: BookingProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-[var(--pink)] hover:bg-[var(--pink-dark)] text-white font-semibold rounded-full transition-all text-base disabled:opacity-60"
+                className="w-full py-4 bg-[var(--foreground)] hover:opacity-90 text-white font-semibold rounded-full transition-all text-base disabled:opacity-60 shadow-[var(--shadow-lg)]"
               >
                 {loading ? "..." : t.booking.submit}
               </button>
@@ -202,7 +217,7 @@ export default function BookingSection({ t, locale }: BookingProps) {
             </form>
           )}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

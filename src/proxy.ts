@@ -1,42 +1,101 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { updateSession } from "@/lib/supabase/middleware";
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    /*
+     * Match all paths except:
+     * - _next/static, _next/image, favicon.ico, public assets
+     */
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+  ],
 };
 
-export function proxy(req: NextRequest) {
-  const username = process.env.ADMIN_DASHBOARD_USER;
-  const password = process.env.ADMIN_DASHBOARD_PASSWORD;
+// Simple in-memory rate limiter (per-IP, per-path prefix)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const RATE_LIMIT_WINDOW = 60_000; // 1 minute
+const RATE_LIMIT_MAX = 30; // 30 requests per minute per IP on public APIs
 
-  // Allow access when credentials are not configured yet.
-  if (!username || !password) {
+function isRateLimited(ip: string, path: string): boolean {
+  const key = `${ip}:${path}`;
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW });
+    return false;
+  }
+
+  entry.count++;
+  if (entry.count > RATE_LIMIT_MAX) {
+    return true;
+  }
+  return false;
+}
+
+// Periodic cleanup to prevent memory leak (runs lazily)
+let lastCleanup = Date.now();
+function cleanupRateLimitMap() {
+  const now = Date.now();
+  if (now - lastCleanup < 60_000) return;
+  lastCleanup = now;
+  for (const [key, entry] of rateLimitMap.entries()) {
+    if (now > entry.resetAt) rateLimitMap.delete(key);
+  }
+}
+
+export async function proxy(req: NextRequest) {
+  const pathname = req.nextUrl.pathname;
+
+  // Security headers on all responses
+  const response = await routeRequest(req, pathname);
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  return response;
+}
+
+async function routeRequest(req: NextRequest, pathname: string): Promise<NextResponse> {
+  // Public routes — no auth needed
+  if (
+    pathname === "/" ||
+    pathname === "/schedule" ||
+    pathname.startsWith("/schedule/") ||
+    pathname === "/privacy" ||
+    pathname === "/imprint" ||
+    pathname.startsWith("/auth/") ||
+    pathname.startsWith("/api/schedule/public") ||
+    pathname.startsWith("/api/cron/")
+  ) {
     return NextResponse.next();
   }
 
-  const authHeader = req.headers.get("authorization");
-
-  if (!authHeader?.startsWith("Basic ")) {
-    return new NextResponse("Authentication required", {
-      status: 401,
-      headers: { "WWW-Authenticate": 'Basic realm="Admin Dashboard"' },
-    });
-  }
-
-  try {
-    const encoded = authHeader.split(" ")[1] || "";
-    const decoded = atob(encoded);
-    const [providedUser, providedPassword] = decoded.split(":");
-
-    if (providedUser === username && providedPassword === password) {
-      return NextResponse.next();
+  // Public APIs with rate limiting
+  if (pathname === "/api/booking" || pathname === "/api/enroll") {
+    cleanupRateLimitMap();
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
+    if (isRateLimited(ip, pathname)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please try again later." },
+        { status: 429 }
+      );
     }
-  } catch {
-    // Fall through to unauthorized response.
+    return NextResponse.next();
   }
 
-  return new NextResponse("Invalid credentials", {
-    status: 401,
-    headers: { "WWW-Authenticate": 'Basic realm="Admin Dashboard"' },
-  });
+  // Admin login page — allow access
+  if (pathname === "/admin/login") {
+    return NextResponse.next();
+  }
+
+  // Admin API routes — require admin authentication
+  if (pathname.startsWith("/api/admin/")) {
+    return updateSession(req);
+  }
+
+  // All protected routes (/my/*, /admin/*, etc.) — run Supabase session check
+  return updateSession(req);
 }

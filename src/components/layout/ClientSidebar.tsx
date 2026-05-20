@@ -1,0 +1,130 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import {
+  CalendarDays,
+  GraduationCap,
+  Bell,
+  User,
+  CreditCard,
+  Users,
+  LogOut,
+} from "lucide-react";
+
+const navItems = [
+  { href: "/my", icon: CalendarDays, label: "Dashboard", exact: true },
+  { href: "/my/classes", icon: GraduationCap, label: "My Classes" },
+  { href: "/my/subscriptions", icon: CreditCard, label: "Subscriptions" },
+  { href: "/my/children", icon: Users, label: "Children" },
+  { href: "/my/notifications", icon: Bell, label: "Notifications" },
+  { href: "/my/settings", icon: User, label: "Settings" },
+];
+
+interface ClientSidebarProps {
+  userName: string;
+  userEmail: string;
+  avatarUrl?: string | null;
+  unreadCount: number;
+}
+
+export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCount }: ClientSidebarProps) {
+  const pathname = usePathname();
+
+  return (
+    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-[#F0E8EB] flex flex-col z-40">
+      {/* Logo/Brand */}
+      <div className="px-6 py-5 border-b border-[#F0E8EB]">
+        <Link href="/" className="flex items-center gap-3 group">
+          <Image
+            src="/logo.jpg"
+            alt="Make Art Studio"
+            width={40}
+            height={40}
+            className="rounded-xl object-contain mix-blend-multiply"
+            style={{ width: "auto", height: 40 }}
+            priority
+          />
+          <div>
+            <span className="text-sm font-bold text-[#2D2327] tracking-tight">Make Art</span>
+            <span className="text-[10px] text-[#9B8A8F] block -mt-0.5">Alanya Studio</span>
+          </div>
+        </Link>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        {navItems.map((item) => {
+          const isActive = item.exact
+            ? pathname === item.href
+            : pathname.startsWith(item.href);
+          const Icon = item.icon;
+          const showBadge = item.href === "/my/notifications" && unreadCount > 0;
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                isActive
+                  ? "bg-[#FDF2F4] text-[#2D2327]"
+                  : "text-[#9B8A8F] hover:bg-[#FAFAFA] hover:text-[#2D2327]"
+              }`}
+            >
+              <Icon
+                className={`w-4.5 h-4.5 ${isActive ? "text-[#DCA8B2]" : ""}`}
+                strokeWidth={isActive ? 2.2 : 1.8}
+              />
+              <span className="flex-1">{item.label}</span>
+              {showBadge && (
+                <span className="w-5 h-5 bg-[#DCA8B2] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Schedule link */}
+      <div className="px-3 pb-3">
+        <Link
+          href="/schedule"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#A9C7E5] hover:bg-[#EFF6FF] transition-all"
+        >
+          <CalendarDays className="w-4.5 h-4.5" strokeWidth={1.8} />
+          <span>Browse Schedule</span>
+        </Link>
+      </div>
+
+      {/* User card */}
+      <div className="border-t border-[#F0E8EB] px-4 py-4">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-linear-to-br from-[#DCA8B2]/30 to-[#A9C7E5]/30 flex items-center justify-center shrink-0">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover" />
+            ) : (
+              <span className="text-sm font-semibold text-[#2D2327]">
+                {userName.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-[#2D2327] truncate">{userName}</p>
+            <p className="text-[11px] text-[#9B8A8F] truncate">{userEmail}</p>
+          </div>
+          <form action="/auth/signout" method="POST">
+            <button
+              type="submit"
+              className="p-1.5 rounded-lg text-[#9B8A8F] hover:text-[#2D2327] hover:bg-[#F5F0F2] transition-colors"
+              title="Sign out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </form>
+        </div>
+      </div>
+    </aside>
+  );
+}

@@ -10,19 +10,29 @@ export const translations = {
       contact: "İletişim",
     },
     hero: {
-      badge: "Alanya'nın #1 Sanat Stüdyosu",
-      headline: "Sanatı Keşfet,\nKendinizi İfade Edin",
-      sub: "Profesyonel resim ve çizim dersleri. Tüm yaşlar ve seviyeler için.",
+      badge: "Alanya'nın Sanat Stüdyosu",
+      headline: "Sevgiyle\nYarat",
+      sub: "Resim, uygulamalı sanat, satranç ve bireysel dersler. Çocuklar ve yetişkinler için deniz kenarında yaratıcı stüdyo.",
       cta: "Hemen Rezervasyon Yap",
-      ctaSecondary: "Kursları Gör",
+      ctaSecondary: "Aktiviteleri Gör",
+      cards: [
+        { title: "Resim", sub: "Boya & Yarat" },
+        { title: "Satranç", sub: "Strateji Oyunları" },
+        { title: "El Sanatları", sub: "Yaratıcı Atölye" },
+      ],
     },
     problem: {
       badge: "Neden Make Art Studio?",
-      headline: "Sanat yeteneği öğretilir,\ndoğuştan gelmez.",
+      headline: "Her yaşta yaratıcılık,\nsadece doğru ortam gerekli.",
       items: [
-        { icon: "🎨", text: "Yapılandırılmış ders programı" },
-        { icon: "👩‍🎨", text: "Deneyimli profesyonel eğitmen" },
+        { icon: "🎨", text: "Resim, uygulamalı sanat ve satranç" },
+        { icon: "👩‍🎨", text: "Deneyimli eğitmenler, bireysel dersler" },
         { icon: "🌍", text: "Türkçe, İngilizce, Rusça destek" },
+      ],
+      stats: [
+        { value: "3+", label: "Yıllık Deneyim", icon: "📅" },
+        { value: "100+", label: "Mutlu Öğrenci", icon: "🎓" },
+        { value: "3", label: "Dil (TR/EN/RU)", icon: "🌍" },
       ],
     },
     packages: {
@@ -36,7 +46,7 @@ export const translations = {
     },
     gallery: {
       badge: "Galeri",
-      headline: "Öğrencilerimizin\nEserleri",
+      headline: "Yaratıcı\nDünyamız",
     },
     booking: {
       badge: "Rezervasyon",
@@ -49,10 +59,16 @@ export const translations = {
       message: "Mesajınız (isteğe bağlı)",
       submit: "Rezervasyon Gönder",
       success: "Teşekkürler! En kısa sürede sizinle iletişime geçeceğiz.",
+      errorGeneric: "Rezervasyon başarısız oldu. Lütfen tekrar deneyin.",
+      errorNetwork: "Bağlantı hatası. Lütfen tekrar deneyin.",
     },
     about: {
       badge: "Eğitmenimiz",
       headline: "Sanatı Sevgiyle\nÖğreten Uzman",
+      description: "Profesyonel sanatçı ve eğitmen",
+      location: "Alanya, Türkiye · 2021'den beri eğitim veriyor",
+      skills: ["🎨 Akrilik", "🖌️ Yağlı Boya", "✏️ Kurşun Kalem", "🎭 Pastel", "💧 Suluboya"],
+      followBtn: "Instagram'da Takip Et",
     },
     location: {
       badge: "Konum",
@@ -61,11 +77,30 @@ export const translations = {
       phone: "+90 551 674 55 15",
       hours: "Pazartesi – Cumartesi: 10:00 – 20:00",
     },
+    tutorial: {
+      badge: "Nasıl Çalışır?",
+      headline: "4 Kolay Adımda\nSanata Başlayın",
+      steps: [
+        { number: "01", title: "Paket Seçin", description: "Size uygun ders paketini belirleyin. Tek ders veya toplu alımla tasarruf edin.", icon: "📋" },
+        { number: "02", title: "Randevu Alın", description: "Online formumuzdan veya telefonla uygun gün ve saatinizi ayırtın.", icon: "📅" },
+        { number: "03", title: "Stüdyoya Gelin", description: "Tüm malzemeler hazır. Sadece gelmeniz yeterli, gerisini biz hallederiz.", icon: "🎨" },
+        { number: "04", title: "Eserinizi Yaratın", description: "Uzman eğitmen eşliğinde adım adım kendi sanat eserinizi tamamlayın.", icon: "✨" },
+      ],
+    },
+    portal: {
+      badge: "Öğrenci Portalı",
+      headline: "Derslerinizi\nTakip Edin",
+      description: "Giriş yaparak ders programınızı görüntüleyin, ilerlemenizi takip edin ve yeni dersler rezerve edin.",
+      cta: "Giriş Yap",
+      features: ["Ders Programı", "İlerleme Takibi", "Kolay Rezervasyon"],
+    },
     footer: {
-      tagline: "Alanya'nın sanat merkezi.",
+      tagline: "Mahmutlar'da deniz kenarında sanat stüdyosu. Çocuklar ve yetişkinler için.",
       privacy: "Gizlilik Politikası",
       imprint: "Künye",
       rights: "Tüm hakları saklıdır.",
+      navigation: "Navigasyon",
+      legal: "Yasal",
     },
   },
 
@@ -78,19 +113,29 @@ export const translations = {
       contact: "Contact",
     },
     hero: {
-      badge: "Alanya's #1 Art Studio",
-      headline: "Discover Art,\nExpress Yourself",
-      sub: "Professional painting and drawing lessons for all ages and levels.",
-      cta: "Book Your First Lesson",
-      ctaSecondary: "View Courses",
+      badge: "Alanya's Creative Art Studio",
+      headline: "Create\nWith Love",
+      sub: "Painting, applied art, chess & individual lessons. A seaside creative studio for kids and adults.",
+      cta: "Book Your First Session",
+      ctaSecondary: "View Activities",
+      cards: [
+        { title: "Art Class", sub: "Paint & Create" },
+        { title: "Chess", sub: "Strategy Games" },
+        { title: "Crafts", sub: "DIY Projects" },
+      ],
     },
     problem: {
       badge: "Why Make Art Studio?",
-      headline: "Artistic talent is taught,\nnot born.",
+      headline: "Creativity at every age,\njust the right space.",
       items: [
-        { icon: "🎨", text: "Structured lesson curriculum" },
-        { icon: "👩‍🎨", text: "Experienced professional instructor" },
+        { icon: "🎨", text: "Painting, applied art & chess" },
+        { icon: "👩‍🎨", text: "Expert instructors, individual lessons" },
         { icon: "🌍", text: "Turkish, English & Russian support" },
+      ],
+      stats: [
+        { value: "3+", label: "Years of Experience", icon: "📅" },
+        { value: "100+", label: "Happy Students", icon: "🎓" },
+        { value: "3", label: "Languages (TR/EN/RU)", icon: "🌍" },
       ],
     },
     packages: {
@@ -104,7 +149,7 @@ export const translations = {
     },
     gallery: {
       badge: "Gallery",
-      headline: "Student\nArtwork",
+      headline: "Our Creative\nWorld",
     },
     booking: {
       badge: "Booking",
@@ -117,10 +162,16 @@ export const translations = {
       message: "Message (optional)",
       submit: "Send Booking Request",
       success: "Thank you! We'll contact you shortly.",
+      errorGeneric: "Booking request failed. Please try again.",
+      errorNetwork: "Network error. Please try again.",
     },
     about: {
-      badge: "Our Instructor",
-      headline: "An Expert Who\nTeaches Art with Passion",
+      badge: "Our Team",
+      headline: "Expert Instructors Who\nInspire Creativity",
+      description: "Professional artist & instructor",
+      location: "Based in Alanya, Turkey · Teaching since 2021",
+      skills: ["🎨 Acrylic", "🖌️ Oil Paint", "✏️ Pencil", "🎭 Pastel", "💧 Watercolor"],
+      followBtn: "Follow on Instagram",
     },
     location: {
       badge: "Location",
@@ -129,11 +180,30 @@ export const translations = {
       phone: "+90 551 674 55 15",
       hours: "Monday – Saturday: 10:00 – 20:00",
     },
+    tutorial: {
+      badge: "How It Works",
+      headline: "Start Your Art Journey\nin 4 Simple Steps",
+      steps: [
+        { number: "01", title: "Choose a Package", description: "Pick the lesson package that fits your schedule. Save with bulk purchases.", icon: "📋" },
+        { number: "02", title: "Book Your Slot", description: "Reserve your preferred day and time through our form or by phone.", icon: "📅" },
+        { number: "03", title: "Come to the Studio", description: "All materials are provided. Just show up — we take care of the rest.", icon: "🎨" },
+        { number: "04", title: "Create Your Art", description: "Follow step-by-step guidance from our expert instructor and finish your masterpiece.", icon: "✨" },
+      ],
+    },
+    portal: {
+      badge: "Student Portal",
+      headline: "Track Your\nProgress",
+      description: "Sign in to view your schedule, track progress, and book new art sessions effortlessly.",
+      cta: "Sign In",
+      features: ["Class Schedule", "Progress Tracking", "Easy Booking"],
+    },
     footer: {
-      tagline: "Alanya's art hub.",
+      tagline: "Art studio by the sea in Mahmutlar. For kids and adults.",
       privacy: "Privacy Policy",
       imprint: "Imprint",
       rights: "All rights reserved.",
+      navigation: "Navigation",
+      legal: "Legal",
     },
   },
 
@@ -146,19 +216,29 @@ export const translations = {
       contact: "Контакты",
     },
     hero: {
-      badge: "Студия искусств №1 в Алании",
-      headline: "Откройте для себя искусство,\nвыразите себя",
-      sub: "Профессиональные уроки живописи и рисунка. Для всех возрастов и уровней.",
-      cta: "Записаться на первый урок",
-      ctaSecondary: "Смотреть курсы",
+      badge: "Арт-студия в Алании",
+      headline: "Создавай\nс любовью",
+      sub: "Живопись, прикладное творчество, шахматы и индивидуальные уроки. Творческая студия у моря для детей и взрослых.",
+      cta: "Записаться на занятие",
+      ctaSecondary: "Смотреть занятия",
+      cards: [
+        { title: "Рисование", sub: "Краски и холст" },
+        { title: "Шахматы", sub: "Стратегия" },
+        { title: "Поделки", sub: "Творческий DIY" },
+      ],
     },
     problem: {
       badge: "Почему Make Art Studio?",
-      headline: "Художественный талант\nразвивается, а не дарится.",
+      headline: "Творчество в любом возрасте,\nнужно лишь правильное пространство.",
       items: [
-        { icon: "🎨", text: "Структурированная программа занятий" },
-        { icon: "👩‍🎨", text: "Опытный профессиональный преподаватель" },
+        { icon: "🎨", text: "Живопись, прикладное творчество и шахматы" },
+        { icon: "👩‍🎨", text: "Опытные педагоги, индивидуальные уроки" },
         { icon: "🌍", text: "Поддержка на турецком, английском и русском" },
+      ],
+      stats: [
+        { value: "3+", label: "Лет опыта", icon: "📅" },
+        { value: "100+", label: "Довольных учеников", icon: "🎓" },
+        { value: "3", label: "Языка (TR/EN/RU)", icon: "🌍" },
       ],
     },
     packages: {
@@ -172,7 +252,7 @@ export const translations = {
     },
     gallery: {
       badge: "Галерея",
-      headline: "Работы\nнаших учеников",
+      headline: "Наш творческий\nмир",
     },
     booking: {
       badge: "Запись",
@@ -185,10 +265,16 @@ export const translations = {
       message: "Сообщение (необязательно)",
       submit: "Отправить заявку",
       success: "Спасибо! Мы свяжемся с вами в ближайшее время.",
+      errorGeneric: "Не удалось отправить заявку. Попробуйте ещё раз.",
+      errorNetwork: "Ошибка сети. Попробуйте ещё раз.",
     },
     about: {
       badge: "Наш преподаватель",
       headline: "Эксперт, влюблённый\nв своё дело",
+      description: "Профессиональный художник и педагог",
+      location: "Алания, Турция · Преподаёт с 2021 года",
+      skills: ["🎨 Акрил", "🖌️ Масло", "✏️ Карандаш", "🎭 Пастель", "💧 Акварель"],
+      followBtn: "Подписаться в Instagram",
     },
     location: {
       badge: "Местоположение",
@@ -197,11 +283,30 @@ export const translations = {
       phone: "+90 551 674 55 15",
       hours: "Понедельник – Суббота: 10:00 – 20:00",
     },
+    tutorial: {
+      badge: "Как это работает?",
+      headline: "Начните рисовать\nза 4 простых шага",
+      steps: [
+        { number: "01", title: "Выберите пакет", description: "Подберите подходящий пакет занятий. Экономьте при покупке нескольких уроков.", icon: "📋" },
+        { number: "02", title: "Запишитесь", description: "Выберите удобный день и время через форму на сайте или по телефону.", icon: "📅" },
+        { number: "03", title: "Приходите в студию", description: "Все материалы предоставляются. Просто приходите — мы обо всём позаботимся.", icon: "🎨" },
+        { number: "04", title: "Создайте шедевр", description: "Под руководством опытного преподавателя шаг за шагом создайте своё произведение.", icon: "✨" },
+      ],
+    },
+    portal: {
+      badge: "Личный кабинет",
+      headline: "Следите за\nсвоим прогрессом",
+      description: "Войдите, чтобы просмотреть расписание, отслеживать прогресс и записаться на новые занятия.",
+      cta: "Войти",
+      features: ["Расписание", "Отслеживание", "Быстрая запись"],
+    },
     footer: {
-      tagline: "Центр искусства в Алании.",
+      tagline: "Арт-студия у моря в Махмутларе. Для детей и взрослых.",
       privacy: "Политика конфиденциальности",
       imprint: "Импрессум",
       rights: "Все права защищены.",
+      navigation: "Навигация",
+      legal: "Юридическая информация",
     },
   },
 };

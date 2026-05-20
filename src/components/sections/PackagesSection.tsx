@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { packages, type Locale } from "@/i18n/translations";
 
 interface PackagesProps {
@@ -15,64 +18,99 @@ interface PackagesProps {
   locale: Locale;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } },
+};
+
 export default function PackagesSection({ t }: PackagesProps) {
   return (
-    <section id="courses" className="py-20 sm:py-28" style={{ background: "var(--pink-light)" }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12">
-          <div className="section-badge justify-center">{t.packages.badge}</div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[var(--foreground)] leading-tight">
+    <section id="courses" className="py-24 sm:py-32 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--pink-light)] via-white to-[var(--background)]" />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-14"
+        >
+          <div className="section-badge mx-auto justify-center">{t.packages.badge}</div>
+          <h2
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--foreground)] leading-[1.15] tracking-tight"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
             {t.packages.headline.split("\n").map((line, i) => (
-              <span key={i} className={i === 1 ? "block text-[var(--pink-dark)]" : "block"}>
+              <span key={i} className={i === 1 ? "block bg-gradient-to-r from-[var(--pink-dark)] to-[var(--pink)] bg-clip-text text-transparent" : "block"}>
                 {line}
               </span>
             ))}
           </h2>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={containerVariants}
+          className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+        >
           {packages.map((pkg) => (
-            <div
+            <motion.div
               key={pkg.id}
-              className={`relative rounded-2xl p-5 sm:p-6 border transition-all hover:-translate-y-1 hover:shadow-lg ${
+              variants={cardVariants}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className={`relative rounded-2xl p-5 sm:p-7 border transition-all cursor-pointer ${
                 pkg.popular
-                  ? "bg-[var(--pink)] border-[var(--pink-dark)] text-white shadow-xl scale-105"
-                  : "bg-white border-[var(--border)] text-[var(--foreground)]"
+                  ? "bg-[var(--foreground)] border-[var(--foreground)] text-white shadow-[var(--shadow-xl)] ring-2 ring-[var(--pink)] ring-offset-2 ring-offset-[var(--pink-light)] z-10"
+                  : "bg-white border-[var(--border)] text-[var(--foreground)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-lg)]"
               }`}
             >
               {pkg.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--foreground)] text-white text-xs font-bold px-3 py-1 rounded-full">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[var(--pink)] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-[var(--shadow-pink)]">
                   {t.packages.popular}
                 </div>
               )}
 
-              <div className={`text-3xl sm:text-4xl font-bold mb-1 ${pkg.popular ? "text-white" : "text-[var(--pink-dark)]"}`}>
+              <div className={`text-4xl sm:text-5xl font-bold mb-1 ${pkg.popular ? "text-white" : "text-[var(--foreground)]"}`}>
                 {pkg.lessons}
               </div>
-              <div className={`text-sm mb-4 ${pkg.popular ? "text-white/80" : "text-[var(--muted)]"}`}>
+              <div className={`text-sm mb-6 font-medium ${pkg.popular ? "text-white/60" : "text-[var(--muted)]"}`}>
                 {t.packages.lessons}
               </div>
 
               <div className="mb-1">
-                <span className="text-2xl font-bold">{pkg.pricePerLesson}€</span>
+                <span className="text-3xl font-bold">{pkg.pricePerLesson}€</span>
+                <span className={`text-xs ml-1 ${pkg.popular ? "text-white/50" : "text-[var(--muted)]"}`}>
+                  /{t.packages.perLesson}
+                </span>
               </div>
-              <div className={`text-xs mb-6 ${pkg.popular ? "text-white/70" : "text-[var(--muted)]"}`}>
-                {t.packages.perLesson} · {t.packages.validity}
+              <div className={`text-xs mb-6 ${pkg.popular ? "text-white/40" : "text-[var(--muted)]"}`}>
+                {t.packages.validity}
               </div>
 
-              <a
+              <motion.a
                 href="#booking"
-                className={`block text-center text-sm font-semibold px-4 py-2.5 rounded-full transition-all ${
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className={`block text-center text-sm font-semibold px-4 py-3 rounded-full transition-all ${
                   pkg.popular
-                    ? "bg-white text-[var(--pink-dark)] hover:bg-white/90"
-                    : "bg-[var(--pink)] text-white hover:bg-[var(--pink-dark)]"
+                    ? "bg-white text-[var(--foreground)] hover:bg-white/90 shadow-sm"
+                    : "bg-[var(--foreground)] text-white hover:opacity-90"
                 }`}
               >
                 {t.packages.buyNow}
-              </a>
-            </div>
+              </motion.a>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
