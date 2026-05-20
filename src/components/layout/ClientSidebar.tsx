@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   CalendarDays,
   GraduationCap,
@@ -11,7 +12,14 @@ import {
   CreditCard,
   Users,
   LogOut,
+  Globe,
 } from "lucide-react";
+
+const LANGUAGES = [
+  { code: "en", label: "EN", flag: "🇬🇧" },
+  { code: "tr", label: "TR", flag: "🇹🇷" },
+  { code: "ru", label: "RU", flag: "🇷🇺" },
+];
 
 const navItems = [
   { href: "/my", icon: CalendarDays, label: "Dashboard", exact: true },
@@ -31,6 +39,18 @@ interface ClientSidebarProps {
 
 export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCount }: ClientSidebarProps) {
   const pathname = usePathname();
+  const [lang, setLang] = useState("en");
+
+  useEffect(() => {
+    const cookie = document.cookie.split("; ").find((c) => c.startsWith("lang="));
+    if (cookie) setLang(cookie.split("=")[1]);
+  }, []);
+
+  function handleLangChange(code: string) {
+    setLang(code);
+    document.cookie = `lang=${code};path=/;max-age=31536000`;
+    window.location.reload();
+  }
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-[#F0E8EB] flex flex-col z-40">
@@ -96,6 +116,27 @@ export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCo
           <CalendarDays className="w-4.5 h-4.5" strokeWidth={1.8} />
           <span>Browse Schedule</span>
         </Link>
+      </div>
+
+      {/* Language Switcher */}
+      <div className="px-4 pb-3">
+        <div className="flex items-center gap-1.5">
+          <Globe className="w-3.5 h-3.5 text-[#9B8A8F]" />
+          {LANGUAGES.map((l) => (
+            <button
+              key={l.code}
+              onClick={() => handleLangChange(l.code)}
+              className={`flex items-center gap-1 px-2 py-1 rounded-md text-xs transition-all ${
+                lang === l.code
+                  ? "bg-[#F5E6EA] text-[#2D2327] font-medium"
+                  : "text-[#9B8A8F] hover:bg-[#FAFAFA]"
+              }`}
+            >
+              <span>{l.flag}</span>
+              <span>{l.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* User card */}
