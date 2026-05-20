@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   title: "Make Art Studio Alanya | Sanat Kursları · Art Courses · Курсы рисования",
   description:
     "Profesyonel resim ve çizim dersleri Alanya'da. Professional painting & drawing courses in Alanya, Turkey. Профессиональные курсы рисования в Алании.",
+  icons: {
+    icon: "/logo.jpg",
+    apple: "/logo.jpg",
+  },
   keywords: [
     "art studio alanya",
     "sanat kursu alanya",
