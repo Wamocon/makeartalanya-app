@@ -1,11 +1,15 @@
 /**
- * Email notification service using Resend.
- * Requires RESEND_API_KEY in environment variables.
- * Sign up at https://resend.com (free 100 emails/day).
+ * Email notification service using Strato SMTP (Nodemailer).
+ * Requires SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in environment variables.
  */
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.FROM_EMAIL || "Make Art Studio <noreply@makeartalanya.com>";
+import nodemailer from "nodemailer";
+
+const SMTP_HOST = process.env.SMTP_HOST || "smtp.strato.de";
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || "465", 10);
+const SMTP_USER = process.env.SMTP_USER || "";
+const SMTP_PASS = process.env.SMTP_PASS || "";
+const FROM_EMAIL = process.env.FROM_EMAIL || `Make Art Studio <${SMTP_USER}>`;
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || "";
 
 interface EmailPayload {
@@ -14,33 +18,32 @@ interface EmailPayload {
   html: string;
 }
 
+function createTransport() {
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS,
+    },
+  });
+}
+
 async function sendEmail(payload: EmailPayload): Promise<boolean> {
-  if (!RESEND_API_KEY) {
-    console.warn("[Email] RESEND_API_KEY not set — skipping email send");
+  if (!SMTP_USER || !SMTP_PASS) {
+    console.warn("[Email] SMTP credentials not set — skipping email send");
     return false;
   }
 
   try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: FROM_EMAIL,
-        to: payload.to,
-        subject: payload.subject,
-        html: payload.html,
-      }),
+    const transporter = createTransport();
+    await transporter.sendMail({
+      from: FROM_EMAIL,
+      to: payload.to,
+      subject: payload.subject,
+      html: payload.html,
     });
-
-    if (!res.ok) {
-      const err = await res.text();
-      console.error("[Email] Failed to send:", err);
-      return false;
-    }
-
     return true;
   } catch (err) {
     console.error("[Email] Error:", err);
