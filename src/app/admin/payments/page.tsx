@@ -62,18 +62,17 @@ export default async function AdminPaymentsPage() {
         </div>
       </div>
 
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <PaymentsManager
-        payments={(payments || []).map((p: any) => ({
+        payments={(payments || []).map((p) => ({
           ...p,
           profiles: Array.isArray(p.profiles) ? p.profiles[0] : p.profiles,
           subscriptions: Array.isArray(p.subscriptions) ? p.subscriptions[0] : p.subscriptions,
-        }))}
+        })) as unknown as import("./PaymentsManager").Payment[]}
         clients={clients || []}
-        subscriptions={(activeSubscriptions || []).map((s: any) => ({
+        subscriptions={(activeSubscriptions || []).map((s) => ({
           ...s,
           packages: Array.isArray(s.packages) ? s.packages[0] : s.packages,
-        }))}
+        })) as unknown as import("./PaymentsManager").Subscription[]}
       />
     </div>
   );

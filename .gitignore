@@ -49,3 +49,8 @@ next-env.d.ts
 /playwright/.cache/
 e2e/tests/*.spec.ts-snapshots/
 
+# local verification artifacts
+/scripts/screenshots*/
+/scripts/*.log
+/dev.log
+/start.log

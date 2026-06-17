@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { CalendarDays, GraduationCap, Bell, User, Globe } from "lucide-react";
+import { CalendarDays, GraduationCap, Bell, User, Globe, MessageSquare } from "lucide-react";
 
 const LANGUAGES = [
   { code: "en", flag: "🇬🇧" },
@@ -19,7 +19,7 @@ interface NavLabels {
   [key: string]: string;
 }
 
-export default function ClientNav({ userName, unreadCount = 0, navLabels }: { userName: string; unreadCount?: number; navLabels: NavLabels }) {
+export default function ClientNav({ userName, unreadCount = 0, chatUnreadCount = 0, navLabels }: { userName: string; unreadCount?: number; chatUnreadCount?: number; navLabels: NavLabels }) {
   const pathname = usePathname();
   const [lang, setLang] = useState("en");
   const [showLang, setShowLang] = useState(false);
@@ -27,6 +27,7 @@ export default function ClientNav({ userName, unreadCount = 0, navLabels }: { us
   const navItems = [
     { href: "/my", icon: CalendarDays, label: navLabels.home },
     { href: "/my/classes", icon: GraduationCap, label: navLabels.classes },
+    { href: "/my/messages", icon: MessageSquare, label: navLabels.messages ?? "Messages" },
     { href: "/my/notifications", icon: Bell, label: navLabels.alerts },
     { href: "/my/settings", icon: User, label: navLabels.profile },
   ];
@@ -69,7 +70,10 @@ export default function ClientNav({ userName, unreadCount = 0, navLabels }: { us
             ? pathname === "/my" 
             : pathname.startsWith(item.href);
           const Icon = item.icon;
-          const showBadge = item.href === "/my/notifications" && unreadCount > 0;
+          const notifBadge = item.href === "/my/notifications" && unreadCount > 0;
+          const chatBadge = item.href === "/my/messages" && chatUnreadCount > 0;
+          const badgeCount = notifBadge ? unreadCount : chatBadge ? chatUnreadCount : 0;
+          const showBadge = notifBadge || chatBadge;
           
           return (
             <Link
@@ -84,8 +88,8 @@ export default function ClientNav({ userName, unreadCount = 0, navLabels }: { us
               <div className="relative">
                 <Icon className={`w-5 h-5 ${isActive ? "text-[#DCA8B2]" : ""}`} strokeWidth={isActive ? 2.5 : 1.8} />
                 {showBadge && (
-                  <span className="absolute -top-1 -right-1.5 w-4 h-4 bg-[#DCA8B2] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                    {unreadCount > 9 ? "9+" : unreadCount}
+                  <span className="absolute -top-1 -right-1.5 min-w-4 h-4 px-0.5 bg-[#DCA8B2] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                    {badgeCount > 9 ? "9+" : badgeCount}
                   </span>
                 )}
               </div>

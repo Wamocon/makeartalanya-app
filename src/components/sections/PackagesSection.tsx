@@ -19,12 +19,12 @@ interface PackagesProps {
 }
 
 const containerVariants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 0.95 },
   visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
 };
 
 const cardVariants = {
-  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  hidden: { opacity: 0.85, y: 20, scale: 0.97 },
   visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } },
 };
 
@@ -36,7 +36,7 @@ export default function PackagesSection({ t }: PackagesProps) {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0.9, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}

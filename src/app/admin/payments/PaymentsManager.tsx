@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Plus, Search, Download } from "lucide-react";
 
-interface Payment {
+export interface Payment {
   id: string;
   amount: number;
   currency: string;
@@ -20,7 +20,7 @@ interface Client {
   phone: string | null;
 }
 
-interface Subscription {
+export interface Subscription {
   id: string;
   user_id: string;
   packages: { name: string } | null;

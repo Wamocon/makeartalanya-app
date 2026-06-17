@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Plus, X, ChevronLeft, ChevronRight } from "lucide-react";
 
-interface ClassType {
+export interface ClassType {
   id: string;
   name_en: string;
   color: string;
@@ -11,7 +11,7 @@ interface ClassType {
   max_capacity: number;
 }
 
-interface Session {
+export interface Session {
   id: string;
   starts_at: string;
   ends_at: string;

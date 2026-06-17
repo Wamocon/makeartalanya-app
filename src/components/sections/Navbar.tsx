@@ -29,18 +29,25 @@ export default function Navbar({ t, locale, setLocale }: NavbarProps) {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  const navLinks = [
+    { href: "#courses", label: t.nav.courses },
+    { href: "#gallery", label: t.nav.gallery },
+    { href: "#about", label: t.nav.about },
+    { href: "#contact", label: t.nav.contact },
+  ];
+
   return (
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+      className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-6xl transition-all duration-500 rounded-full px-2 ${
         scrolled
-          ? "glass shadow-[var(--shadow-md)]"
-          : "bg-transparent"
+          ? "glass-strong shadow-[var(--shadow-lg)]"
+          : "glass shadow-[var(--shadow-sm)]"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between">
+      <div className="h-14 flex items-center justify-between px-4 sm:px-5">
         {/* Logo */}
         <motion.a
           href="/"
@@ -48,64 +55,53 @@ export default function Navbar({ t, locale, setLocale }: NavbarProps) {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          <Logo size={56} variant="full" />
+          <Logo size={48} variant="full" />
         </motion.a>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">
-          {[
-            { href: "#courses", label: t.nav.courses },
-            { href: "#gallery", label: t.nav.gallery },
-            { href: "#about", label: t.nav.about },
-            { href: "#contact", label: t.nav.contact },
-          ].map((link) => (
+        <nav className="hidden md:flex items-center gap-0.5 bg-white/40 rounded-full p-1">
+          {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="relative px-4 py-2 text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors rounded-full hover:bg-[var(--pink-light)]"
+              className="relative px-4 py-2 text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors rounded-full hover:bg-white/60"
             >
               {link.label}
             </a>
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* Language Switcher */}
-          <div className="flex items-center gap-0.5 bg-[var(--background)] border border-[var(--border)] rounded-full p-1">
+          <div className="hidden sm:flex items-center gap-0.5 bg-white/60 border border-[var(--border)] rounded-full p-1">
             {LOCALES.map((l) => (
-              <motion.button
+              <button
                 key={l.value}
                 onClick={() => setLocale(l.value)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`text-xs px-2.5 py-1.5 rounded-full transition-all font-medium ${
+                className={`text-[11px] px-2.5 py-1.5 rounded-full transition-all font-semibold ${
                   locale === l.value
-                    ? "bg-[var(--pink)] text-white shadow-sm"
-                    : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                    ? "bg-[var(--foreground)] text-white shadow-sm"
+                    : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-white/60"
                 }`}
               >
                 {l.label}
-              </motion.button>
+              </button>
             ))}
           </div>
 
           {/* Login */}
           <Link href="/auth/login">
-            <motion.span
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="hidden sm:inline-flex items-center gap-1.5 text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] px-3 py-2.5 rounded-full hover:bg-[var(--pink-light)] transition-all"
-            >
+            <span className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/60 border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-white transition-all">
               <User className="w-4 h-4" />
-            </motion.span>
+            </span>
           </Link>
 
           {/* CTA */}
           <motion.a
             href="#booking"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="hidden sm:inline-flex items-center gap-1.5 bg-[var(--foreground)] text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all shadow-[var(--shadow-md)]"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="hidden sm:inline-flex items-center gap-1.5 bg-[var(--foreground)] text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)]"
           >
             {t.nav.booking}
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,7 +112,7 @@ export default function Navbar({ t, locale, setLocale }: NavbarProps) {
           {/* Hamburger */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 rounded-xl hover:bg-[var(--pink-light)] transition-colors"
+            className="md:hidden p-2 rounded-full hover:bg-white/60 transition-colors"
             aria-label="Toggle menu"
           >
             <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,27 +130,22 @@ export default function Navbar({ t, locale, setLocale }: NavbarProps) {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden glass border-t border-[var(--border)] overflow-hidden"
+            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="md:hidden absolute top-full left-0 right-0 mt-3 glass-strong rounded-3xl shadow-[var(--shadow-xl)] overflow-hidden"
           >
-            <div className="px-4 pb-5 pt-3 flex flex-col gap-1">
-              {[
-                { href: "#courses", label: t.nav.courses },
-                { href: "#gallery", label: t.nav.gallery },
-                { href: "#about", label: t.nav.about },
-                { href: "#contact", label: t.nav.contact },
-              ].map((link, i) => (
+            <div className="px-3 pb-4 pt-3 flex flex-col gap-1">
+              {navLinks.map((link, i) => (
                 <motion.a
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="text-sm font-medium text-[var(--foreground)] py-3 px-3 rounded-xl hover:bg-[var(--pink-light)] transition-colors"
+                  className="text-sm font-medium text-[var(--foreground)] py-3 px-4 rounded-2xl hover:bg-[var(--pink-light)]/60 transition-colors"
                 >
                   {link.label}
                 </motion.a>
@@ -165,7 +156,7 @@ export default function Navbar({ t, locale, setLocale }: NavbarProps) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="mt-3 text-center bg-[var(--foreground)] text-white text-sm font-semibold px-5 py-3 rounded-full"
+                className="mt-2 text-center bg-[var(--foreground)] text-white text-sm font-semibold px-5 py-3 rounded-full"
               >
                 {t.nav.booking}
               </motion.a>

@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Logo from "@/components/Logo";
 
 export default function AdminLoginPage() {
@@ -112,10 +113,10 @@ export default function AdminLoginPage() {
           </button>
 
           <p className="text-xs text-center text-[var(--muted)]">
-            <a href="/" className="inline-flex items-center gap-1 hover:text-[var(--pink-dark)] transition-colors">
+            <Link href="/" className="inline-flex items-center gap-1 hover:text-[var(--pink-dark)] transition-colors">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
               Back to website
-            </a>
+            </Link>
           </p>
         </form>
       </div>

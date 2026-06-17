@@ -61,7 +61,7 @@ export async function POST() {
       email: userEmail,
       password: userPassword,
       email_confirm: true,
-      user_metadata: { role: "client", full_name: "Test Parent", preferred_language: "en" },
+      user_metadata: { role: "user", full_name: "Test Parent", preferred_language: "en" },
     });
     results.push({ email: userEmail, status: error ? `error: ${error.message}` : "created" });
 
@@ -72,7 +72,7 @@ export async function POST() {
         await supabase.from("profiles").upsert({
           id: regularUser.id,
           full_name: "Test Parent",
-          role: "client",
+          role: "user",
           preferred_language: "en",
         });
       }
@@ -85,7 +85,7 @@ export async function POST() {
     message: "Seed complete",
     credentials: {
       admin: { email: adminEmail, password: adminPassword, role: "admin" },
-      user: { email: userEmail, password: userPassword, role: "client" },
+      user: { email: userEmail, password: userPassword, role: "user" },
     },
     results,
   });

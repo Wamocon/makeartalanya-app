@@ -17,15 +17,18 @@ import {
   Banknote,
   Menu,
   X,
+  MessageSquare,
 } from "lucide-react";
 import { useState } from "react";
 import { useAdminLocale } from "./AdminLocaleProvider";
+import { useUnreadCounts } from "@/hooks/useUnreadCounts";
 import type { AdminLocale } from "@/i18n/admin-translations";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { locale, setLocale, t } = useAdminLocale();
+  const { notifications: notifUnread, chat: chatUnread } = useUnreadCounts();
 
   const navSections = [
     {
@@ -54,6 +57,7 @@ export default function AdminSidebar() {
     {
       title: t.sidebar.system,
       items: [
+        { href: "/admin/messages", icon: MessageSquare, label: t.sidebar.messages ?? "Messages" },
         { href: "/admin/notifications", icon: Bell, label: t.sidebar.notifications },
         { href: "/admin/content", icon: FileText, label: t.sidebar.content },
         { href: "/admin/media", icon: ImageIcon, label: t.sidebar.media },
@@ -106,7 +110,7 @@ export default function AdminSidebar() {
         <nav className="p-3 space-y-5 overflow-y-auto h-[calc(100%-4rem-4rem)]">
           {navSections.map((section) => (
             <div key={section.title}>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-[#9B8A8F] px-3 mb-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)] px-3 mb-2">
                 {section.title}
               </p>
               <div className="space-y-0.5">
@@ -116,19 +120,30 @@ export default function AdminSidebar() {
                       ? pathname === "/admin"
                       : pathname.startsWith(item.href);
                   const Icon = item.icon;
+                  const badgeCount =
+                    item.href === "/admin/notifications" ? notifUnread :
+                    item.href === "/admin/messages" ? chatUnread : 0;
+
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                         isActive
-                          ? "bg-[#F5E6EA] text-[#B87A88] font-medium"
-                          : "text-[#9B8A8F] hover:text-[#2D2327] hover:bg-[#FEFCFD]"
+                          ? "bg-gradient-to-r from-[var(--pink-light)] to-white text-[var(--foreground)] shadow-[var(--shadow-sm)]"
+                          : "text-[var(--muted)] hover:bg-white/60 hover:text-[var(--foreground)]"
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      {item.label}
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isActive ? "bg-white shadow-sm" : "bg-[var(--background)] group-hover:bg-white"}`}>
+                        <Icon className={`w-4 h-4 ${isActive ? "text-[var(--pink-dark)]" : "text-[var(--muted)] group-hover:text-[var(--pink-dark)]"}`} />
+                      </div>
+                      <span className="flex-1">{item.label}</span>
+                      {badgeCount > 0 && (
+                        <span className="min-w-[1.25rem] h-5 px-1 bg-gradient-to-r from-[var(--pink-dark)] to-[var(--pink)] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
+                          {badgeCount > 9 ? "9+" : badgeCount}
+                        </span>
+                      )}
                     </Link>
                   );
                 })}

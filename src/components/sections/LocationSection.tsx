@@ -16,7 +16,7 @@ export default function LocationSection({ t }: LocationProps) {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0.9, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
@@ -34,7 +34,7 @@ export default function LocationSection({ t }: LocationProps) {
         <div className="grid md:grid-cols-2 gap-6">
           {/* Info card */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0.85, x: -16 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
@@ -120,7 +120,7 @@ export default function LocationSection({ t }: LocationProps) {
 
           {/* Google Maps embed */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0.85, x: 16 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}

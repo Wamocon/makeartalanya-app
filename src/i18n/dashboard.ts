@@ -96,6 +96,7 @@ export const dashboardTranslations = {
       classes: "Classes",
       alerts: "Alerts",
       profile: "Profile",
+      messages: "Messages",
     },
   },
   tr: {
@@ -184,6 +185,7 @@ export const dashboardTranslations = {
       classes: "Dersler",
       alerts: "Bildirimler",
       profile: "Profil",
+      messages: "Mesajlar",
     },
   },
   ru: {
@@ -272,6 +274,7 @@ export const dashboardTranslations = {
       classes: "Занятия",
       alerts: "Уведомления",
       profile: "Профиль",
+      messages: "Сообщения",
     },
   },
 } as const;

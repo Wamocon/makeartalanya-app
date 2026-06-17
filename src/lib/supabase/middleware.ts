@@ -59,8 +59,7 @@ export async function updateSession(request: NextRequest) {
       const sessionCookie = request.cookies.get("admin_session");
       if (!sessionCookie?.value) {
         const url = request.nextUrl.clone();
-        url.pathname = "/auth/login";
-        url.searchParams.set("redirect", "/admin");
+        url.pathname = "/admin/login";
         return NextResponse.redirect(url);
       }
       // Validate legacy cookie
@@ -72,14 +71,12 @@ export async function updateSession(request: NextRequest) {
         const maxAge = 8 * 60 * 60 * 1000;
         if (sessionUser !== username || sessionAge > maxAge) {
           const url = request.nextUrl.clone();
-          url.pathname = "/auth/login";
-          url.searchParams.set("redirect", "/admin");
+          url.pathname = "/admin/login";
           return NextResponse.redirect(url);
         }
       } catch {
         const url = request.nextUrl.clone();
-        url.pathname = "/auth/login";
-        url.searchParams.set("redirect", "/admin");
+        url.pathname = "/admin/login";
         return NextResponse.redirect(url);
       }
     } else {

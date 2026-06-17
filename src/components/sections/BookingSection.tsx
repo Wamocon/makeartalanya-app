@@ -78,7 +78,7 @@ export default function BookingSection({ t, locale }: BookingProps) {
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--blue-light)] via-white to-[var(--background)]" />
       
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0.9, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}

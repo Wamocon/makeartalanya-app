@@ -13,6 +13,7 @@ import {
   Users,
   LogOut,
   Globe,
+  MessageSquare,
 } from "lucide-react";
 
 const LANGUAGES = [
@@ -37,10 +38,11 @@ interface ClientSidebarProps {
   userEmail: string;
   avatarUrl?: string | null;
   unreadCount: number;
+  chatUnreadCount: number;
   navLabels: NavLabels;
 }
 
-export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCount, navLabels }: ClientSidebarProps) {
+export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCount, chatUnreadCount, navLabels }: ClientSidebarProps) {
   const pathname = usePathname();
   const [lang, setLang] = useState("en");
 
@@ -49,6 +51,7 @@ export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCo
     { href: "/my/classes", icon: GraduationCap, label: navLabels.myClasses },
     { href: "/my/subscriptions", icon: CreditCard, label: navLabels.subscriptions },
     { href: "/my/children", icon: Users, label: navLabels.children },
+    { href: "/my/messages", icon: MessageSquare, label: navLabels.messages ?? "Messages" },
     { href: "/my/notifications", icon: Bell, label: navLabels.notifications },
     { href: "/my/settings", icon: User, label: navLabels.settings },
   ];
@@ -92,26 +95,30 @@ export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCo
             ? pathname === item.href
             : pathname.startsWith(item.href);
           const Icon = item.icon;
-          const showBadge = item.href === "/my/notifications" && unreadCount > 0;
+          const notifBadge = item.href === "/my/notifications" && unreadCount > 0;
+          const chatBadge = item.href === "/my/messages" && chatUnreadCount > 0;
+          const badgeCount = notifBadge ? unreadCount : chatBadge ? chatUnreadCount : 0;
 
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 isActive
-                  ? "bg-[#FDF2F4] text-[#2D2327]"
-                  : "text-[#9B8A8F] hover:bg-[#FAFAFA] hover:text-[#2D2327]"
+                  ? "bg-gradient-to-r from-[var(--pink-light)] to-white text-[var(--foreground)] shadow-[var(--shadow-sm)]"
+                  : "text-[var(--muted)] hover:bg-white/60 hover:text-[var(--foreground)]"
               }`}
             >
-              <Icon
-                className={`w-4.5 h-4.5 ${isActive ? "text-[#DCA8B2]" : ""}`}
-                strokeWidth={isActive ? 2.2 : 1.8}
-              />
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isActive ? "bg-white shadow-sm" : "bg-[var(--background)] group-hover:bg-white"}`}>
+                <Icon
+                  className={`w-4 h-4 ${isActive ? "text-[var(--pink-dark)]" : "text-[var(--muted)] group-hover:text-[var(--pink-dark)]"}`}
+                  strokeWidth={isActive ? 2.2 : 1.8}
+                />
+              </div>
               <span className="flex-1">{item.label}</span>
-              {showBadge && (
-                <span className="w-5 h-5 bg-[#DCA8B2] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {unreadCount > 9 ? "9+" : unreadCount}
+              {(notifBadge || chatBadge) && (
+                <span className="min-w-[1.25rem] h-5 px-1 bg-gradient-to-r from-[var(--pink-dark)] to-[var(--pink)] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
+                  {badgeCount > 9 ? "9+" : badgeCount}
                 </span>
               )}
             </Link>
@@ -152,25 +159,25 @@ export default function ClientSidebar({ userName, userEmail, avatarUrl, unreadCo
       </div>
 
       {/* User card */}
-      <div className="border-t border-[#F0E8EB] px-4 py-4">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-linear-to-br from-[#DCA8B2]/30 to-[#A9C7E5]/30 flex items-center justify-center shrink-0">
+      <div className="border-t border-[var(--border)] px-4 py-4">
+        <div className="flex items-center gap-3 p-2 rounded-2xl bg-gradient-to-r from-[var(--pink-light)]/50 to-[var(--blue-light)]/30 border border-[var(--border)]">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--pink)]/40 to-[var(--blue)]/40 flex items-center justify-center shrink-0 border border-white/60">
             {avatarUrl ? (
-              <img src={avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover" />
+              <img src={avatarUrl} alt="" className="w-10 h-10 rounded-full object-cover" />
             ) : (
-              <span className="text-sm font-semibold text-[#2D2327]">
+              <span className="text-sm font-bold text-[var(--foreground)]">
                 {userName.charAt(0).toUpperCase()}
               </span>
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[#2D2327] truncate">{userName}</p>
-            <p className="text-[11px] text-[#9B8A8F] truncate">{userEmail}</p>
+            <p className="text-sm font-semibold text-[var(--foreground)] truncate">{userName}</p>
+            <p className="text-[11px] text-[var(--muted)] truncate">{userEmail}</p>
           </div>
           <form action="/auth/signout" method="POST">
             <button
               type="submit"
-              className="p-1.5 rounded-lg text-[#9B8A8F] hover:text-[#2D2327] hover:bg-[#F5F0F2] transition-colors"
+              className="p-2 rounded-xl text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-white/60 transition-colors"
               title="Sign out"
             >
               <LogOut className="w-4 h-4" />

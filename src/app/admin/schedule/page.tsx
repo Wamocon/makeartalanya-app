@@ -40,13 +40,12 @@ export default async function AdminSchedulePage() {
         <p className="text-sm text-[#9B8A8F] mt-1">Weekly class schedule management</p>
       </div>
 
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <ScheduleManager
-        sessions={(sessions || []).map((s: any) => ({
+        sessions={(sessions || []).map((s) => ({
           ...s,
           class_types: Array.isArray(s.class_types) ? s.class_types[0] : s.class_types,
-        }))}
-        classTypes={(classTypes || []) as any}
+        })) as unknown as import("./ScheduleManager").Session[]}
+        classTypes={(classTypes || []) as unknown as import("./ScheduleManager").ClassType[]}
         weekStart={weekStart.toISOString()}
       />
     </div>

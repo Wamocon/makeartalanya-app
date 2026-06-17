@@ -90,3 +90,32 @@ export const settingSchema = z.object({
   key: z.string().min(1),
   value: z.unknown(),
 })
+
+// ── Chat ───────────────────────────────────────────────────────────
+export const chatMessageSchema = z.object({
+  roomId: z.string().uuid(),
+  content: z.string().min(1).max(4000),
+})
+
+export const chatRoomCreateSchema = z.object({
+  userId: z.string().uuid(),
+  title: z.string().max(100).optional(),
+})
+
+export const chatReadSchema = z.object({
+  roomId: z.string().uuid(),
+  messageIds: z.array(z.string().uuid()).optional(),
+})
+
+// ── Notifications ──────────────────────────────────────────────────
+export const notificationBroadcastSchema = z.object({
+  userId: z.string().uuid().optional(),
+  type: z.enum([
+    "general", "class_reminder", "class_cancelled", "booking_confirmed",
+    "payment_recorded", "sub_expiring", "sub_expired", "sub_low", "broadcast"
+  ]),
+  title: z.string().min(1).max(200),
+  body: z.string().max(2000).optional(),
+  link: z.string().max(500).optional(),
+  actionText: z.string().max(100).optional(),
+})

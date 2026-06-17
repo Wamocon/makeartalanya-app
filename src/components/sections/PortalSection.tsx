@@ -32,7 +32,7 @@ export default function PortalSection({ t }: PortalSectionProps) {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left content */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0.85, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
@@ -65,7 +65,7 @@ export default function PortalSection({ t }: PortalSectionProps) {
                 return (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0.85, y: 8 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.2 + i * 0.1, duration: 0.4 }}
@@ -93,7 +93,7 @@ export default function PortalSection({ t }: PortalSectionProps) {
 
           {/* Right - Visual card */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0.85, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -121,7 +121,7 @@ export default function PortalSection({ t }: PortalSectionProps) {
                 ].map((item, i) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, scaleX: 0 }}
+                    initial={{ opacity: 0.7, scaleX: 0.8 }}
                     whileInView={{ opacity: 1, scaleX: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.5 + i * 0.15, duration: 0.5 }}

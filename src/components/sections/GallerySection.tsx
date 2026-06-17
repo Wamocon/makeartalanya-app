@@ -20,12 +20,12 @@ interface GalleryProps {
 }
 
 const containerVariants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 0.95 },
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const imageVariants = {
-  hidden: { opacity: 0, scale: 0.9 },
+  hidden: { opacity: 0.8, scale: 0.95 },
   visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } },
 };
 
@@ -63,7 +63,7 @@ export default function GallerySection({ t }: GalleryProps) {
     <section id="gallery" className="py-24 sm:py-32 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0.9, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
@@ -127,7 +127,7 @@ export default function GallerySection({ t }: GalleryProps) {
         </motion.div>
 
         <motion.p
-          initial={{ opacity: 0 }}
+          initial={{ opacity: 0.85 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}

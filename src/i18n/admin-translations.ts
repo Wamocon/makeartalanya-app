@@ -28,6 +28,7 @@ export const adminTranslations: Record<AdminLocale, {
     subscriptions: string;
     payments: string;
     system: string;
+    messages: string;
     notifications: string;
     content: string;
     media: string;
@@ -66,6 +67,7 @@ export const adminTranslations: Record<AdminLocale, {
       subscriptions: "Subscriptions",
       payments: "Payments",
       system: "System",
+      messages: "Messages",
       notifications: "Notifications",
       content: "Content",
       media: "Media",
@@ -104,6 +106,7 @@ export const adminTranslations: Record<AdminLocale, {
       subscriptions: "Abonelikler",
       payments: "Ödemeler",
       system: "Sistem",
+      messages: "Mesajlar",
       notifications: "Bildirimler",
       content: "İçerik",
       media: "Medya",
@@ -142,6 +145,7 @@ export const adminTranslations: Record<AdminLocale, {
       subscriptions: "Подписки",
       payments: "Платежи",
       system: "Система",
+      messages: "Сообщения",
       notifications: "Уведомления",
       content: "Контент",
       media: "Медиа",

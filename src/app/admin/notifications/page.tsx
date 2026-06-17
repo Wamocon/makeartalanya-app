@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Bell, Send, Mail, MessageSquare, Smartphone } from "lucide-react";
+import BroadcastForm from "./BroadcastForm";
 
 function relativeTime(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -41,6 +42,8 @@ export default async function AdminNotificationsPage() {
           </p>
         </div>
       </div>
+
+      <BroadcastForm />
 
       <div className="space-y-2">
         {notifications && notifications.length > 0 ? (

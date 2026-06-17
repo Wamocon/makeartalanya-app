@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { ToastProvider } from "@/components/providers/ToastProvider";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -51,7 +52,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://vnldsyjkhofofellwuiq.supabase.co" />
       </head>
       <body className="min-h-full flex flex-col font-sans">
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

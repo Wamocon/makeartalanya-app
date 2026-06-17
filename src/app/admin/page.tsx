@@ -42,7 +42,7 @@ export default async function AdminPage() {
   }
 
   const { data, error } = await admin
-    .from("bookings")
+    .from("legacy_bookings")
     .select("id, guest_name, guest_email, guest_phone, preferred_language, status, message, created_at")
     .order("created_at", { ascending: false })
     .limit(100);

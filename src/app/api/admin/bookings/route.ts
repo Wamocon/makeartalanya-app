@@ -26,7 +26,7 @@ export async function PATCH(request: Request) {
     }
 
     const { error } = await supabase
-      .from("bookings")
+      .from("legacy_bookings")
       .update({ status })
       .eq("id", id);
 
@@ -37,7 +37,7 @@ export async function PATCH(request: Request) {
     // Send notifications on status change (fire-and-forget)
     if (status === "confirmed" || status === "cancelled") {
       const { data: booking } = await supabase
-        .from("bookings")
+        .from("legacy_bookings")
         .select("guest_name, guest_phone, preferred_language, guest_email, telegram_chat_id")
         .eq("id", id)
         .single();
@@ -82,7 +82,7 @@ export async function DELETE(request: Request) {
     }
 
     const { error } = await supabase
-      .from("bookings")
+      .from("legacy_bookings")
       .delete()
       .eq("id", id);
 
