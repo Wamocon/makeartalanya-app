@@ -12,6 +12,7 @@ import LocationSection from "@/components/sections/LocationSection";
 import TutorialSection from "@/components/sections/TutorialSection";
 import PortalSection from "@/components/sections/PortalSection";
 import Footer from "@/components/sections/Footer";
+import CtaBand from "@/components/sections/CtaBand";
 import GsapProvider from "@/components/GsapProvider";
 import { LocalBusinessJsonLd } from "@/components/JsonLd";
 import { translations, type Locale } from "@/i18n/translations";
@@ -72,6 +73,8 @@ export default function Home() {
     const url = new URL(window.location.href);
     url.searchParams.set("lang", l);
     window.history.replaceState({}, "", url.toString());
+    // Let site-wide islands (e.g. the AI concierge) follow the language live.
+    window.dispatchEvent(new CustomEvent("localechange", { detail: l }));
   }, []);
 
   const loadOverrides = useCallback((l: Locale) => {
@@ -106,6 +109,7 @@ export default function Home() {
         <TutorialSection t={t} />
         <PackagesSection t={t} locale={locale} />
         <GallerySection t={t} />
+        <CtaBand locale={locale} />
         <BookingSection t={t} locale={locale} />
         <PortalSection t={t} />
         <AboutSection t={t} />

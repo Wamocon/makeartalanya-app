@@ -60,7 +60,7 @@ export default function AboutSection({ t }: AboutProps) {
             className="flex justify-center lg:justify-start"
           >
             {photoUrl ? (
-              <div className="w-72 h-72 sm:w-80 sm:h-80 rounded-3xl overflow-hidden shadow-[var(--shadow-xl)] relative ring-4 ring-white">
+              <div className="w-72 h-72 sm:w-80 sm:h-80 rounded-3xl overflow-hidden shadow-[var(--shadow-xl)] relative ring-4 ring-white bg-gradient-to-br from-[var(--pink-light)] to-[var(--blue-light)]">
                 <Image
                   src={photoUrl}
                   alt="Instructor"
@@ -70,10 +70,10 @@ export default function AboutSection({ t }: AboutProps) {
                 />
               </div>
             ) : (
-              <div className="w-72 h-72 sm:w-80 sm:h-80 rounded-3xl overflow-hidden shadow-[var(--shadow-xl)] ring-4 ring-white relative">
+              <div className="w-72 h-72 sm:w-80 sm:h-80 rounded-3xl overflow-hidden shadow-[var(--shadow-xl)] ring-4 ring-white relative bg-gradient-to-br from-[var(--pink-light)] to-[var(--blue-light)]">
                 <Image
-                  src="https://images.unsplash.com/photo-1580974852861-c381510bc98a?w=400&h=400&fit=crop&crop=center"
-                  alt="Art instructor teaching painting"
+                  src="/images/hero/hero-painting.jpg"
+                  alt="Make Art Studio painting"
                   fill
                   className="object-cover"
                   sizes="(max-width: 640px) 288px, 320px"

@@ -4,13 +4,13 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-const PLACEHOLDER_IMAGES = [
-  { id: 1, src: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=600&h=600&fit=crop", alt: "Vibrant oil painting on canvas" },
-  { id: 2, src: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&h=600&fit=crop", alt: "Artist painting colorful artwork" },
-  { id: 3, src: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&h=600&fit=crop", alt: "Art gallery wall display" },
-  { id: 4, src: "https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=600&h=600&fit=crop", alt: "Children painting in art class" },
-  { id: 5, src: "https://images.unsplash.com/photo-1560421683-6856ea585c78?w=600&h=600&fit=crop", alt: "Chess game in progress" },
-  { id: 6, src: "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=600&h=600&fit=crop", alt: "Paint palette and brushes" },
+const LOCAL_IMAGES = [
+  "/images/gallery/work-1.jpg",
+  "/images/gallery/work-2.jpg",
+  "/images/gallery/work-3.jpg",
+  "/images/gallery/work-4.jpg",
+  "/images/gallery/work-5.jpg",
+  "/images/gallery/work-6.jpg",
 ];
 
 interface GalleryProps {
@@ -57,7 +57,11 @@ export default function GallerySection({ t }: GalleryProps) {
       .catch(() => {});
   }, []);
 
-  const hasRealImages = images.length > 0;
+  // Always render at least 6 tiles so the grid never looks sparse; real
+  // Supabase gallery images come first, padded with local studio work.
+  const display = images.length
+    ? [...images, ...LOCAL_IMAGES].slice(0, Math.max(6, images.length))
+    : LOCAL_IMAGES;
 
   return (
     <section id="gallery" className="py-24 sm:py-32 bg-white relative overflow-hidden">
@@ -89,41 +93,23 @@ export default function GallerySection({ t }: GalleryProps) {
           variants={containerVariants}
           className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4"
         >
-          {hasRealImages
-            ? images.map((url, i) => (
-                <motion.div
-                  key={i}
-                  variants={imageVariants}
-                  whileHover={{ scale: 1.03, y: -4 }}
-                  className="aspect-square rounded-2xl overflow-hidden relative group shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-lg)] transition-shadow"
-                >
-                  <Image
-                    src={url}
-                    alt={`Gallery image ${i + 1}`}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </motion.div>
-              ))
-            : PLACEHOLDER_IMAGES.map((item) => (
-                <motion.div
-                  key={item.id}
-                  variants={imageVariants}
-                  whileHover={{ scale: 1.03, y: -4 }}
-                  className="aspect-square rounded-2xl overflow-hidden relative group cursor-pointer shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-lg)] transition-shadow"
-                >
-                  <Image
-                    src={item.src}
-                    alt={item.alt}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </motion.div>
-              ))}
+          {display.map((src, i) => (
+            <motion.div
+              key={i}
+              variants={imageVariants}
+              whileHover={{ scale: 1.03, y: -4 }}
+              className="group relative aspect-square overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--pink-light)] to-[var(--blue-light)] shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-lg)]"
+            >
+              <Image
+                src={src}
+                alt={`Make Art Studio gallery ${i + 1}`}
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                sizes="(max-width: 768px) 50vw, 33vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            </motion.div>
+          ))}
         </motion.div>
 
         <motion.p

@@ -51,6 +51,7 @@ export default function DashboardHeader({
           <Link
             href="/"
             target="_blank"
+            rel="noopener noreferrer"
             className="px-4 py-2 text-xs font-semibold text-[var(--muted)] hover:text-[var(--foreground)] border border-[var(--border)] rounded-full hover:bg-white hover:shadow-sm transition-all"
           >
             {t.viewSite} ↗

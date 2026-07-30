@@ -1,0 +1,443 @@
+"use client";
+
+/**
+ * KVKK registration form ("Anmeldeformular"). A parent/guardian registers a
+ * child for painting, crafts or chess and gives explicit, versioned consent.
+ *
+ * ⚠️ The consent wording below is a sensible default; have a Turkish lawyer
+ * confirm the exact KVKK aydınlatma / muvafakat text before launch.
+ */
+
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import { packages, type Locale } from "@/i18n/translations";
+
+type Relationship = "mother" | "father" | "guardian";
+type Gender = "male" | "female" | "other";
+type Branch = "painting" | "chess" | "crafts" | "individual";
+
+const LOCALES: Locale[] = ["tr", "en", "ru"];
+
+// Count-correct word for "lesson(s)" per locale (TR has no numeral inflection;
+// EN is singular/plural; RU needs one/few/many forms).
+const LESSON_FORMS: Record<Locale, (n: number) => string> = {
+  tr: () => "ders",
+  en: (n) => (n === 1 ? "lesson" : "lessons"),
+  ru: (n) => {
+    const r = new Intl.PluralRules("ru").select(n);
+    return r === "one" ? "занятие" : r === "few" ? "занятия" : "занятий";
+  },
+};
+
+function readLocale(): Locale {
+  if (typeof document === "undefined") return "tr";
+  const cookie = document.cookie.match(/(?:^|; )lang=([^;]*)/)?.[1];
+  if (cookie && LOCALES.includes(cookie as Locale)) return cookie as Locale;
+  const stored = localStorage.getItem("locale");
+  if (stored && LOCALES.includes(stored as Locale)) return stored as Locale;
+  return "tr";
+}
+
+const COPY: Record<Locale, {
+  title: string; subtitle: string; back: string; optional: string;
+  language: string;
+  sections: { parent: string; child: string; enrollment: string; consent: string };
+  f: Record<string, string>;
+  rel: Record<Relationship, string>;
+  gender: Record<Gender, string>;
+  branch: Record<Branch, string>;
+  selectPlaceholder: string;
+  lessons: string; perLesson: string;
+  consent: { kvkk: string; kvkkLink: string; liability: string; media: string };
+  submit: string; submitting: string;
+  successTitle: string; successMsg: string;
+  errGeneric: string; errNetwork: string;
+}> = {
+  tr: {
+    title: "Kayıt Formu",
+    subtitle: "Çocuğunuzu resim, el sanatları veya satranç dersine kaydedin. Bilgileriniz yalnızca kayıt ve iletişim için kullanılır.",
+    back: "Ana sayfaya dön",
+    optional: "isteğe bağlı",
+    language: "Dil",
+    sections: { parent: "Veli Bilgileri", child: "Çocuk Bilgileri", enrollment: "Ders Seçimi", consent: "Onaylar" },
+    f: {
+      parentName: "Ad Soyad", parentIdNo: "T.C. Kimlik / Pasaport No", relationship: "Yakınlık",
+      parentEmail: "E-posta", parentPhone: "WhatsApp Telefon", parentAddress: "Adres",
+      childName: "Çocuğun Adı Soyadı", childBirthDate: "Doğum Tarihi", childGender: "Cinsiyet",
+      childHealthNotes: "Sağlık / alerji notları", emergencyContact: "Acil durum kişisi (ad, telefon)",
+      branch: "Branş", package: "Paket", message: "Mesajınız",
+    },
+    rel: { mother: "Anne", father: "Baba", guardian: "Veli / Vasi" },
+    gender: { male: "Erkek", female: "Kız", other: "Diğer" },
+    branch: { painting: "Resim & Çizim", chess: "Satranç", crafts: "El Sanatları", individual: "Birebir Ders" },
+    selectPlaceholder: "Seçiniz…",
+    lessons: "ders", perLesson: "ders başına",
+    consent: {
+      kvkk: "Kendime ve çocuğuma ait kişisel verilerin, kayıt ve iletişim amacıyla KVKK kapsamında işlenmesini onaylıyorum.",
+      kvkkLink: "Aydınlatma Metni",
+      liability: "Çocuğumu ders süresince Make Art Studio'ya emanet ettiğimi ve stüdyonun ders sırasındaki gözetim koşullarını kabul ediyorum.",
+      media: "Çocuğumun ders çalışmalarına ait fotoğraf/videoların stüdyonun galeri ve sosyal medyasında kullanılmasına izin veriyorum.",
+    },
+    submit: "Kaydı Gönder",
+    submitting: "Gönderiliyor…",
+    successTitle: "Teşekkürler!",
+    successMsg: "Kaydınızı aldık. Stüdyo, gün, saat ve paket detayları için en kısa sürede WhatsApp'tan sizinle iletişime geçecek.",
+    errGeneric: "Kayıt gönderilemedi. Lütfen alanları kontrol edip tekrar deneyin.",
+    errNetwork: "Bağlantı hatası. Lütfen tekrar deneyin.",
+  },
+  en: {
+    title: "Registration Form",
+    subtitle: "Register your child for painting, crafts or chess. Your details are used only for registration and contact.",
+    back: "Back to home",
+    optional: "optional",
+    language: "Language",
+    sections: { parent: "Parent / Guardian", child: "Child's Details", enrollment: "Class Choice", consent: "Consents" },
+    f: {
+      parentName: "Full name", parentIdNo: "ID / Passport no.", relationship: "Relationship",
+      parentEmail: "Email", parentPhone: "WhatsApp phone", parentAddress: "Address",
+      childName: "Child's full name", childBirthDate: "Date of birth", childGender: "Gender",
+      childHealthNotes: "Health / allergy notes", emergencyContact: "Emergency contact (name, phone)",
+      branch: "Class", package: "Package", message: "Your message",
+    },
+    rel: { mother: "Mother", father: "Father", guardian: "Guardian" },
+    gender: { male: "Boy", female: "Girl", other: "Other" },
+    branch: { painting: "Painting & Drawing", chess: "Chess", crafts: "Applied Art & Crafts", individual: "Individual lesson" },
+    selectPlaceholder: "Select…",
+    lessons: "lessons", perLesson: "per lesson",
+    consent: {
+      kvkk: "I consent to the processing of my and my child's personal data for registration and contact, under Turkish data-protection law (KVKK).",
+      kvkkLink: "Privacy notice",
+      liability: "I entrust my child to Make Art Studio during lessons and accept the studio's supervision terms during class.",
+      media: "I allow photos/videos of my child's work to be used on the studio's gallery and social media.",
+    },
+    submit: "Submit registration",
+    submitting: "Submitting…",
+    successTitle: "Thank you!",
+    successMsg: "We've received your registration. The studio will contact you shortly on WhatsApp to confirm days, times and package details.",
+    errGeneric: "Registration failed. Please check the fields and try again.",
+    errNetwork: "Network error. Please try again.",
+  },
+  ru: {
+    title: "Форма записи",
+    subtitle: "Запишите ребёнка на рисование, рукоделие или шахматы. Данные используются только для записи и связи.",
+    back: "На главную",
+    optional: "необязательно",
+    language: "Язык",
+    sections: { parent: "Родитель / опекун", child: "Данные ребёнка", enrollment: "Выбор занятия", consent: "Согласия" },
+    f: {
+      parentName: "Имя и фамилия", parentIdNo: "Удостоверение / паспорт", relationship: "Кем приходится",
+      parentEmail: "Email", parentPhone: "Телефон WhatsApp", parentAddress: "Адрес",
+      childName: "Имя и фамилия ребёнка", childBirthDate: "Дата рождения", childGender: "Пол",
+      childHealthNotes: "Здоровье / аллергии", emergencyContact: "Контакт на случай экстренной ситуации (имя, телефон)",
+      branch: "Занятие", package: "Пакет", message: "Ваше сообщение",
+    },
+    rel: { mother: "Мама", father: "Папа", guardian: "Опекун" },
+    gender: { male: "Мальчик", female: "Девочка", other: "Другое" },
+    branch: { painting: "Живопись и рисунок", chess: "Шахматы", crafts: "Прикладное творчество", individual: "Индивидуальное занятие" },
+    selectPlaceholder: "Выберите…",
+    lessons: "занятий", perLesson: "за занятие",
+    consent: {
+      kvkk: "Я даю согласие на обработку моих и детских персональных данных для записи и связи в соответствии с турецким законом о защите данных (KVKK).",
+      kvkkLink: "Уведомление о конфиденциальности",
+      liability: "Я доверяю ребёнка студии Make Art Studio на время занятий и принимаю условия присмотра студии во время занятия.",
+      media: "Я разрешаю использовать фото/видео работ моего ребёнка в галерее и соцсетях студии.",
+    },
+    submit: "Отправить заявку",
+    submitting: "Отправка…",
+    successTitle: "Спасибо!",
+    successMsg: "Мы получили вашу заявку. Студия свяжется с вами в WhatsApp, чтобы подтвердить дни, время и детали пакета.",
+    errGeneric: "Не удалось отправить. Проверьте поля и попробуйте снова.",
+    errNetwork: "Ошибка сети. Попробуйте ещё раз.",
+  },
+};
+
+const emptyForm = {
+  parentName: "", parentIdNo: "", parentRelationship: "" as Relationship | "",
+  parentEmail: "", parentPhone: "", parentAddress: "",
+  childName: "", childBirthDate: "", childGender: "" as Gender | "",
+  childHealthNotes: "", emergencyContact: "",
+  branch: "" as Branch | "", packageId: "", message: "",
+  consentKvkk: false, consentLiability: false, consentMedia: false,
+};
+
+export function RegistrationForm() {
+  const [locale, setLocale] = useState<Locale>("tr");
+  const [form, setForm] = useState({ ...emptyForm });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+  const successHeadingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => setLocale(readLocale()), []);
+  useEffect(() => {
+    if (done) successHeadingRef.current?.focus();
+  }, [done]);
+
+  const t = COPY[locale];
+
+  function switchLocale(l: Locale) {
+    setLocale(l);
+    localStorage.setItem("locale", l);
+    document.cookie = `lang=${l};path=/;max-age=31536000;SameSite=Lax`;
+    window.dispatchEvent(new CustomEvent("localechange", { detail: l }));
+  }
+
+  const canSubmit =
+    !loading &&
+    form.parentName.trim().length >= 2 &&
+    form.parentPhone.trim().length >= 7 &&
+    form.childName.trim().length >= 2 &&
+    !!form.branch &&
+    form.consentKvkk &&
+    form.consentLiability;
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!canSubmit) return;
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, preferredLanguage: locale }),
+      });
+      const data = (await res.json()) as { ok: boolean; error?: string };
+      if (!res.ok || !data.ok) {
+        setError(data.error || t.errGeneric);
+        setLoading(false);
+        return;
+      }
+      setDone(true);
+      setForm({ ...emptyForm });
+    } catch {
+      setError(t.errNetwork);
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="min-h-screen relative">
+      <div className="absolute inset-0 mesh-gradient -z-10" aria-hidden="true" />
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        {/* header */}
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+            {t.back}
+          </Link>
+          <div className="flex gap-1 glass rounded-full p-1" role="group" aria-label={t.language}>
+            {LOCALES.map((l) => (
+              <button
+                key={l}
+                type="button"
+                onClick={() => switchLocale(l)}
+                aria-pressed={l === locale}
+                className={`px-3 py-1 rounded-full text-xs font-semibold uppercase transition-colors ${
+                  l === locale ? "bg-[var(--foreground)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                }`}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {done ? (
+          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[var(--shadow-lg)] border border-[var(--border)] text-center">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-5">
+              <Check className="w-8 h-8 text-emerald-500" aria-hidden="true" />
+            </div>
+            <h1
+              ref={successHeadingRef}
+              tabIndex={-1}
+              className="text-2xl font-bold text-[var(--foreground)] mb-2 focus:outline-none"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {t.successTitle}
+            </h1>
+            <p className="text-[var(--muted)] leading-relaxed">{t.successMsg}</p>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 mt-6 bg-[var(--foreground)] text-white font-semibold px-6 py-3 rounded-full hover:opacity-90 transition-opacity"
+            >
+              {t.back}
+            </Link>
+          </div>
+        ) : (
+          <>
+            <div className="mb-8">
+              <h1 className="text-3xl sm:text-4xl font-bold text-[var(--foreground)] mb-2 tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+                {t.title}
+              </h1>
+              <p className="text-[var(--muted)] leading-relaxed">{t.subtitle}</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-8" aria-busy={loading}>
+              {/* Parent */}
+              <Section title={t.sections.parent}>
+                <Field label={t.f.parentName} required>
+                  <input required value={form.parentName} onChange={(e) => setForm({ ...form, parentName: e.target.value })} className={inputCls} placeholder="Ayşe Yılmaz" />
+                </Field>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field label={t.f.relationship} hint={t.optional}>
+                    <select value={form.parentRelationship} onChange={(e) => setForm({ ...form, parentRelationship: e.target.value as Relationship })} className={inputCls}>
+                      <option value="">{t.selectPlaceholder}</option>
+                      {(Object.keys(t.rel) as Relationship[]).map((k) => (
+                        <option key={k} value={k}>{t.rel[k]}</option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label={t.f.parentIdNo} hint={t.optional}>
+                    <input value={form.parentIdNo} onChange={(e) => setForm({ ...form, parentIdNo: e.target.value })} className={inputCls} />
+                  </Field>
+                </div>
+                <Field label={t.f.parentPhone} required>
+                  <input required type="tel" value={form.parentPhone} onChange={(e) => setForm({ ...form, parentPhone: e.target.value })} className={inputCls} placeholder="+90 5xx xxx xx xx" />
+                </Field>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field label={t.f.parentEmail} hint={t.optional}>
+                    <input type="email" value={form.parentEmail} onChange={(e) => setForm({ ...form, parentEmail: e.target.value })} className={inputCls} />
+                  </Field>
+                  <Field label={t.f.parentAddress} hint={t.optional}>
+                    <input value={form.parentAddress} onChange={(e) => setForm({ ...form, parentAddress: e.target.value })} className={inputCls} />
+                  </Field>
+                </div>
+              </Section>
+
+              {/* Child */}
+              <Section title={t.sections.child}>
+                <Field label={t.f.childName} required>
+                  <input required value={form.childName} onChange={(e) => setForm({ ...form, childName: e.target.value })} className={inputCls} />
+                </Field>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field label={t.f.childBirthDate} hint={t.optional}>
+                    <input type="date" value={form.childBirthDate} onChange={(e) => setForm({ ...form, childBirthDate: e.target.value })} className={inputCls} />
+                  </Field>
+                  <Field label={t.f.childGender} hint={t.optional}>
+                    <select value={form.childGender} onChange={(e) => setForm({ ...form, childGender: e.target.value as Gender })} className={inputCls}>
+                      <option value="">{t.selectPlaceholder}</option>
+                      {(Object.keys(t.gender) as Gender[]).map((k) => (
+                        <option key={k} value={k}>{t.gender[k]}</option>
+                      ))}
+                    </select>
+                  </Field>
+                </div>
+                <Field label={t.f.childHealthNotes} hint={t.optional}>
+                  <input value={form.childHealthNotes} onChange={(e) => setForm({ ...form, childHealthNotes: e.target.value })} className={inputCls} />
+                </Field>
+                <Field label={t.f.emergencyContact} hint={t.optional}>
+                  <input value={form.emergencyContact} onChange={(e) => setForm({ ...form, emergencyContact: e.target.value })} className={inputCls} />
+                </Field>
+              </Section>
+
+              {/* Enrollment */}
+              <Section title={t.sections.enrollment}>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <Field label={t.f.branch} required>
+                    <select required value={form.branch} onChange={(e) => setForm({ ...form, branch: e.target.value as Branch })} className={inputCls}>
+                      <option value="">{t.selectPlaceholder}</option>
+                      {(Object.keys(t.branch) as Branch[]).map((k) => (
+                        <option key={k} value={k}>{t.branch[k]}</option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label={t.f.package} hint={t.optional}>
+                    <select value={form.packageId} onChange={(e) => setForm({ ...form, packageId: e.target.value })} className={inputCls}>
+                      <option value="">{t.selectPlaceholder}</option>
+                      {packages.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.lessons} {LESSON_FORMS[locale](p.lessons)} · {p.pricePerLesson}€/{t.perLesson}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                </div>
+                <Field label={t.f.message} hint={t.optional}>
+                  <textarea rows={3} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className={`${inputCls} resize-none`} />
+                </Field>
+              </Section>
+
+              {/* Consents */}
+              <Section title={t.sections.consent}>
+                <Consent checked={form.consentKvkk} onChange={(v) => setForm({ ...form, consentKvkk: v })} required>
+                  {t.consent.kvkk}{" "}
+                  <Link
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[var(--pink-dark)] underline hover:text-[var(--pink)]"
+                  >
+                    {t.consent.kvkkLink}
+                  </Link>
+                </Consent>
+                <Consent checked={form.consentLiability} onChange={(v) => setForm({ ...form, consentLiability: v })} required>
+                  {t.consent.liability}
+                </Consent>
+                <Consent checked={form.consentMedia} onChange={(v) => setForm({ ...form, consentMedia: v })}>
+                  {t.consent.media}
+                </Consent>
+              </Section>
+
+              {error && <p role="alert" className="text-sm text-red-600 font-medium">{error}</p>}
+
+              <button
+                type="submit"
+                disabled={!canSubmit}
+                className="w-full py-4 bg-[var(--foreground)] hover:opacity-90 text-white font-semibold rounded-full transition-all text-base disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-lg)] inline-flex items-center justify-center gap-2"
+              >
+                {loading && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
+                {loading ? t.submitting : t.submit}
+              </button>
+            </form>
+          </>
+        )}
+      </div>
+    </main>
+  );
+}
+
+const inputCls =
+  "w-full px-4 py-3 rounded-xl border border-[var(--border)] focus-visible:outline-none focus-visible:border-[var(--pink)] focus-visible:ring-2 focus-visible:ring-[var(--pink)]/30 text-sm bg-white/80";
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-3xl p-5 sm:p-7 shadow-[var(--shadow-sm)] border border-[var(--border)] space-y-4">
+      <h2 className="text-sm font-bold uppercase tracking-wide text-[var(--pink-dark)]">{title}</h2>
+      {children}
+    </div>
+  );
+}
+
+function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="block text-xs font-semibold text-[var(--muted)] mb-1.5">
+        {label} {required && <span className="text-[var(--pink-dark)]">*</span>}
+        {hint && <span className="font-normal normal-case"> ({hint})</span>}
+      </span>
+      {children}
+    </label>
+  );
+}
+
+function Consent({ checked, onChange, required, children }: { checked: boolean; onChange: (v: boolean) => void; required?: boolean; children: React.ReactNode }) {
+  return (
+    <label className="flex items-start gap-3 cursor-pointer group">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        required={required}
+        className="mt-0.5 w-5 h-5 rounded accent-[var(--pink-dark)] shrink-0"
+      />
+      <span className="text-sm text-[var(--foreground)]/85 leading-relaxed">
+        {children} {required && <span className="text-[var(--pink-dark)]">*</span>}
+      </span>
+    </label>
+  );
+}

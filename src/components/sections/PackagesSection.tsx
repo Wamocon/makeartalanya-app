@@ -97,7 +97,7 @@ export default function PackagesSection({ t }: PackagesProps) {
               </div>
 
               <motion.a
-                href="#booking"
+                href="/kayit"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 className={`block text-center text-sm font-semibold px-4 py-3 rounded-full transition-all ${

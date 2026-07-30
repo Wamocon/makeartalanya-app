@@ -98,7 +98,7 @@ export default function Navbar({ t, locale, setLocale }: NavbarProps) {
 
           {/* CTA */}
           <motion.a
-            href="#booking"
+            href="/kayit"
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className="hidden sm:inline-flex items-center gap-1.5 bg-[var(--foreground)] text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)]"
@@ -151,7 +151,7 @@ export default function Navbar({ t, locale, setLocale }: NavbarProps) {
                 </motion.a>
               ))}
               <motion.a
-                href="#booking"
+                href="/kayit"
                 onClick={() => setMenuOpen(false)}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

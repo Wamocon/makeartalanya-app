@@ -40,6 +40,35 @@ export const createSubscriptionSchema = z.object({
   notes: z.string().max(500).optional(),
 })
 
+// ── Registration (KVKK) ───────────────────────────────────────────
+const optionalText = (max: number) =>
+  z.string().max(max).optional().or(z.literal(""))
+
+export const registrationSchema = z.object({
+  // Parent / guardian (Veli)
+  parentName: z.string().min(2).max(120),
+  parentIdNo: optionalText(40),
+  parentRelationship: z.enum(["mother", "father", "guardian"]).optional().or(z.literal("")),
+  parentEmail: z.string().email().max(160).optional().or(z.literal("")),
+  parentPhone: z.string().min(7).max(25), // WhatsApp
+  parentAddress: optionalText(300),
+  // Child (Çocuk)
+  childName: z.string().min(2).max(120),
+  childBirthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+  childGender: z.enum(["male", "female", "other"]).optional().or(z.literal("")),
+  childHealthNotes: optionalText(500),
+  emergencyContact: optionalText(120),
+  // Enrollment interest
+  branch: z.enum(["painting", "chess", "crafts", "individual"]),
+  packageId: optionalText(20),
+  preferredLanguage: z.enum(["tr", "en", "ru"]).default("tr"),
+  message: optionalText(1000),
+  // Consents — the two required ones must be literally `true`
+  consentKvkk: z.literal(true),
+  consentLiability: z.literal(true),
+  consentMedia: z.boolean().optional().default(false),
+})
+
 // ── Booking ───────────────────────────────────────────────────────
 export const bookClassSchema = z.object({
   sessionId: z.string().uuid(),

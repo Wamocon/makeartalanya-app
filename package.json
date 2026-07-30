@@ -23,11 +23,16 @@
     "test:update-snapshots": "npx playwright test --update-snapshots"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.18",
+    "@ai-sdk/openai": "^4.0.17",
+    "@ai-sdk/openai-compatible": "^3.0.14",
+    "@ai-sdk/react": "^4.0.37",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.0",
     "@types/three": "^0.184.1",
+    "ai": "^7.0.34",
     "clsx": "^2.1.1",
     "date-fns": "^4.2.1",
     "framer-motion": "^12.39.0",

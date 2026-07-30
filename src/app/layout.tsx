@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/providers/ToastProvider";
+import { ConciergeMount } from "@/components/ai/ConciergeMount";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -53,6 +54,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <ToastProvider>{children}</ToastProvider>
+        <ConciergeMount />
       </body>
     </html>
   );
