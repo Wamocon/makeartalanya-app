@@ -233,36 +233,37 @@ test.describe("Booking API - POST /api/booking", () => {
   });
 });
 
-test.describe("Content API - GET /api/content", () => {
-  test("GET with locale=en returns JSON", async ({ request }) => {
-    const response = await request.get(`${BASE_URL}/api/content?locale=en`);
-    // May return 200 with content or 404 if no overrides exist yet
-    expect([200, 404, 500]).toContain(response.status());
-  });
+// Both routes below hold the service-role key. They must never answer an
+// anonymous caller — the checks assert 401 exactly, not a permissive range,
+// because a range is what let the open endpoints pass unnoticed before.
+test.describe("Content API - /api/content requires an admin session", () => {
+  for (const locale of ["en", "tr", "ru"]) {
+    test(`GET with locale=${locale} is rejected without a session`, async ({ request }) => {
+      const response = await request.get(`${BASE_URL}/api/content?locale=${locale}`);
+      expect(response.status()).toBe(401);
+    });
+  }
 
-  test("GET with locale=tr returns JSON", async ({ request }) => {
-    const response = await request.get(`${BASE_URL}/api/content?locale=tr`);
-    expect([200, 404, 500]).toContain(response.status());
-  });
-
-  test("GET with locale=ru returns JSON", async ({ request }) => {
-    const response = await request.get(`${BASE_URL}/api/content?locale=ru`);
-    expect([200, 404, 500]).toContain(response.status());
-  });
-
-  test("GET without locale param returns error or default", async ({ request }) => {
+  test("GET without locale param is rejected without a session", async ({ request }) => {
     const response = await request.get(`${BASE_URL}/api/content`);
-    expect([200, 400, 404, 500]).toContain(response.status());
+    expect(response.status()).toBe(401);
   });
 
-  test("GET with invalid locale", async ({ request }) => {
+  test("GET with invalid locale is rejected without a session", async ({ request }) => {
     const response = await request.get(`${BASE_URL}/api/content?locale=xx`);
-    expect([200, 400, 404, 500]).toContain(response.status());
+    expect(response.status()).toBe(401);
+  });
+
+  test("POST cannot overwrite landing page copy without a session", async ({ request }) => {
+    const response = await request.post(`${BASE_URL}/api/content`, {
+      data: { locale: "tr", content: { hero: { headline: "injected" } } },
+    });
+    expect(response.status()).toBe(401);
   });
 });
 
-test.describe("Upload API - POST /api/upload", () => {
-  test("upload without auth returns error or requires auth", async ({ request }) => {
+test.describe("Upload API - /api/upload requires an admin session", () => {
+  test("upload is rejected without a session", async ({ request }) => {
     const response = await request.post(`${BASE_URL}/api/upload`, {
       multipart: {
         file: {
@@ -274,11 +275,10 @@ test.describe("Upload API - POST /api/upload", () => {
       },
     });
 
-    // Without proper setup, should not expose server errors
-    expect(response.status()).toBeLessThanOrEqual(500);
+    expect(response.status()).toBe(401);
   });
 
-  test("upload with empty file", async ({ request }) => {
+  test("empty file is rejected without a session", async ({ request }) => {
     const response = await request.post(`${BASE_URL}/api/upload`, {
       multipart: {
         file: {
@@ -290,6 +290,22 @@ test.describe("Upload API - POST /api/upload", () => {
       },
     });
 
-    expect(response.status()).toBeGreaterThanOrEqual(400);
+    expect(response.status()).toBe(401);
+  });
+
+  test("delete is rejected without a session", async ({ request }) => {
+    const response = await request.delete(`${BASE_URL}/api/upload`, {
+      data: { filename: "anything.jpg", bucket: "gallery" },
+    });
+    expect(response.status()).toBe(401);
+  });
+
+  test("a forged admin_session cookie is rejected", async ({ request }) => {
+    const forged = Buffer.from(`not-the-admin:${Date.now()}`).toString("base64");
+    const response = await request.delete(`${BASE_URL}/api/upload`, {
+      headers: { Cookie: `admin_session=${forged}` },
+      data: { filename: "anything.jpg", bucket: "gallery" },
+    });
+    expect(response.status()).toBe(401);
   });
 });

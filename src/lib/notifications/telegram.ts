@@ -7,6 +7,25 @@
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID;
 
+/**
+ * Turns Telegram's error description into the thing you actually have to change.
+ * Without this the log says "Forbidden: the bot can't send messages to the bot"
+ * and someone has to work out that TELEGRAM_ADMIN_CHAT_ID holds the bot's own
+ * @username instead of a chat id — which is the state this project shipped in.
+ */
+function explain(description: string, chatId: string): string | null {
+  if (/can't send messages to the bot/i.test(description)) {
+    return `TELEGRAM_ADMIN_CHAT_ID is "${chatId}", which resolves to the bot itself. It must be the id of the chat that should receive alerts: open Telegram, send the bot a message, then read the numeric id from https://api.telegram.org/bot<token>/getUpdates. For a group, add the bot to it and use the group's (negative) id.`;
+  }
+  if (/chat not found/i.test(description)) {
+    return `TELEGRAM_ADMIN_CHAT_ID "${chatId}" is unknown to the bot. A chat only exists once someone has written to the bot, or the bot has been added to the group.`;
+  }
+  if (/bot was blocked/i.test(description)) {
+    return "The recipient blocked the bot. Unblock it in Telegram, otherwise no alert will ever arrive.";
+  }
+  return null;
+}
+
 async function sendTelegramMessage(chatId: string, text: string): Promise<boolean> {
   if (!BOT_TOKEN) {
     console.warn("[Telegram] TELEGRAM_BOT_TOKEN not set — skipping message");
@@ -27,17 +46,56 @@ async function sendTelegramMessage(chatId: string, text: string): Promise<boolea
       }
     );
 
-    if (!res.ok) {
-      const err = await res.text();
-      console.error("[Telegram] Failed:", err);
+    const body = (await res.json().catch(() => null)) as
+      | { ok?: boolean; description?: string; error_code?: number }
+      | null;
+
+    if (!res.ok || !body?.ok) {
+      const description = body?.description ?? `HTTP ${res.status}`;
+      console.error(`[Telegram] Alert NOT delivered: ${description}`);
+      const hint = explain(description, chatId);
+      if (hint) console.error(`[Telegram] Fix: ${hint}`);
       return false;
     }
 
     return true;
   } catch (err) {
-    console.error("[Telegram] Error:", err);
+    console.error("[Telegram] Alert NOT delivered:", err);
     return false;
   }
+}
+
+/**
+ * Sends a message and reports what happened, so a caller can react instead of
+ * discovering months later that no alert ever arrived. Used by the health check.
+ */
+export async function telegramSelfTest(): Promise<
+  { ok: true } | { ok: false; reason: string }
+> {
+  if (!BOT_TOKEN) return { ok: false, reason: "TELEGRAM_BOT_TOKEN is not set" };
+  if (!ADMIN_CHAT_ID) return { ok: false, reason: "TELEGRAM_ADMIN_CHAT_ID is not set" };
+
+  const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getChat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID }),
+  });
+  const body = (await res.json().catch(() => null)) as
+    | { ok?: boolean; description?: string; result?: { id?: number; type?: string } }
+    | null;
+
+  if (!body?.ok) {
+    const description = body?.description ?? `HTTP ${res.status}`;
+    return { ok: false, reason: explain(description, ADMIN_CHAT_ID) ?? description };
+  }
+  // getChat happily resolves the bot's own username, so check for that too.
+  if (body.result?.type === "private" && String(body.result.id) === BOT_TOKEN.split(":")[0]) {
+    return {
+      ok: false,
+      reason: explain("can't send messages to the bot", ADMIN_CHAT_ID)!,
+    };
+  }
+  return { ok: true };
 }
 
 export async function telegramNotifyAdminNewBooking(booking: {

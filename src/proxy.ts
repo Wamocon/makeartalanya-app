@@ -66,6 +66,7 @@ async function routeRequest(req: NextRequest, pathname: string): Promise<NextRes
     pathname.startsWith("/schedule/") ||
     pathname === "/privacy" ||
     pathname === "/imprint" ||
+    pathname === "/kayit" ||
     pathname.startsWith("/auth/") ||
     pathname.startsWith("/api/schedule/public") ||
     pathname.startsWith("/api/cron/")
@@ -74,7 +75,11 @@ async function routeRequest(req: NextRequest, pathname: string): Promise<NextRes
   }
 
   // Public APIs with rate limiting
-  if (pathname === "/api/booking" || pathname === "/api/enroll") {
+  if (
+    pathname === "/api/booking" ||
+    pathname === "/api/enroll" ||
+    pathname === "/api/register"
+  ) {
     cleanupRateLimitMap();
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown";
     if (isRateLimited(ip, pathname)) {

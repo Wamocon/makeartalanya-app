@@ -54,3 +54,4 @@ e2e/tests/*.spec.ts-snapshots/
 /scripts/*.log
 /dev.log
 /start.log
+.gstack/

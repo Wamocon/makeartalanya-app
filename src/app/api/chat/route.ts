@@ -1,5 +1,5 @@
 import { streamText, convertToModelMessages, type UIMessage } from "ai";
-import { resolveModel, providerConfigured } from "@/lib/ai/provider";
+import { resolveModel, providerConfigured, conciergeEnabled } from "@/lib/ai/provider";
 import { buildSystemPrompt } from "@/lib/ai/prompt";
 import { rateLimit } from "@/lib/rate-limit";
 import type { Locale } from "@/i18n/translations";
@@ -38,6 +38,18 @@ export async function POST(req: Request) {
       {
         error:
           "The assistant is not configured yet. Add AI_API_URL and AI_API_KEY (the DGX endpoint) to .env.local.",
+      },
+      { status: 503 },
+    );
+  }
+
+  // The layout hides the widget when the model would run outside Türkiye, but
+  // the route stays reachable — so it refuses on the same condition.
+  if (!conciergeEnabled()) {
+    return Response.json(
+      {
+        error:
+          "The assistant is disabled: no in-house AI_API_URL is set. Point it at the DGX endpoint, or set CONCIERGE_ALLOW_EXTERNAL_PROVIDER=true once the cross-border transfer has been assessed.",
       },
       { status: 503 },
     );
