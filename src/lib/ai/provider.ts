@@ -18,6 +18,14 @@ function provider(): string {
   return (process.env.AI_PROVIDER ?? "").trim().toLowerCase();
 }
 
+export function providerDisplayName(): string {
+  const selected = provider();
+  if (selected === "openrouter") return "OpenRouter";
+  if (selected === "openai") return "OpenAI";
+  if (selected === "anthropic") return "Anthropic";
+  return usesExternalProvider() ? "the configured overseas AI provider" : "Make Art Studio AI";
+}
+
 /**
  * The base URL we will actually call. AI_API_URL wins; otherwise
  * AI_PROVIDER=openrouter implies OpenRouter's endpoint, so the key alone is
@@ -111,6 +119,11 @@ export function usesExternalProvider(): boolean {
  */
 export function conciergeEnabled(): boolean {
   if (!providerConfigured()) return false;
+  // Local development still presents the provider-specific consent screen and
+  // server-side message checks. Keeping the launcher available here prevents a
+  // missing production compliance switch from making the feature impossible
+  // to design, test or demonstrate locally.
+  if (process.env.NODE_ENV !== "production") return true;
   if (!usesExternalProvider()) return true;
   return process.env.CONCIERGE_ALLOW_EXTERNAL_PROVIDER === "true";
 }

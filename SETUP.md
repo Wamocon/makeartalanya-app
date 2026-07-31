@@ -62,7 +62,46 @@ NEXT_PUBLIC_DEFAULT_LOCALE   = tr
 SUPABASE_DB_PASSWORD         = (from Supabase dashboard → Settings → Database → password)
 SUPABASE_SERVICE_ROLE_KEY    = (from Supabase dashboard → Settings → API → service_role key)
 ADMIN_DASHBOARD_PASSWORD     = (choose a strong password)
+ADMIN_SESSION_SECRET         = (at least 32 random bytes)
 ```
+
+### 2a. AI concierge and KVKK transfer gate
+
+The public assistant is enabled only when a model is configured and its data
+transfer is allowed. Prefer a Türkiye-hosted `AI_API_URL`. For OpenRouter,
+OpenAI, Anthropic or another overseas processor, keep
+`CONCIERGE_ALLOW_EXTERNAL_PROVIDER=false` until the applicable KVKK Article 9
+transfer mechanism (such as the correct standard contract and notification)
+has been completed and the privacy notice has been confirmed by counsel.
+Local development still shows the assistant behind its provider-specific
+consent screen so the complete UI and guardrails can be tested. The production
+build continues to require the explicit flag above for an overseas provider.
+
+The chat API accepts text only, blocks common identifiers/contact details,
+limits context and output, has no tools or database access, and is restricted
+to Make Art Studio information.
+
+### 2b. Mandatory business/legal launch data
+
+Set the following from the trade registry/accountant before launch:
+
+```text
+NEXT_PUBLIC_COMPANY_MERSIS_NO
+NEXT_PUBLIC_COMPANY_TRADE_REGISTRY_NO
+NEXT_PUBLIC_COMPANY_DIRECTOR
+```
+
+If the website will allow a binding order or payment, complete ETBİS
+registration before that functionality goes live. The current forms are
+explicitly non-binding requests and do not take payment.
+
+Apply every Supabase migration through `0019_kvkk_notice_terms_health.sql`
+before deploying the matching application code.
+
+Public package and service tariffs must use Turkish lira (`TL` / `₺`). The old
+euro figures are intentionally no longer published. Add only the studio's
+approved, tax-inclusive TL tariff after it has been confirmed by the business
+and accounting adviser.
 
 ### 3. GitHub Repo erstellen + mit Vercel verbinden
 

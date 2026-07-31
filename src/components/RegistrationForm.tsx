@@ -49,7 +49,7 @@ const COPY: Record<Locale, {
   branch: Record<Branch, string>;
   selectPlaceholder: string;
   lessons: string; perLesson: string;
-  consent: { kvkk: string; kvkkLink: string; liability: string; media: string };
+  consent: { notice: string; noticeLink: string; terms: string; termsLink: string; health: string; media: string };
   submit: string; submitting: string;
   successTitle: string; successMsg: string;
   errGeneric: string; errNetwork: string;
@@ -74,9 +74,11 @@ const COPY: Record<Locale, {
     selectPlaceholder: "Seçiniz…",
     lessons: "ders", perLesson: "ders başına",
     consent: {
-      kvkk: "Kendime ve çocuğuma ait kişisel verilerin, kayıt ve iletişim amacıyla KVKK kapsamında işlenmesini onaylıyorum.",
-      kvkkLink: "Aydınlatma Metni",
-      liability: "Çocuğumu ders süresince Make Art Studio'ya emanet ettiğimi ve stüdyonun ders sırasındaki gözetim koşullarını kabul ediyorum.",
+      notice: "KVKK Aydınlatma Metni'ni okudum ve kayıt talebim için hangi verilerin, hangi amaç ve hukuki sebeple işleneceği konusunda bilgilendirildim.",
+      noticeLink: "Aydınlatma Metni",
+      terms: "Bu formun ödeme yükümlülüğü doğurmayan bir kayıt talebi olduğunu ve hizmet koşulları ile ön bilgilendirmeyi okuduğumu kabul ediyorum.",
+      termsLink: "Ön Bilgilendirme ve Hizmet Koşulları",
+      health: "Yazdığım sağlık/alerji notlarının çocuğumun ders güvenliği amacıyla işlenmesine açık rıza veriyorum. Bu alanı boş bırakabileceğimi biliyorum.",
       media: "Çocuğumun ders çalışmalarına ait fotoğraf/videoların stüdyonun galeri ve sosyal medyasında kullanılmasına izin veriyorum.",
     },
     submit: "Kaydı Gönder",
@@ -106,9 +108,11 @@ const COPY: Record<Locale, {
     selectPlaceholder: "Select…",
     lessons: "lessons", perLesson: "per lesson",
     consent: {
-      kvkk: "I consent to the processing of my and my child's personal data for registration and contact, under Turkish data-protection law (KVKK).",
-      kvkkLink: "Privacy notice",
-      liability: "I entrust my child to Make Art Studio during lessons and accept the studio's supervision terms during class.",
+      notice: "I have read the KVKK Privacy Notice and have been informed which data is processed for my registration request, for what purposes and on which legal grounds.",
+      noticeLink: "Privacy notice",
+      terms: "I understand this is a non-binding registration request with no payment obligation, and I have read the pre-contract information and service terms.",
+      termsLink: "Pre-contract information and service terms",
+      health: "I explicitly consent to the processing of the health/allergy notes I entered solely for my child's safety during class. I understand that I may leave this field blank.",
       media: "I allow photos/videos of my child's work to be used on the studio's gallery and social media.",
     },
     submit: "Submit registration",
@@ -138,9 +142,11 @@ const COPY: Record<Locale, {
     selectPlaceholder: "Выберите…",
     lessons: "занятий", perLesson: "за занятие",
     consent: {
-      kvkk: "Я даю согласие на обработку моих и детских персональных данных для записи и связи в соответствии с турецким законом о защите данных (KVKK).",
-      kvkkLink: "Уведомление о конфиденциальности",
-      liability: "Я доверяю ребёнка студии Make Art Studio на время занятий и принимаю условия присмотра студии во время занятия.",
+      notice: "Я прочитал(а) уведомление KVKK и проинформирован(а), какие данные, для каких целей и на каком основании обрабатываются по моей заявке.",
+      noticeLink: "Уведомление о конфиденциальности",
+      terms: "Я понимаю, что это необязывающая заявка без обязанности платить, и прочитал(а) преддоговорную информацию и условия услуг.",
+      termsLink: "Преддоговорная информация и условия",
+      health: "Я явно соглашаюсь на обработку введённых сведений о здоровье/аллергии только для безопасности ребёнка на занятии. Поле можно оставить пустым.",
       media: "Я разрешаю использовать фото/видео работ моего ребёнка в галерее и соцсетях студии.",
     },
     submit: "Отправить заявку",
@@ -158,7 +164,7 @@ const emptyForm = {
   childName: "", childBirthDate: "", childGender: "" as Gender | "",
   childHealthNotes: "", emergencyContact: "",
   branch: "" as Branch | "", packageId: "", message: "",
-  consentKvkk: false, consentLiability: false, consentMedia: false,
+  privacyNoticeAccepted: false, termsAccepted: false, consentHealth: false, consentMedia: false,
 };
 
 export function RegistrationForm() {
@@ -189,8 +195,9 @@ export function RegistrationForm() {
     form.parentPhone.trim().length >= 7 &&
     form.childName.trim().length >= 2 &&
     !!form.branch &&
-    form.consentKvkk &&
-    form.consentLiability;
+    form.privacyNoticeAccepted &&
+    form.termsAccepted &&
+    (!form.childHealthNotes.trim() || form.consentHealth);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -351,7 +358,7 @@ export function RegistrationForm() {
                       <option value="">{t.selectPlaceholder}</option>
                       {packages.map((p) => (
                         <option key={p.id} value={p.id}>
-                          {p.lessons} {LESSON_FORMS[locale](p.lessons)} · {p.pricePerLesson}€/{t.perLesson}
+                          {p.lessons} {LESSON_FORMS[locale](p.lessons)}
                         </option>
                       ))}
                     </select>
@@ -364,20 +371,28 @@ export function RegistrationForm() {
 
               {/* Consents */}
               <Section title={t.sections.consent}>
-                <Consent checked={form.consentKvkk} onChange={(v) => setForm({ ...form, consentKvkk: v })} required>
-                  {t.consent.kvkk}{" "}
+                <Consent checked={form.privacyNoticeAccepted} onChange={(v) => setForm({ ...form, privacyNoticeAccepted: v })} required>
+                  {t.consent.notice}{" "}
                   <Link
                     href="/privacy"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[var(--pink-dark)] underline hover:text-[var(--pink)]"
                   >
-                    {t.consent.kvkkLink}
+                    {t.consent.noticeLink}
                   </Link>
                 </Consent>
-                <Consent checked={form.consentLiability} onChange={(v) => setForm({ ...form, consentLiability: v })} required>
-                  {t.consent.liability}
+                <Consent checked={form.termsAccepted} onChange={(v) => setForm({ ...form, termsAccepted: v })} required>
+                  {t.consent.terms}{" "}
+                  <Link href="/terms" target="_blank" rel="noopener noreferrer" className="text-[var(--pink-dark)] underline hover:text-[var(--pink)]">
+                    {t.consent.termsLink}
+                  </Link>
                 </Consent>
+                {form.childHealthNotes.trim() && (
+                  <Consent checked={form.consentHealth} onChange={(v) => setForm({ ...form, consentHealth: v })} required>
+                    {t.consent.health}
+                  </Consent>
+                )}
                 <Consent checked={form.consentMedia} onChange={(v) => setForm({ ...form, consentMedia: v })}>
                   {t.consent.media}
                 </Consent>

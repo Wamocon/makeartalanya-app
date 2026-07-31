@@ -308,17 +308,9 @@ test.describe("Booking Form - Package Selection", () => {
     expect(options.length).toBeGreaterThan(1);
   });
 
-  test("package prices are displayed correctly", async ({ page, homePage }) => {
+  test("booking request does not display a foreign-currency sale price", async ({ page, homePage }) => {
     const section = page.locator("#booking");
     await section.scrollIntoViewIfNeeded();
-
-    const packageSelect = section.locator("select").nth(1);
-    const options = await packageSelect.locator("option").allTextContents();
-
-    // Each non-empty option should contain Euro sign
-    const packageOptions = options.filter((o) => o !== "—" && o.trim() !== "");
-    for (const opt of packageOptions) {
-      expect(opt).toContain("€");
-    }
+    await expect(section).not.toContainText("€");
   });
 });

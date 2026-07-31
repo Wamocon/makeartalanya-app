@@ -1,42 +1,9 @@
 import Link from "next/link";
 import { getLocale } from "@/i18n/server";
+import { COMPANY } from "@/lib/legal";
 
 export const metadata = {
   title: "Künye · Imprint | Make Art Studio Alanya",
-};
-
-/**
- * Company details, taken from the vergi levhası of 02.03.2023.
- *
- * The registered seat and the atelier are two different addresses: the company
- * is registered at 226 Nolu Sk., while lessons take place at Sahil Caddesi 165E.
- * Both are listed, because the second one is where visitors actually go and the
- * first one is what the tax office holds on file.
- *
- * Fields left null are not published rather than guessed. Outstanding, all
- * obtainable from the ticaret sicil gazetesi or the accountant:
- *   - mersisNo        (required for commercial websites under Law 6563)
- *   - ticaretSicilNo
- *   - managingDirector
- */
-const COMPANY = {
-  legalName: "Make Art Resim Atölyesi Turizm ve Ticaret Limited Şirketi",
-  registeredSeat: [
-    "Mahmutlar Mah., 226 Nolu Sk.",
-    "Yazar Group Apt., Yazar Apt 2 No: 4/C",
-    "07070 Alanya / Antalya",
-  ],
-  atelier: ["Mahmutlar Mah., Sahil Caddesi 165E", "07070 Alanya / Antalya"],
-  taxOffice: "Alanya",
-  taxNumber: "6111825733",
-  mersisNo: null as string | null,
-  ticaretSicilNo: null as string | null,
-  managingDirector: null as string | null,
-  phone: "+90 551 674 55 15",
-  phoneHref: "+905516745515",
-  email: "info@makeartalanya.com",
-  instagram: "make_art.tr",
-  lastUpdated: "31.07.2026",
 };
 
 const COPY = {
@@ -163,8 +130,8 @@ export default async function ImprintPage() {
                 <Row label={t.taxOffice}>{COMPANY.taxOffice}</Row>
                 <Row label={t.taxNumber}>{COMPANY.taxNumber}</Row>
                 {COMPANY.mersisNo && <Row label={t.mersis}>{COMPANY.mersisNo}</Row>}
-                {COMPANY.ticaretSicilNo && (
-                  <Row label={t.registry}>{COMPANY.ticaretSicilNo}</Row>
+                {COMPANY.tradeRegistryNo && (
+                  <Row label={t.registry}>{COMPANY.tradeRegistryNo}</Row>
                 )}
               </dl>
             </section>

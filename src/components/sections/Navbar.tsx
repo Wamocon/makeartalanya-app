@@ -1,35 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { User } from "lucide-react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import type { Locale } from "@/i18n/translations";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUpRight, Menu, UserRound, X } from "lucide-react";
 import Logo from "@/components/Logo";
+import type { Locale } from "@/i18n/translations";
 
 interface NavbarProps {
   t: { nav: { courses: string; gallery: string; booking: string; about: string; contact: string } };
   locale: Locale;
-  setLocale: (l: Locale) => void;
+  setLocale: (locale: Locale) => void;
 }
 
-const LOCALES: { value: Locale; flag: string; label: string }[] = [
-  { value: "tr", flag: "🇹🇷", label: "TR" },
-  { value: "en", flag: "🇬🇧", label: "EN" },
-  { value: "ru", flag: "🇷🇺", label: "RU" },
-];
+const LOCALES: Locale[] = ["tr", "en", "ru"];
 
 export default function Navbar({ t, locale, setLocale }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
+    const update = () => setScrolled(window.scrollY > 24);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
   }, []);
 
-  const navLinks = [
+  const links = [
     { href: "#courses", label: t.nav.courses },
     { href: "#gallery", label: t.nav.gallery },
     { href: "#about", label: t.nav.about },
@@ -37,133 +34,139 @@ export default function Navbar({ t, locale, setLocale }: NavbarProps) {
   ];
 
   return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-6xl transition-all duration-500 rounded-full px-2 ${
-        scrolled
-          ? "glass-strong shadow-[var(--shadow-lg)]"
-          : "glass shadow-[var(--shadow-sm)]"
-      }`}
-    >
-      <div className="h-14 flex items-center justify-between px-4 sm:px-5">
-        {/* Logo */}
-        <motion.a
-          href="/"
-          className="flex items-center group"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          <Logo size={48} variant="full" />
-        </motion.a>
+    <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5 sm:pt-5">
+      <motion.div
+        initial={{ opacity: 0, y: -18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+        className={`mx-auto max-w-7xl rounded-[1.15rem] border px-3 transition-all duration-300 sm:px-4 ${
+          scrolled
+            ? "border-black/10 bg-[#f8f7f4]/92 shadow-[0_20px_60px_rgba(15,12,21,0.12)] backdrop-blur-2xl"
+            : "border-white/25 bg-[#17131e]/28 text-white shadow-[0_18px_70px_rgba(0,0,0,0.12)] backdrop-blur-xl"
+        }`}
+      >
+        <div className="flex h-16 items-center justify-between gap-4">
+          <a href="#hero" aria-label="Make Art Studio" className="flex shrink-0 items-center gap-3">
+            <span className="grid size-10 place-items-center overflow-hidden rounded-xl bg-white shadow-sm">
+              <Logo size={34} variant="mark" className="rounded-lg" />
+            </span>
+            <span className="hidden leading-none min-[440px]:block">
+              <span className="block text-sm font-extrabold tracking-[-0.025em]">MAKE ART</span>
+              <span className={`mt-1 block text-[0.55rem] font-bold uppercase tracking-[0.24em] ${scrolled ? "text-black/42" : "text-white/54"}`}>
+                Studio Alanya
+              </span>
+            </span>
+          </a>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-0.5 bg-white/40 rounded-full p-1">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="relative px-4 py-2 text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors rounded-full hover:bg-white/60"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="flex items-center gap-2">
-          {/* Language Switcher */}
-          <div className="hidden sm:flex items-center gap-0.5 bg-white/60 border border-[var(--border)] rounded-full p-1">
-            {LOCALES.map((l) => (
-              <button
-                key={l.value}
-                onClick={() => setLocale(l.value)}
-                className={`text-[11px] px-2.5 py-1.5 rounded-full transition-all font-semibold ${
-                  locale === l.value
-                    ? "bg-[var(--foreground)] text-white shadow-sm"
-                    : "text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-white/60"
+          <nav aria-label="Primary navigation" className="hidden items-center gap-1 lg:flex">
+            {links.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className={`rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-colors ${
+                  scrolled ? "text-black/62 hover:bg-black/[0.045] hover:text-black" : "text-white/72 hover:bg-white/10 hover:text-white"
                 }`}
               >
-                {l.label}
-              </button>
+                {link.label}
+              </a>
             ))}
-          </div>
+          </nav>
 
-          {/* Login */}
-          <Link href="/auth/login">
-            <span className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/60 border border-[var(--border)] text-[var(--muted)] hover:text-[var(--foreground)] hover:bg-white transition-all">
-              <User className="w-4 h-4" />
-            </span>
-          </Link>
-
-          {/* CTA */}
-          <motion.a
-            href="/kayit"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="hidden sm:inline-flex items-center gap-1.5 bg-[var(--foreground)] text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-lg)]"
-          >
-            {t.nav.booking}
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </motion.a>
-
-          {/* Hamburger */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden p-2 rounded-full hover:bg-white/60 transition-colors"
-            aria-label="Toggle menu"
-          >
-            <svg className="w-5 h-5 text-[var(--foreground)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {menuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="md:hidden absolute top-full left-0 right-0 mt-3 glass-strong rounded-3xl shadow-[var(--shadow-xl)] overflow-hidden"
-          >
-            <div className="px-3 pb-4 pt-3 flex flex-col gap-1">
-              {navLinks.map((link, i) => (
-                <motion.a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="text-sm font-medium text-[var(--foreground)] py-3 px-4 rounded-2xl hover:bg-[var(--pink-light)]/60 transition-colors"
+          <div className="flex items-center gap-1.5">
+            <div className={`hidden items-center rounded-xl border p-1 sm:flex ${scrolled ? "border-black/8 bg-black/[0.035]" : "border-white/15 bg-white/[0.07]"}`}>
+              {LOCALES.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  aria-current={locale === item ? "true" : undefined}
+                  onClick={() => setLocale(item)}
+                  className={`min-h-9 min-w-9 rounded-lg px-2 text-[0.66rem] font-extrabold uppercase tracking-[0.08em] transition-colors ${
+                    locale === item
+                      ? scrolled
+                        ? "bg-white text-[var(--foreground)] shadow-sm"
+                        : "bg-white text-[#17131e] shadow-sm"
+                      : scrolled
+                        ? "text-black/45 hover:text-black"
+                        : "text-white/52 hover:text-white"
+                  }`}
                 >
-                  {link.label}
-                </motion.a>
+                  {item}
+                </button>
               ))}
-              <motion.a
-                href="/kayit"
-                onClick={() => setMenuOpen(false)}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="mt-2 text-center bg-[var(--foreground)] text-white text-sm font-semibold px-5 py-3 rounded-full"
-              >
-                {t.nav.booking}
-              </motion.a>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.header>
+
+            <Link
+              href="/auth/login"
+              aria-label="Student login"
+              className={`grid size-11 place-items-center rounded-xl border transition-colors ${
+                scrolled ? "border-black/10 text-black/62 hover:bg-black/[0.045] hover:text-black" : "border-white/18 text-white/72 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <UserRound aria-hidden="true" className="size-[1.05rem]" strokeWidth={1.8} />
+            </Link>
+
+            <Link
+              href="/kayit"
+              className={`hidden min-h-11 items-center gap-2 rounded-xl px-4 text-xs font-extrabold transition-colors md:flex ${
+                scrolled ? "bg-[var(--foreground)] text-white hover:bg-[#302a39]" : "bg-white text-[#17131e] hover:bg-white/88"
+              }`}
+            >
+              {t.nav.booking}
+              <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={2} />
+            </Link>
+
+            <button
+              type="button"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((open) => !open)}
+              className={`grid size-11 place-items-center rounded-xl border lg:hidden ${
+                scrolled ? "border-black/10 text-black" : "border-white/18 text-white"
+              }`}
+            >
+              {menuOpen ? <X aria-hidden="true" className="size-5" /> : <Menu aria-hidden="true" className="size-5" />}
+            </button>
+          </div>
+        </div>
+
+        <AnimatePresence>
+          {menuOpen ? (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden lg:hidden"
+            >
+              <nav className={`grid gap-1 border-t py-3 ${scrolled ? "border-black/8" : "border-white/14"}`}>
+                {links.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    className={`rounded-xl px-4 py-3 text-sm font-semibold ${scrolled ? "hover:bg-black/[0.04]" : "hover:bg-white/10"}`}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+                <div className="mt-2 flex gap-2 sm:hidden">
+                  {LOCALES.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      onClick={() => setLocale(item)}
+                      className={`min-h-11 flex-1 rounded-xl border text-xs font-bold uppercase ${
+                        locale === item ? "border-[var(--pink)] bg-[var(--pink)] text-white" : scrolled ? "border-black/10" : "border-white/18"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </nav>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </motion.div>
+    </header>
   );
 }

@@ -4,6 +4,9 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { type Locale } from "@/i18n/translations";
+import { SectionHeading } from "@/components/sections/SectionHeading";
+import { PaintedBackdrop } from "@/components/sections/PaintedBackdrop";
+import { CircleCheckBig } from "lucide-react";
 
 interface BookingProps {
   t: {
@@ -16,6 +19,8 @@ interface BookingProps {
       submit: string;
       consent: string;
       privacy: string;
+      nonBinding: string;
+      terms: string;
       success: string;
       errorGeneric: string;
       errorNetwork: string;
@@ -39,7 +44,8 @@ export default function BookingSection({ t, locale }: BookingProps) {
     phone: "",
     language: locale,
     isTrial: false,
-    consentKvkk: false,
+    privacyNoticeAccepted: false,
+    termsAccepted: false,
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -68,7 +74,8 @@ export default function BookingSection({ t, locale }: BookingProps) {
         phone: "",
         language: locale,
         isTrial: false,
-        consentKvkk: false,
+        privacyNoticeAccepted: false,
+        termsAccepted: false,
       });
     } catch {
       setError(t.booking.errorNetwork);
@@ -78,39 +85,29 @@ export default function BookingSection({ t, locale }: BookingProps) {
   }
 
   return (
-    <section id="booking" className="py-24 sm:py-32 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--blue-light)] via-white to-[var(--background)]" />
+    <section id="booking" className="painted-section painted-section--rose relative overflow-hidden py-24 sm:py-32 lg:py-40">
+      <PaintedBackdrop tone="rose" composition="palette" />
+      <div className="future-grid absolute inset-0 opacity-45" aria-hidden="true" />
+      <div className="absolute -right-32 top-24 size-96 rounded-full bg-[var(--blue)]/14 blur-[110px]" aria-hidden="true" />
       
       <motion.div
         initial={{ opacity: 0.9, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="max-w-2xl mx-auto px-4 sm:px-6 relative"
+        className="relative z-[1] mx-auto max-w-5xl px-5 sm:px-8 lg:px-10"
       >
-        <div className="text-center mb-10">
-          <div className="section-badge mx-auto justify-center">{t.booking.badge}</div>
-          <h2
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--foreground)] leading-[1.15] tracking-tight"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            {t.booking.headline.split("\n").map((line, i) => (
-              <span key={i} className={i === 1 ? "block bg-gradient-to-r from-[var(--pink-dark)] to-[var(--pink)] bg-clip-text text-transparent" : "block"}>
-                {line}
-              </span>
-            ))}
-          </h2>
-        </div>
+        <SectionHeading label={t.booking.badge} title={t.booking.headline} align="center" className="mb-14" />
 
-        <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-[var(--shadow-lg)] border border-[var(--border)]">
+        <div className="future-surface relative overflow-hidden rounded-[1.75rem] p-5 sm:p-8 lg:p-10">
+          <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,var(--pink),var(--blue))]" aria-hidden="true" />
           {submitted ? (
-            <div className="text-center py-8">
-              <div className="text-5xl mb-4">🎉</div>
+            <div className="py-10 text-center">
+              <CircleCheckBig aria-hidden="true" className="mx-auto mb-5 size-12 text-[var(--pink-dark)]" strokeWidth={1.45} />
               <p className="text-lg font-medium text-[var(--foreground)]">{t.booking.success}</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="mx-auto grid max-w-3xl gap-5 sm:grid-cols-2">
               <div>
                 <label className="block text-xs font-semibold text-[var(--muted)] mb-1.5 uppercase tracking-wide">
                   {t.booking.name} *
@@ -120,7 +117,7 @@ export default function BookingSection({ t, locale }: BookingProps) {
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)]"
+                  className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-white px-4 text-sm transition-colors focus:border-[var(--pink)] focus:outline-none"
                   placeholder="Anna Müller"
                 />
               </div>
@@ -134,19 +131,19 @@ export default function BookingSection({ t, locale }: BookingProps) {
                   type="tel"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)]"
+                  className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-white px-4 text-sm transition-colors focus:border-[var(--pink)] focus:outline-none"
                   placeholder="+90 5xx xxx xx xx"
                 />
               </div>
 
-              <div>
+              <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-[var(--muted)] mb-1.5 uppercase tracking-wide">
                   {t.booking.language}
                 </label>
                 <select
                   value={form.language}
                   onChange={(e) => setForm({ ...form, language: e.target.value as Locale })}
-                  className="w-full px-4 py-3 rounded-xl border border-[var(--border)] focus:outline-none focus:border-[var(--pink)] text-sm bg-[var(--background)]"
+                  className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-white px-4 text-sm transition-colors focus:border-[var(--pink)] focus:outline-none"
                 >
                   {LANGUAGES.map((l) => (
                     <option key={l.value} value={l.value}>{l.label}</option>
@@ -155,7 +152,7 @@ export default function BookingSection({ t, locale }: BookingProps) {
               </div>
 
               {/* Trial class option */}
-              <label className="flex items-center gap-3 p-3 rounded-xl border border-[var(--border)] bg-[var(--background)] cursor-pointer hover:border-[var(--pink)] transition-colors">
+              <label className="flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--border)] bg-white p-4 transition-colors hover:border-[var(--pink)] sm:col-span-2">
                 <input
                   type="checkbox"
                   checked={form.isTrial}
@@ -172,12 +169,12 @@ export default function BookingSection({ t, locale }: BookingProps) {
                 </div>
               </label>
 
-              <label className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 text-sm leading-relaxed text-[var(--muted)]">
+              <label className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-white p-4 text-sm leading-relaxed text-[var(--muted)] sm:col-span-2">
                 <input
                   required
                   type="checkbox"
-                  checked={form.consentKvkk}
-                  onChange={(e) => setForm({ ...form, consentKvkk: e.target.checked })}
+                  checked={form.privacyNoticeAccepted}
+                  onChange={(e) => setForm({ ...form, privacyNoticeAccepted: e.target.checked })}
                   className="mt-0.5 size-4 shrink-0 rounded accent-[#DCA8B2]"
                 />
                 <span>
@@ -194,16 +191,39 @@ export default function BookingSection({ t, locale }: BookingProps) {
                 </span>
               </label>
 
+              <label className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-white p-4 text-sm leading-relaxed text-[var(--muted)] sm:col-span-2">
+                <input
+                  required
+                  type="checkbox"
+                  checked={form.termsAccepted}
+                  onChange={(e) => setForm({ ...form, termsAccepted: e.target.checked })}
+                  className="mt-0.5 size-4 shrink-0 rounded accent-[#DCA8B2]"
+                />
+                <span>
+                  {locale === "tr"
+                    ? "Bağlayıcı olmayan rezervasyon talebine ilişkin ön bilgilendirmeyi okudum:"
+                    : locale === "ru"
+                      ? "Я прочитал(а) информацию об услуге для этого необязывающего запроса:"
+                      : "I have read the service information for this non-binding booking request:"}{" "}
+                  <Link href="/terms" target="_blank" rel="noopener noreferrer" className="font-medium text-[var(--pink-dark)] underline">
+                    {t.booking.terms}
+                  </Link>
+                  <span className="text-[var(--pink-dark)]"> *</span>
+                </span>
+              </label>
+
+              <p className="px-1 text-xs leading-relaxed text-[var(--muted)] sm:col-span-2">{t.booking.nonBinding}</p>
+
               <button
                 type="submit"
-                disabled={loading || !form.consentKvkk}
-                className="w-full py-4 bg-[var(--foreground)] hover:opacity-90 text-white font-semibold rounded-full transition-all text-base disabled:opacity-60 shadow-[var(--shadow-lg)]"
+                disabled={loading || !form.privacyNoticeAccepted || !form.termsAccepted}
+                className="future-button w-full bg-[var(--foreground)] text-white shadow-[var(--shadow-md)] hover:bg-[var(--pink-dark)] disabled:cursor-not-allowed disabled:opacity-50 sm:col-span-2"
               >
                 {loading ? "..." : t.booking.submit}
               </button>
 
               {error && (
-                <p className="text-sm text-red-600 text-center font-medium">{error}</p>
+                <p className="text-center text-sm font-medium text-red-600 sm:col-span-2">{error}</p>
               )}
             </form>
           )}

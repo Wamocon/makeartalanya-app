@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowUpRight, Brush, Palette, Sparkles } from "lucide-react";
 import { HeroMedia } from "@/components/sections/HeroMedia";
+import { OrbitMark } from "@/components/sections/OrbitMark";
 
 interface HeroProps {
   t: {
@@ -17,128 +18,97 @@ interface HeroProps {
   };
 }
 
+const FEATURE_ICONS = [Palette, Sparkles, Brush];
+const HERO_VIDEOS = [
+  "/video/makeart-hero-v2.mp4",
+  "/video/makeart-hero-purple-v2.mp4",
+  "/video/makeart-hero-palette-v2.mp4",
+];
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function Hero({ t }: HeroProps) {
   const lines = t.hero.headline.split("\n");
 
   return (
-    <section
-      id="hero"
-      className="grain relative flex min-h-screen items-center overflow-hidden"
-    >
-      {/* Media background — poster now, real video is a drop-in later */}
-      <HeroMedia poster="/images/hero/hero-art-studio.jpg" alt="Make Art Studio Alanya" />
+    <section id="hero" className="relative flex min-h-[760px] items-end overflow-hidden bg-[#17131e] text-white sm:min-h-screen">
+      <HeroMedia
+        videoSources={HERO_VIDEOS}
+      />
 
-      {/* Aurora glow (below the scrims) */}
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <span
-          className="aurora"
-          style={{ width: "34rem", height: "34rem", top: "-6rem", right: "-4rem", background: "var(--pink-glow)" }}
-        />
-        <span
-          className="aurora"
-          style={{ width: "32rem", height: "32rem", bottom: "-8rem", left: "-6rem", background: "var(--blue-glow)", animationDelay: "-9s" }}
-        />
-      </div>
-      {/* Legibility scrims: strong on the left (behind the copy) + up from the bottom */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
-      <div className="hero-scrim absolute inset-0 -z-10" />
+      <div className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(10,8,14,0.88)_0%,rgba(10,8,14,0.58)_42%,rgba(10,8,14,0.08)_76%)]" />
+      <div className="absolute inset-0 z-[1] bg-[linear-gradient(0deg,rgba(10,8,14,0.94)_0%,rgba(10,8,14,0.18)_55%,rgba(10,8,14,0.12)_100%)]" />
+      <div className="future-grid-dark absolute inset-0 z-[2] opacity-35 [mask-image:linear-gradient(to_bottom,transparent,black)]" aria-hidden="true" />
 
-      <div className="on-dark relative z-10 mx-auto w-full max-w-7xl px-4 pb-20 pt-28 sm:px-6">
-        <div className="max-w-2xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-white/90 backdrop-blur-sm"
-          >
-            <span aria-hidden="true" className="h-2 w-2 animate-pulse rounded-full bg-[var(--pink)]" />
-            {t.hero.badge}
-          </motion.div>
-
-          <h1
-            className="mt-6 text-5xl font-bold leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {lines.map((line, i) => (
-              <motion.span
-                key={i}
-                initial={{ opacity: 0, y: "45%" }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.3 + i * 0.12, ease: EASE }}
-                className={i === 1 ? "block gradient-text-pink" : "block"}
-              >
-                {line}
-              </motion.span>
-            ))}
-          </h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="mt-6 max-w-xl text-lg leading-relaxed text-white/85 sm:text-xl"
-          >
-            {t.hero.sub}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.75 }}
-            className="mt-9 flex flex-col gap-3 sm:flex-row"
-          >
-            <a
-              href="/kayit"
-              className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-base font-semibold text-[#1a1115] shadow-[var(--shadow-xl)] transition-transform hover:scale-[1.03] active:scale-[0.98]"
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-8 pt-32 sm:px-8 sm:pb-10 lg:px-10 lg:pb-12">
+        <div className="grid items-end gap-14 lg:grid-cols-[minmax(0,1.25fr)_minmax(19rem,0.75fr)]">
+          <div className="max-w-4xl">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, rotate: -18 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 0.8, ease: EASE }}
+              className="mb-7 text-[var(--pink)]"
             >
-              {t.hero.cta}
-              <ArrowRight aria-hidden="true" className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </a>
-            <a
-              href="#courses"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-            >
-              {t.hero.ctaSecondary}
-            </a>
-          </motion.div>
+              <OrbitMark />
+            </motion.div>
 
-          {/* Feature chips (painting / chess / crafts) */}
+            <h1 className="font-display text-[clamp(4.5rem,12.5vw,10.5rem)] font-semibold leading-[0.76] tracking-[-0.075em] text-white">
+              {lines.map((line, index) => (
+                <motion.span
+                  key={`${line}-${index}`}
+                  initial={{ opacity: 0, y: 46 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.9, delay: 0.12 + index * 0.1, ease: EASE }}
+                  className={`block ${index === 1 ? "ml-[0.12em] text-[var(--pink)]" : ""}`}
+                >
+                  {line}
+                </motion.span>
+              ))}
+            </h1>
+
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.42, ease: EASE }}
+              className="mt-10 grid max-w-3xl gap-7 border-l border-white/20 pl-5 sm:grid-cols-[1fr_auto] sm:items-end sm:pl-7"
+            >
+              <p className="max-w-xl text-base leading-7 text-white/72 sm:text-lg sm:leading-8">{t.hero.sub}</p>
+              <div className="flex flex-col gap-2.5 sm:min-w-56">
+                <a href="/kayit" className="future-button bg-white text-[#17131e] hover:bg-[var(--pink)] hover:text-white">
+                  {t.hero.cta}
+                  <ArrowUpRight aria-hidden="true" className="size-4" />
+                </a>
+                <a href="#courses" className="future-button border border-white/22 bg-white/[0.07] text-white backdrop-blur-md hover:bg-white/14">
+                  {t.hero.ctaSecondary}
+                  <ArrowDown aria-hidden="true" className="size-4" />
+                </a>
+              </div>
+            </motion.div>
+          </div>
+
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            className="mt-10 flex flex-wrap gap-2.5"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: EASE }}
+            className="hidden border-y border-white/16 lg:block"
           >
-            {t.hero.cards.map((card, i) => (
-              <span
-                key={i}
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/90 backdrop-blur-sm"
-              >
-                <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--pink)]" />
-                {card.title}
-              </span>
-            ))}
+            {t.hero.cards.map((card, index) => {
+              const Icon = FEATURE_ICONS[index] ?? Palette;
+              return (
+                <div key={card.title} className="group grid grid-cols-[3rem_1fr_auto] items-center gap-4 border-b border-white/12 py-5 last:border-b-0">
+                  <span className="grid size-12 place-items-center rounded-xl border border-white/15 bg-white/[0.07] text-[var(--blue)] transition-colors group-hover:border-[var(--blue)]/50 group-hover:bg-[var(--blue)]/10">
+                    <Icon aria-hidden="true" className="size-5" strokeWidth={1.65} />
+                  </span>
+                  <span>
+                    <span className="block text-sm font-bold text-white">{card.title}</span>
+                    <span className="mt-1 block text-xs text-white/48">{card.sub}</span>
+                  </span>
+                  <span className="font-mono text-[0.62rem] text-white/32">0{index + 1}</span>
+                </div>
+              );
+            })}
           </motion.div>
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6 }}
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
-      >
-        <div aria-hidden="true" className="flex h-10 w-6 items-start justify-center rounded-full border-2 border-white/40 p-1.5">
-          <motion.div
-            animate={{ y: [0, 12, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="h-1.5 w-1.5 rounded-full bg-white"
-          />
-        </div>
-      </motion.div>
     </section>
   );
 }

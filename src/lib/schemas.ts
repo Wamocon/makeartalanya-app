@@ -63,10 +63,19 @@ export const registrationSchema = z.object({
   packageId: optionalText(20),
   preferredLanguage: z.enum(["tr", "en", "ru"]).default("tr"),
   message: optionalText(1000),
-  // Consents — the two required ones must be literally `true`
-  consentKvkk: z.literal(true),
-  consentLiability: z.literal(true),
+  // Notice acknowledgment and service terms are separate from optional consent.
+  privacyNoticeAccepted: z.literal(true),
+  termsAccepted: z.literal(true),
+  consentHealth: z.boolean().optional().default(false),
   consentMedia: z.boolean().optional().default(false),
+}).superRefine((data, ctx) => {
+  if (data.childHealthNotes?.trim() && data.consentHealth !== true) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["consentHealth"],
+      message: "Explicit consent is required for optional health data",
+    })
+  }
 })
 
 // ── Booking ───────────────────────────────────────────────────────
@@ -75,7 +84,8 @@ export const quickBookingSchema = z.object({
   phone: z.string().trim().min(7).max(25),
   language: z.enum(["tr", "en", "ru"]).default("tr"),
   isTrial: z.boolean().default(false),
-  consentKvkk: z.literal(true),
+  privacyNoticeAccepted: z.literal(true),
+  termsAccepted: z.literal(true),
 })
 
 export const bookClassSchema = z.object({

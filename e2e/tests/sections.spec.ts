@@ -60,12 +60,13 @@ test.describe("Packages Section", () => {
     await expect(popularBadge.first()).toBeVisible();
   });
 
-  test("package prices are displayed in EUR", async ({ page, homePage }) => {
+  test("package prices follow Turkish-lira disclosure rules", async ({ page, homePage }) => {
     const courses = page.locator("#courses");
     await courses.scrollIntoViewIfNeeded();
 
     const text = await courses.textContent();
-    expect(text).toContain("€");
+    expect(text).not.toContain("€");
+    expect(text).toMatch(/TL|Turkish lira|турецких лирах/i);
   });
 
   test("clicking package CTA scrolls to booking", async ({ page, homePage }) => {
@@ -73,7 +74,7 @@ test.describe("Packages Section", () => {
     await courses.scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
 
-    const ctaButton = courses.getByRole("link", { name: /book|rezerv|бронир|select|seç/i }).first();
+    const ctaButton = courses.getByRole("link", { name: /book|rezerv|kayıt|request|заяв|select|seç/i }).first();
     if (await ctaButton.isVisible()) {
       await ctaButton.click();
       await page.waitForTimeout(800);

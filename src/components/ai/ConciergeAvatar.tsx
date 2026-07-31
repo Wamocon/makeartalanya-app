@@ -1,44 +1,46 @@
 import { cn } from "@/lib/utils";
 
 /**
- * The Make Art Studio concierge mark: a friendly artist's palette with three
- * paint dabs on a soft pink-to-blue brand disc. Reads warm and creative at any
- * size (launcher, header, message).
+ * The concierge mark is a tiny artist's seal: a loaded brush sweeping across
+ * a palette. It deliberately avoids the generic robot/support-bubble look and
+ * remains readable at launcher, header and message-avatar sizes.
  */
 export function ConciergeAvatar({ className }: { className?: string }) {
   return (
     <span
-      aria-hidden
+      aria-hidden="true"
       className={cn(
-        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full",
+        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#fffaf2] text-[#241c1d]",
         className,
       )}
     >
-      <svg viewBox="0 0 48 48" className="size-full" fill="none">
-        <circle cx="24" cy="24" r="24" fill="url(#mac_disc)" />
-        {/* soft top light */}
-        <circle cx="24" cy="24" r="24" fill="url(#mac_glow)" />
-        {/* palette body */}
+      <svg viewBox="0 0 64 64" className="size-full" fill="none">
+        <circle cx="32" cy="32" r="30" fill="#FFF9F0" stroke="currentColor" strokeWidth="2" />
         <path
-          d="M24 12c7.7 0 14 4.9 14 11 0 4-3.3 6.2-6.6 6.2-2 0-3.2-.8-4.4-.8-1 0-1.8.7-1.8 1.8 0 .8.5 1.4.5 2.4 0 2-1.9 3.2-4 3.2-7.2 0-13.7-5.9-13.7-13C8 17.4 15.5 12 24 12Z"
-          fill="#ffffff"
+          d="M18 42.5c2.8 5.2 8.1 8.3 14.1 8.3 8.9 0 16.1-7.1 16.1-15.8 0-3.4-1.1-6.6-3.1-9.2-2.8-3.6-8.5-2.7-10.1 1.6-.7 1.9-2.4 3.2-4.4 3.4-3.9.3-7.2 1.7-9.7 4.1"
+          fill="#F7EDE4"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
         />
-        {/* thumb hole */}
-        <circle cx="24.5" cy="30.4" r="2.3" fill="url(#mac_disc)" />
-        {/* paint dabs */}
-        <circle cx="16.6" cy="21.4" r="2.2" fill="#E8A0B0" />
-        <circle cx="23" cy="18.4" r="2.2" fill="#8CB8D9" />
-        <circle cx="29.6" cy="20.6" r="2.2" fill="#F3B24A" />
-        <defs>
-          <linearGradient id="mac_disc" x1="6" y1="6" x2="42" y2="42" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#E8A0B0" />
-            <stop offset="1" stopColor="#8CB8D9" />
-          </linearGradient>
-          <radialGradient id="mac_glow" cx="0.5" cy="0.26" r="0.72" gradientUnits="objectBoundingBox">
-            <stop offset="0" stopColor="#ffffff" stopOpacity="0.5" />
-            <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
-          </radialGradient>
-        </defs>
+        <circle cx="40.8" cy="32" r="2.5" fill="#8CB8D9" />
+        <circle cx="42.4" cy="39.3" r="2.5" fill="#D9A13A" />
+        <circle cx="35.6" cy="44" r="2.5" fill="#E86D87" />
+        <path
+          d="M18.5 43.4c2.7-.6 5-2.2 6.5-4.6 1.1-1.8 1.5-3.6 1.1-5.5l-5.6 1.2-4.2 5.1c-.9 1.1.7 4.1 2.2 3.8Z"
+          fill="#E86D87"
+        />
+        <path
+          d="m22.7 34.1 4.2 3.8L47.8 14c1.2-1.4 3.3-1.5 4.6-.3 1.3 1.2 1.4 3.2.2 4.5L30.3 40.7l-4.6-4.2-3-2.4Z"
+          fill="#241C1D"
+        />
+        <path d="m46.3 15.8 4.3 3.8" stroke="#FFF9F0" strokeWidth="1.5" strokeLinecap="round" />
+        <path
+          d="M15.8 45.3c3.8-.3 7.4-2.1 9.8-5"
+          stroke="#241C1D"
+          strokeWidth="1.7"
+          strokeLinecap="round"
+        />
       </svg>
     </span>
   );

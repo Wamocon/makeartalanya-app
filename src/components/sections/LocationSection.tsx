@@ -1,6 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { ExternalMap } from "@/components/privacy/ExternalMap";
+import { SectionHeading } from "@/components/sections/SectionHeading";
+import { PaintedBackdrop } from "@/components/sections/PaintedBackdrop";
 
 interface LocationProps {
   t: {
@@ -12,41 +15,39 @@ interface LocationProps {
       whatsappLabel: string;
       whatsappMessage: string;
       hours: string;
+      mapLoad: string;
+      mapPrivacy: string;
+      mapWithdraw: string;
     };
   };
 }
 
 export default function LocationSection({ t }: LocationProps) {
   return (
-    <section id="contact" className="py-24 sm:py-32 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--pink-light)] via-white to-[var(--background)]" />
+    <section id="contact" className="painted-section painted-section--canvas relative overflow-hidden py-24 sm:py-32 lg:py-40">
+      <PaintedBackdrop tone="canvas" composition="ribbons" />
+      <div className="future-grid absolute inset-0 opacity-42" aria-hidden="true" />
+      <div className="absolute -left-28 top-1/3 size-80 rounded-full bg-[var(--pink)]/12 blur-[100px]" aria-hidden="true" />
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
+      <div className="relative z-[1] mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <motion.div
           initial={{ opacity: 0.9, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-14"
+          className="mb-14"
         >
-          <div className="section-badge mx-auto justify-center">{t.location.badge}</div>
-          <h2
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--foreground)] tracking-tight"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            {t.location.headline}
-          </h2>
+          <SectionHeading label={t.location.badge} title={t.location.headline} />
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid gap-5 md:grid-cols-[0.8fr_1.2fr]">
           {/* Info card */}
           <motion.div
             initial={{ opacity: 0.85, x: -16 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="bg-white rounded-3xl p-6 sm:p-8 border border-[var(--border)] shadow-[var(--shadow-md)]"
+            className="future-surface rounded-[1.6rem] p-6 sm:p-8"
           >
             <div className="space-y-6">
               <div className="flex items-start gap-4">
@@ -167,17 +168,12 @@ export default function LocationSection({ t }: LocationProps) {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="rounded-3xl overflow-hidden border border-[var(--border)] shadow-[var(--shadow-md)] min-h-64"
+            className="min-h-[26rem] overflow-hidden rounded-[1.6rem] border border-[var(--border)] bg-white shadow-[var(--shadow-md)]"
           >
-            <iframe
-              src="https://maps.google.com/maps?q=Mahmutlar+Sahil+Caddesi+Alanya+Antalya+Turkey&z=16&output=embed"
-              width="100%"
-              height="100%"
-              style={{ border: 0, minHeight: "280px" }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Make Art Studio Location"
+            <ExternalMap
+              loadLabel={t.location.mapLoad}
+              privacyLabel={t.location.mapPrivacy}
+              withdrawLabel={t.location.mapWithdraw}
             />
           </motion.div>
         </div>

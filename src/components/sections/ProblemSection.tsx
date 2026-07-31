@@ -1,6 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Languages, Palette, Sparkles, UsersRound } from "lucide-react";
+import { SectionHeading } from "@/components/sections/SectionHeading";
+import { PaintedBackdrop } from "@/components/sections/PaintedBackdrop";
 
 interface ProblemSectionProps {
   t: {
@@ -12,95 +15,72 @@ interface ProblemSectionProps {
     };
   };
 }
-
-const containerVariants = {
-  hidden: { opacity: 0.95 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0.85, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } },
-};
+const BENEFIT_ICONS = [Palette, Sparkles, Languages];
+const BENEFIT_TONES = [
+  "border-[#f25c7a]/30 bg-[#f25c7a]/14 text-[#bd3655]",
+  "border-[#13abc5]/30 bg-[#13abc5]/14 text-[#177d8c]",
+  "border-[#8a5bd1]/30 bg-[#8a5bd1]/14 text-[#6740a4]",
+];
 
 export default function ProblemSection({ t }: ProblemSectionProps) {
-  const stats = t.problem.stats;
   return (
-    <section id="why" className="py-24 sm:py-32 relative overflow-hidden">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0)", backgroundSize: "32px 32px" }} />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
-          {/* Left: text */}
+    <section id="why" className="painted-section painted-section--rose relative overflow-hidden py-24 sm:py-32 lg:py-40">
+      <PaintedBackdrop tone="rose" flow="right" composition="burst" />
+      <div className="future-grid absolute inset-0 opacity-55" aria-hidden="true" />
+      <div className="absolute -right-24 top-20 size-80 rounded-full bg-[var(--blue)]/12 blur-[90px]" aria-hidden="true" />
+
+      <div className="relative z-[1] mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <div className="grid gap-14 lg:grid-cols-[0.92fr_1.08fr] lg:gap-24">
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={containerVariants}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-90px" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <motion.div variants={itemVariants} className="section-badge">{t.problem.badge}</motion.div>
-            <motion.h2
-              variants={itemVariants}
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--foreground)] leading-[1.15] mb-8 tracking-tight"
-              style={{ fontFamily: "'Playfair Display', serif" }}
-            >
-              {t.problem.headline.split("\n").map((line, i) => (
-                <span key={i} className={i === 1 ? "block bg-gradient-to-r from-[var(--pink-dark)] to-[var(--pink)] bg-clip-text text-transparent" : "block"}>
-                  {line}
-                </span>
-              ))}
-            </motion.h2>
-            <motion.div variants={containerVariants} className="space-y-3 mt-8">
-              {t.problem.items.map((item, i) => (
-                <motion.div
-                  key={i}
-                  variants={itemVariants}
-                  whileHover={{ x: 4, scale: 1.01 }}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-[var(--border)] shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] transition-shadow"
-                >
-                  <div className="w-12 h-12 rounded-xl bg-[var(--pink-light)] flex items-center justify-center flex-shrink-0">
-                    <span className="text-xl">{item.icon}</span>
-                  </div>
-                  <span className="text-sm sm:text-base font-medium text-[var(--foreground)]">
-                    {item.text}
-                  </span>
-                </motion.div>
-              ))}
-            </motion.div>
+            <SectionHeading label={t.problem.badge} title={t.problem.headline} />
+            <div className="mt-12 flex items-center gap-4 text-[var(--muted)]">
+              <span className="future-icon text-[var(--pink-dark)]"><UsersRound aria-hidden="true" className="size-5" strokeWidth={1.65} /></span>
+              <span className="max-w-xs text-sm leading-6">Make Art Studio · Mahmutlar, Alanya</span>
+            </div>
           </motion.div>
 
-          {/* Right: stats */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={containerVariants}
-            className="grid grid-cols-1 gap-4"
-          >
-            {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                variants={itemVariants}
-                whileHover={{ y: -4, scale: 1.02 }}
-                className="p-6 sm:p-8 rounded-2xl border border-[var(--border)] bg-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-lg)] transition-all group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--pink-light)] to-[var(--blue-light)] flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                    {stat.icon}
-                  </div>
-                  <div>
-                    <div className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-[var(--pink-dark)] to-[var(--blue-dark)] bg-clip-text text-transparent">{stat.value}</div>
-                    <div className="text-sm text-[var(--muted)] font-medium">{stat.label}</div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          <div className="border-t border-[var(--border)]">
+            {t.problem.items.map((item, index) => {
+              const Icon = BENEFIT_ICONS[index] ?? Sparkles;
+              return (
+                <motion.div
+                  key={item.text}
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-70px" }}
+                  transition={{ duration: 0.6, delay: index * 0.08 }}
+                  className="group grid grid-cols-[3rem_1fr_auto] items-center gap-5 border-b border-[var(--border)] py-7 sm:grid-cols-[4rem_1fr_auto] sm:py-9"
+                >
+                  <span className={`inline-flex size-12 items-center justify-center rounded-[0.95rem] border shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] transition-transform group-hover:-rotate-3 group-hover:scale-105 ${BENEFIT_TONES[index]}`}>
+                    <Icon aria-hidden="true" className="size-5" strokeWidth={1.6} />
+                  </span>
+                  <p className="text-base font-semibold leading-6 tracking-[-0.015em] sm:text-xl">{item.text}</p>
+                  <span className="font-mono text-[0.65rem] text-[var(--muted)]/55">0{index + 1}</span>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-20 grid border-y border-[var(--border)] sm:grid-cols-3 lg:mt-28"
+        >
+          {t.problem.stats.map((stat, index) => (
+            <div key={stat.label} className="relative px-2 py-7 sm:px-8 sm:py-9 sm:not-last:border-r sm:not-last:border-[var(--border)]">
+              <span className="font-display text-5xl font-semibold tracking-[-0.055em] text-[var(--foreground)] sm:text-6xl">{stat.value}</span>
+              <span className="mt-2 block max-w-44 text-xs font-bold uppercase leading-5 tracking-[0.14em] text-[var(--muted)]">{stat.label}</span>
+              <span className={`absolute right-4 top-5 size-2 rounded-full ${index === 1 ? "bg-[var(--blue)]" : "bg-[var(--pink)]"}`} aria-hidden="true" />
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

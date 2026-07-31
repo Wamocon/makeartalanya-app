@@ -51,8 +51,8 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: var(--font-playfair), 'Playfair Display', Georgia, serif;
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-pink: var(--pink);
@@ -200,19 +200,21 @@ body {
   animation: shimmer 1.5s infinite;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
+/* Hide scrollbar chrome throughout the app while preserving native scrolling. */
+html,
+body,
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
 }
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--muted);
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
 /* Animation keyframes for non-framer elements */
@@ -290,4 +292,374 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .aurora { animation: none; }
+}
+
+/* Public site v2 — scoped so portal/admin screens keep their existing theme. */
+.public-v2 {
+  --pink: #f36f83;
+  --pink-light: #fff0f2;
+  --pink-dark: #c84359;
+  --pink-glow: rgba(243, 111, 131, 0.28);
+  --blue: #70cbd6;
+  --blue-light: #eaf9fb;
+  --blue-dark: #287c88;
+  --blue-glow: rgba(112, 203, 214, 0.24);
+  --background: #f8f7f4;
+  --foreground: #17131e;
+  --muted: #706a78;
+  --border: rgba(23, 19, 30, 0.13);
+  --card: #ffffff;
+  --glass-bg: rgba(248, 247, 244, 0.84);
+  --glass-border: rgba(255, 255, 255, 0.72);
+  --shadow-sm: 0 1px 0 rgba(23, 19, 30, 0.05), 0 8px 24px rgba(23, 19, 30, 0.04);
+  --shadow-md: 0 1px 0 rgba(23, 19, 30, 0.06), 0 18px 48px rgba(23, 19, 30, 0.07);
+  --shadow-lg: 0 1px 0 rgba(23, 19, 30, 0.08), 0 28px 72px rgba(23, 19, 30, 0.1);
+  --shadow-xl: 0 36px 100px rgba(23, 19, 30, 0.16);
+  --shadow-2xl: 0 50px 130px rgba(23, 19, 30, 0.22);
+  --shadow-pink: 0 22px 60px rgba(243, 111, 131, 0.25);
+  --shadow-blue: 0 22px 60px rgba(112, 203, 214, 0.22);
+  isolation: isolate;
+}
+
+/* Keep the public hero flush with the viewport at every breakpoint. */
+html:has(.public-v2),
+body:has(.public-v2) {
+  background: #17131e;
+}
+
+.public-v2 .future-grid {
+  background-image:
+    linear-gradient(rgba(23, 19, 30, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 19, 30, 0.045) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.public-v2 .future-grid-dark {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.public-v2 .future-surface {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.public-v2 .future-button {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  border-radius: 0.9rem;
+  padding: 0.75rem 1.35rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition: transform 180ms var(--ease-lux), background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.public-v2 .future-button:hover {
+  transform: translateY(-2px);
+}
+
+.public-v2 .future-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.public-v2 .future-icon {
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.74);
+  color: var(--foreground);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* Code-native canvas washes used to replace flat white section backgrounds. */
+.public-v2 .painted-section {
+  position: relative;
+  isolation: isolate;
+  background: var(--paint-paper, #fbf8f4);
+}
+
+.public-v2 .painted-section--rose {
+  --paint-paper: #fff8f5;
+  --paint-primary: rgba(255, 43, 105, 0.38);
+  --paint-secondary: rgba(255, 130, 29, 0.33);
+  --paint-accent: rgba(99, 50, 190, 0.28);
+  --paint-deep: rgba(21, 61, 139, 0.2);
+  --paint-bristle: rgba(207, 35, 94, 0.4);
+}
+
+.public-v2 .painted-section--aqua {
+  --paint-paper: #f4fbff;
+  --paint-primary: rgba(0, 176, 236, 0.38);
+  --paint-secondary: rgba(32, 83, 201, 0.3);
+  --paint-accent: rgba(244, 44, 143, 0.3);
+  --paint-deep: rgba(37, 25, 103, 0.2);
+  --paint-bristle: rgba(0, 112, 171, 0.38);
+}
+
+.public-v2 .painted-section--lilac {
+  --paint-paper: #fcf7ff;
+  --paint-primary: rgba(143, 49, 204, 0.34);
+  --paint-secondary: rgba(245, 46, 151, 0.33);
+  --paint-accent: rgba(0, 180, 225, 0.26);
+  --paint-deep: rgba(42, 32, 117, 0.22);
+  --paint-bristle: rgba(103, 44, 158, 0.38);
+}
+
+.public-v2 .painted-section--canvas {
+  --paint-paper: #fffaf1;
+  --paint-primary: rgba(255, 158, 0, 0.38);
+  --paint-secondary: rgba(255, 57, 91, 0.3);
+  --paint-accent: rgba(0, 171, 220, 0.26);
+  --paint-deep: rgba(69, 39, 142, 0.18);
+  --paint-bristle: rgba(190, 91, 0, 0.38);
+}
+
+.public-v2 .painted-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.public-v2 .painted-backdrop__stroke,
+.public-v2 .painted-backdrop__bristle,
+.public-v2 .painted-backdrop__specks {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+}
+
+.public-v2 .painted-backdrop__stroke {
+  background:
+    linear-gradient(98deg, transparent 0 3%, currentColor 8% 87%, transparent 98%),
+    repeating-linear-gradient(177deg, currentColor 0 7px, transparent 8px 12px);
+  color: var(--paint-primary, rgba(255, 43, 105, 0.35));
+  clip-path: polygon(0 17%, 7% 8%, 19% 13%, 31% 3%, 46% 12%, 61% 5%, 74% 15%, 88% 7%, 100% 18%, 97% 76%, 84% 89%, 69% 80%, 53% 94%, 37% 82%, 20% 92%, 5% 78%);
+  mix-blend-mode: multiply;
+}
+
+.public-v2 .painted-backdrop__stroke--secondary {
+  color: var(--paint-secondary, rgba(255, 130, 29, 0.3));
+}
+
+.public-v2 .painted-backdrop__stroke--accent {
+  color: var(--paint-accent, rgba(0, 176, 236, 0.28));
+}
+
+.public-v2 .painted-backdrop__stroke--deep {
+  color: var(--paint-deep, rgba(45, 31, 119, 0.2));
+}
+
+.public-v2 .painted-backdrop__bristle {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--paint-bristle, rgba(207, 35, 94, 0.34));
+  box-shadow: 0 13px 0 color-mix(in srgb, var(--paint-bristle, #cf235e) 42%, transparent), 0 27px 0 color-mix(in srgb, var(--paint-bristle, #cf235e) 24%, transparent);
+  opacity: 0.58;
+}
+
+.public-v2 .painted-backdrop__specks {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  color: var(--paint-bristle, rgba(207, 35, 94, 0.4));
+  background: currentColor;
+  box-shadow: 28px -17px 0 -2px currentColor, 52px 12px 0 -3px currentColor, 83px -28px 0 2px currentColor, 112px 6px 0 -2px currentColor;
+  opacity: 0.5;
+}
+
+/* Wide diagonal sweeps: generous open center, expressive painted edges. */
+.public-v2 .painted-backdrop--sweep .painted-backdrop__stroke--primary {
+  top: -5%;
+  right: -12%;
+  width: 76%;
+  height: 29%;
+  transform: rotate(-7deg);
+}
+
+.public-v2 .painted-backdrop--sweep .painted-backdrop__stroke--secondary {
+  right: -8%;
+  bottom: 5%;
+  width: 54%;
+  height: 25%;
+  transform: rotate(9deg);
+}
+
+.public-v2 .painted-backdrop--sweep .painted-backdrop__stroke--accent {
+  left: -12%;
+  bottom: -8%;
+  width: 44%;
+  height: 24%;
+  transform: rotate(-10deg);
+}
+
+.public-v2 .painted-backdrop--sweep .painted-backdrop__stroke--deep {
+  right: 8%;
+  top: 24%;
+  width: 28%;
+  height: 13%;
+  transform: rotate(-3deg);
+}
+
+.public-v2 .painted-backdrop--sweep .painted-backdrop__bristle--one { top: 22%; right: -3%; width: 51%; transform: rotate(-5deg); }
+.public-v2 .painted-backdrop--sweep .painted-backdrop__bristle--two { bottom: 18%; left: -4%; width: 34%; transform: rotate(7deg); }
+.public-v2 .painted-backdrop--sweep .painted-backdrop__specks { right: 8%; top: 34%; }
+
+/* Pigment burst: layered paint concentrated in opposing corners. */
+.public-v2 .painted-backdrop--burst .painted-backdrop__stroke--primary {
+  right: -15%;
+  top: 3%;
+  width: 58%;
+  height: 49%;
+  transform: rotate(-14deg);
+}
+
+.public-v2 .painted-backdrop--burst .painted-backdrop__stroke--secondary {
+  left: -14%;
+  bottom: -7%;
+  width: 51%;
+  height: 39%;
+  transform: rotate(12deg);
+}
+
+.public-v2 .painted-backdrop--burst .painted-backdrop__stroke--accent {
+  right: 9%;
+  bottom: 2%;
+  width: 36%;
+  height: 25%;
+  transform: rotate(-8deg);
+}
+
+.public-v2 .painted-backdrop--burst .painted-backdrop__stroke--deep {
+  left: -6%;
+  top: 5%;
+  width: 31%;
+  height: 18%;
+  transform: rotate(6deg);
+}
+
+.public-v2 .painted-backdrop--burst .painted-backdrop__bristle--one { top: 31%; right: -2%; width: 42%; transform: rotate(-11deg); }
+.public-v2 .painted-backdrop--burst .painted-backdrop__bristle--two { bottom: 25%; left: -3%; width: 33%; transform: rotate(9deg); }
+.public-v2 .painted-backdrop--burst .painted-backdrop__specks { right: 11%; top: 44%; }
+
+/* Vertical ribbons: gallery-like bands with more visible pigment variety. */
+.public-v2 .painted-backdrop--ribbons .painted-backdrop__stroke--primary {
+  left: -11%;
+  top: -6%;
+  width: 36%;
+  height: 86%;
+  transform: rotate(5deg);
+}
+
+.public-v2 .painted-backdrop--ribbons .painted-backdrop__stroke--secondary {
+  right: 5%;
+  top: -8%;
+  width: 28%;
+  height: 67%;
+  transform: rotate(-7deg);
+}
+
+.public-v2 .painted-backdrop--ribbons .painted-backdrop__stroke--accent {
+  right: -15%;
+  bottom: -4%;
+  width: 48%;
+  height: 43%;
+  transform: rotate(10deg);
+}
+
+.public-v2 .painted-backdrop--ribbons .painted-backdrop__stroke--deep {
+  left: 33%;
+  bottom: -10%;
+  width: 30%;
+  height: 22%;
+  transform: rotate(-4deg);
+}
+
+.public-v2 .painted-backdrop--ribbons .painted-backdrop__bristle--one { top: 11%; left: -2%; width: 29%; transform: rotate(3deg); }
+.public-v2 .painted-backdrop--ribbons .painted-backdrop__bristle--two { bottom: 24%; right: -1%; width: 37%; transform: rotate(8deg); }
+.public-v2 .painted-backdrop--ribbons .painted-backdrop__specks { left: 8%; top: 52%; }
+
+/* Palette field: independent patches, inspired by thick mixed paint. */
+.public-v2 .painted-backdrop--palette .painted-backdrop__stroke--primary {
+  left: -9%;
+  top: 9%;
+  width: 44%;
+  height: 34%;
+  transform: rotate(-9deg);
+}
+
+.public-v2 .painted-backdrop--palette .painted-backdrop__stroke--secondary {
+  right: -12%;
+  top: 4%;
+  width: 47%;
+  height: 29%;
+  transform: rotate(11deg);
+}
+
+.public-v2 .painted-backdrop--palette .painted-backdrop__stroke--accent {
+  right: 4%;
+  bottom: -6%;
+  width: 38%;
+  height: 31%;
+  transform: rotate(-8deg);
+}
+
+.public-v2 .painted-backdrop--palette .painted-backdrop__stroke--deep {
+  left: 19%;
+  bottom: -8%;
+  width: 35%;
+  height: 22%;
+  transform: rotate(5deg);
+}
+
+.public-v2 .painted-backdrop--palette .painted-backdrop__bristle--one { top: 38%; left: -1%; width: 32%; transform: rotate(-7deg); }
+.public-v2 .painted-backdrop--palette .painted-backdrop__bristle--two { top: 31%; right: -3%; width: 31%; transform: rotate(8deg); }
+.public-v2 .painted-backdrop--palette .painted-backdrop__specks { right: 13%; bottom: 27%; }
+
+.public-v2 .painted-backdrop--right {
+  transform: scaleX(-1);
+}
+
+.public-v2 .painted-backdrop__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.055;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.62' numOctaves='4' seed='7' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='.72'/%3E%3C/svg%3E");
+}
+
+.public-v2 section {
+  content-visibility: visible;
+  contain-intrinsic-size: none;
+}
+
+.public-v2 #hero,
+.public-v2 header {
+  content-visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-v2 *,
+  .public-v2 *::before,
+  .public-v2 *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

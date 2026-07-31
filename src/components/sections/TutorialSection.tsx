@@ -1,6 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { CalendarCheck, Check, DoorOpen, PackageCheck, Palette } from "lucide-react";
+import { SectionHeading } from "@/components/sections/SectionHeading";
+import { PaintedBackdrop } from "@/components/sections/PaintedBackdrop";
 
 interface TutorialSectionProps {
   t: {
@@ -12,102 +15,51 @@ interface TutorialSectionProps {
   };
 }
 
-const containerVariants = {
-  hidden: { opacity: 0.95 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.2 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0.85, y: 18 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const } },
-};
+const STEP_ICONS = [PackageCheck, CalendarCheck, DoorOpen, Palette];
+const STEP_ICON_TONES = [
+  "border-[#ff6f88]/30 bg-[#ff6f88]/16 text-[#bd3655]",
+  "border-[#12aeca]/30 bg-[#12aeca]/16 text-[#147b89]",
+  "border-[#8b5bd6]/30 bg-[#8b5bd6]/15 text-[#6840aa]",
+  "border-[#f49b18]/30 bg-[#f49b18]/17 text-[#a76708]",
+];
 
 export default function TutorialSection({ t }: TutorialSectionProps) {
   return (
-    <section id="how-it-works" className="py-24 sm:py-32 relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--pink-light)]/30 to-transparent" />
+    <section id="how-it-works" className="painted-section painted-section--canvas relative overflow-hidden py-28 sm:py-36 lg:py-44">
+      <PaintedBackdrop tone="canvas" composition="sweep" />
+      <div className="absolute inset-x-0 top-0 h-px bg-[var(--border)]" />
+      <div className="relative z-[1] mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        <div className="grid gap-10 lg:grid-cols-[0.76fr_1.24fr] lg:items-end">
+          <SectionHeading label={t.tutorial.badge} title={t.tutorial.headline} />
+          <p className="max-w-xl text-base leading-7 text-[var(--muted)] lg:justify-self-end">
+            {t.tutorial.steps.map((step) => step.title).join(" · ")}
+          </p>
+        </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
-        {/* Header */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={containerVariants}
-          className="text-center mb-16"
-        >
-          <motion.div variants={itemVariants} className="section-badge">
-            {t.tutorial.badge}
-          </motion.div>
-          <motion.h2
-            variants={itemVariants}
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[var(--foreground)] leading-[1.15] tracking-tight"
-            style={{ fontFamily: "'Playfair Display', serif" }}
-          >
-            {t.tutorial.headline.split("\n").map((line, i) => (
-              <span
-                key={i}
-                className={
-                  i === 1
-                    ? "block bg-gradient-to-r from-[var(--pink-dark)] to-[var(--pink)] bg-clip-text text-transparent"
-                    : "block"
-                }
-              >
-                {line}
-              </span>
-            ))}
-          </motion.h2>
-        </motion.div>
-
-        {/* Steps grid */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          variants={containerVariants}
-          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
-        >
-          {t.tutorial.steps.map((step, i) => (
-            <motion.div
-              key={i}
-              variants={itemVariants}
-              whileHover={{ y: -6, scale: 1.02 }}
-              className="relative group"
-            >
-              {/* Connector line (hidden on first, mobile) */}
-              {i > 0 && (
-                <div className="hidden lg:block absolute top-12 -left-4 lg:-left-6 w-4 lg:w-6 h-0.5 bg-gradient-to-r from-[var(--pink)] to-[var(--pink-dark)] opacity-40" />
-              )}
-
-              <div className="bg-white border border-[var(--border)] rounded-3xl p-6 sm:p-8 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-lg)] transition-all duration-300 h-full flex flex-col">
-                {/* Step number + icon */}
-                <div className="flex items-center justify-between mb-5">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[var(--pink-light)] to-[var(--pink)]/20 flex items-center justify-center">
-                    <span className="text-2xl">{step.icon}</span>
+        <div className="relative mt-16 lg:mt-24">
+          <div className="absolute left-5 right-5 top-6 hidden h-px bg-[linear-gradient(90deg,var(--pink),var(--blue))] opacity-35 md:block" aria-hidden="true" />
+          <div className="grid gap-5 md:grid-cols-4" data-gsap-stagger>
+            {t.tutorial.steps.map((step, index) => {
+              const Icon = STEP_ICONS[index] ?? Check;
+              return (
+                <motion.article
+                  key={step.number}
+                  whileHover={{ y: -5 }}
+                  className="group relative border-t border-[var(--border)] pt-6 md:border-0 md:pt-0"
+                >
+                  <div className="relative z-10 mb-8 flex items-center justify-between md:block">
+                    <span className={`grid size-12 place-items-center rounded-xl border shadow-[var(--shadow-sm)] transition-transform group-hover:-rotate-3 group-hover:scale-105 ${STEP_ICON_TONES[index]}`}>
+                      <Icon aria-hidden="true" className="size-5" strokeWidth={1.6} />
+                    </span>
+                    <span className="font-mono text-[0.66rem] font-bold tracking-[0.16em] text-[var(--muted)] md:mt-5 md:block">{step.number}</span>
                   </div>
-                  <span className="text-4xl font-bold text-[var(--pink)]/30 group-hover:text-[var(--pink)]/60 transition-colors" style={{ fontFamily: "'Playfair Display', serif" }}>
-                    {step.number}
-                  </span>
-                </div>
-
-                {/* Content */}
-                <h3 className="text-lg font-bold text-[var(--foreground)] mb-2 tracking-tight">
-                  {step.title}
-                </h3>
-                <p className="text-sm text-[var(--muted)] leading-relaxed flex-1">
-                  {step.description}
-                </p>
-
-                {/* Bottom accent */}
-                <div className="mt-5 h-1 w-12 rounded-full bg-gradient-to-r from-[var(--pink)] to-[var(--pink-dark)] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+                  <h3 className="max-w-[14rem] text-xl font-bold tracking-[-0.025em]">{step.title}</h3>
+                  <p className="mt-4 text-sm leading-6 text-[var(--muted)]">{step.description}</p>
+                </motion.article>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </section>
   );

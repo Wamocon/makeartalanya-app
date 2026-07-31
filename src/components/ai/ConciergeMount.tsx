@@ -17,7 +17,13 @@ function readLocale(): Locale {
   return "tr";
 }
 
-export function ConciergeMount() {
+export function ConciergeMount({
+  externalProvider,
+  providerName,
+}: {
+  externalProvider: boolean;
+  providerName: string;
+}) {
   const pathname = usePathname();
   const [locale, setLocale] = useState<Locale>("tr");
 
@@ -37,5 +43,11 @@ export function ConciergeMount() {
 
   if (HIDDEN_PREFIXES.some((p) => pathname?.startsWith(p))) return null;
 
-  return <Concierge locale={locale} />;
+  return (
+    <Concierge
+      locale={locale}
+      externalProvider={externalProvider}
+      providerName={providerName}
+    />
+  );
 }

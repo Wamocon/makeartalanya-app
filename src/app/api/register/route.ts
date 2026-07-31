@@ -3,8 +3,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { registrationSchema } from "@/lib/schemas";
 import { notifyAdminNewBooking, telegramNotifyAdminNewBooking } from "@/lib/notifications";
 import { createAdminClient } from "@/lib/supabase/admin";
-
-const CONSENT_VERSION = "2026-07-v1";
+import { PRIVACY_NOTICE_VERSION, TERMS_VERSION } from "@/lib/legal";
 
 export async function POST(req: Request) {
   try {
@@ -54,10 +53,17 @@ export async function POST(req: Request) {
       package_id: d.packageId?.trim() || null,
       preferred_language: d.preferredLanguage,
       message: d.message?.trim() || null,
-      consent_kvkk: d.consentKvkk,
-      consent_liability: d.consentLiability,
+      // Legacy mirrors stay true for old admin/report compatibility. The new
+      // columns below preserve the legally distinct notice and terms records.
+      consent_kvkk: d.privacyNoticeAccepted,
+      consent_liability: d.termsAccepted,
+      privacy_notice_ack: d.privacyNoticeAccepted,
+      privacy_notice_version: PRIVACY_NOTICE_VERSION,
+      terms_ack: d.termsAccepted,
+      terms_version: TERMS_VERSION,
+      consent_health: d.consentHealth,
       consent_media: d.consentMedia ?? false,
-      consent_version: CONSENT_VERSION,
+      consent_version: PRIVACY_NOTICE_VERSION,
       consented_at: new Date().toISOString(),
       consent_ip: ip,
       status: "new",

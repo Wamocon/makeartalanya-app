@@ -1,21 +1,8 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/providers/ToastProvider";
 import { ConciergeMount } from "@/components/ai/ConciergeMount";
-import { conciergeEnabled } from "@/lib/ai/provider";
-
-const inter = Inter({
-  subsets: ["latin", "cyrillic"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin", "cyrillic"],
-  variable: "--font-playfair",
-  display: "swap",
-});
+import { conciergeEnabled, providerDisplayName, usesExternalProvider } from "@/lib/ai/provider";
 
 export const metadata: Metadata = {
   title: "Make Art Studio Alanya | Sanat Kursları · Art Courses · Курсы рисования",
@@ -48,14 +35,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className={`h-full ${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
+    <html lang="tr" className="h-full" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://vnldsyjkhofofellwuiq.supabase.co" />
         <link rel="dns-prefetch" href="https://vnldsyjkhofofellwuiq.supabase.co" />
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <ToastProvider>{children}</ToastProvider>
-        {conciergeEnabled() && <ConciergeMount />}
+        {conciergeEnabled() && (
+          <ConciergeMount
+            externalProvider={usesExternalProvider()}
+            providerName={providerDisplayName()}
+          />
+        )}
       </body>
     </html>
   );

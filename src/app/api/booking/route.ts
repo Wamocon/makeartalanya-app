@@ -3,8 +3,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { notifyAdminNewBooking, telegramNotifyAdminNewBooking } from "@/lib/notifications";
 import { quickBookingSchema } from "@/lib/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
-
-const CONSENT_VERSION = "2026-07-v1";
+import { PRIVACY_NOTICE_VERSION, TERMS_VERSION } from "@/lib/legal";
 
 export async function POST(req: Request) {
   try {
@@ -51,7 +50,11 @@ export async function POST(req: Request) {
       status: "pending",
       message: payload.isTrial ? "TRIAL CLASS REQUEST" : null,
       consent_kvkk: true,
-      consent_version: CONSENT_VERSION,
+      privacy_notice_ack: payload.privacyNoticeAccepted,
+      privacy_notice_version: PRIVACY_NOTICE_VERSION,
+      terms_ack: payload.termsAccepted,
+      terms_version: TERMS_VERSION,
+      consent_version: PRIVACY_NOTICE_VERSION,
       consented_at: new Date().toISOString(),
       consent_ip: ip,
     });

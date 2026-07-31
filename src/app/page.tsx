@@ -102,7 +102,7 @@ export default function Home() {
   return (
     <GsapProvider>
       <LocalBusinessJsonLd />
-      <main className="min-h-screen">
+      <main className="public-v2 min-h-screen bg-[var(--background)] text-[var(--foreground)]">
         <Navbar t={t} locale={locale} setLocale={setLocale} />
         <Hero t={t} />
         <ProblemSection t={t} />

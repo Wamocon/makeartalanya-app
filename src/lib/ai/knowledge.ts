@@ -97,9 +97,9 @@ Sen bir yardımcısın, stüdyonun kayıt sistemi değilsin. Canlı ders program
     },
     {
       topic: "Packages and prices",
-      en: "Lessons are sold in packages, and the more lessons in a package, the lower the price per lesson: a single lesson is 45€ each, and it goes down through larger packages to 32€ per lesson for a 16-lesson package. The 8-lesson package (37€ per lesson) is the most popular, and packages have no expiry date. The first trial lesson is free. For the current package that fits your plan and to enrol, the team will confirm the details, I can point you to the registration form or WhatsApp.",
-      tr: "Dersler paketler hâlinde satılır ve pakette ne kadar çok ders olursa ders başına fiyat o kadar düşer: tek ders 45€, daha büyük paketlerde ders başına 32€'ya (16 derslik paket) kadar iner. En popüler olan 8 derslik pakettir (ders başına 37€) ve paketlerin son kullanma tarihi yoktur. İlk deneme dersi ücretsizdir. Planınıza uygun güncel paket ve kayıt için ekip ayrıntıları teyit eder; sizi kayıt formuna ya da WhatsApp'a yönlendirebilirim.",
-      ru: "Занятия продаются пакетами, и чем больше занятий в пакете, тем ниже цена за занятие: одно занятие стоит 45€, и цена снижается в больших пакетах до 32€ за занятие в пакете на 16 занятий. Самый популярный, пакет на 8 занятий (37€ за занятие), а срок действия у пакетов не ограничен. Первое пробное занятие бесплатное. Актуальный пакет под ваш план и запись команда подтвердит, я могу направить вас к форме записи или в WhatsApp.",
+      en: "Lessons are available as 1, 2, 4, 8, 12 and 16-lesson packages, and packages have no expiry date. The first trial lesson is free. The studio confirms the current tax-inclusive total in Turkish lira before any contract. I can point you to the non-binding registration request or WhatsApp.",
+      tr: "Dersler 1, 2, 4, 8, 12 ve 16 derslik paketler hâlinde sunulur ve paketlerin son kullanma tarihi yoktur. İlk deneme dersi ücretsizdir. Stüdyo, herhangi bir sözleşmeden önce güncel ve vergiler dâhil toplam tutarı Türk lirası olarak teyit eder. Sizi bağlayıcı olmayan kayıt talebine ya da WhatsApp'a yönlendirebilirim.",
+      ru: "Занятия предлагаются пакетами на 1, 2, 4, 8, 12 и 16 уроков без срока действия. Первое пробное занятие бесплатное. До заключения договора студия подтверждает актуальную итоговую цену с налогами в турецких лирах. Я могу направить вас к необязывающей заявке или в WhatsApp.",
     },
     {
       topic: "Free trial lesson",
@@ -109,9 +109,9 @@ Sen bir yardımcısın, stüdyonun kayıt sistemi değilsin. Canlı ders program
     },
     {
       topic: "How to register",
-      en: "To enrol, parents fill in a short registration form on the site with their own details and their child's details, a WhatsApp number so the studio can reach you, and a consent tick (required under Turkish data-protection law, KVKK). Once it is submitted, the studio contacts you to confirm days, times and the package. You can also just message WhatsApp +90 551 674 55 15 and the team will guide you.",
-      tr: "Kayıt için veliler, sitedeki kısa kayıt formunu kendi bilgileri ve çocuklarının bilgileriyle, stüdyonun size ulaşabilmesi için bir WhatsApp numarasıyla ve bir rıza onayıyla (Türk kişisel verilerin korunması kanunu, KVKK gereği zorunlu) doldurur. Form gönderildikten sonra stüdyo gün, saat ve paketi teyit etmek için sizinle iletişime geçer. Dilerseniz doğrudan WhatsApp +90 551 674 55 15'e yazabilirsiniz; ekip size yol gösterir.",
-      ru: "Чтобы записаться, родители заполняют на сайте короткую форму записи со своими данными и данными ребёнка, номером WhatsApp, чтобы студия могла с вами связаться, и отметкой согласия (обязательной по турецкому закону о защите данных, KVKK). После отправки студия свяжется с вами, чтобы подтвердить дни, время и пакет. Также можно просто написать в WhatsApp +90 551 674 55 15, и команда всё подскажет.",
+      en: "To enrol, parents fill in the short registration form with their contact details, their child's details and a WhatsApp number. The form separately records that the KVKK privacy notice and service information were read. Optional health notes or photo/video use have separate, optional explicit-consent choices and are not a condition of service. The studio then contacts you to confirm days, times and the package. You can also message WhatsApp +90 551 674 55 15.",
+      tr: "Kayıt için veliler kısa kayıt formunu kendi iletişim bilgileri, çocuklarının bilgileri ve bir WhatsApp numarasıyla doldurur. Formda KVKK Aydınlatma Metni ile hizmet ön bilgilendirmesinin okunduğu ayrı ayrı kaydedilir. İsteğe bağlı sağlık notları veya fotoğraf/video kullanımı için açık rıza ayrı ve isteğe bağlıdır; hizmetin şartı değildir. Stüdyo daha sonra gün, saat ve paketi teyit etmek için sizinle iletişime geçer. WhatsApp +90 551 674 55 15'e de yazabilirsiniz.",
+      ru: "Для записи родители заполняют короткую форму с контактными данными, данными ребёнка и номером WhatsApp. Отдельно отмечается ознакомление с уведомлением KVKK и информацией об услуге. Явное согласие на необязательные сведения о здоровье или фото/видео запрашивается отдельно и добровольно, оно не является условием услуги. Затем студия подтверждает дни, время и пакет. Также можно написать в WhatsApp +90 551 674 55 15.",
     },
     {
       topic: "Schedule and hours",
@@ -145,9 +145,9 @@ Sen bir yardımcısın, stüdyonun kayıt sistemi değilsin. Canlı ders program
     },
     {
       topic: "Payment",
-      en: "Packages are priced in euros (as shown on the site), and the studio confirms accepted payment methods when you enrol. I cannot take payment here, so to buy a package the team will help you through the registration form or on WhatsApp.",
-      tr: "Paketler euro cinsindendir (sitede gösterildiği gibi) ve kabul edilen ödeme yöntemlerini kayıt sırasında stüdyo teyit eder. Buradan ödeme alamıyorum; bu yüzden bir paket almak için ekip, kayıt formu ya da WhatsApp üzerinden size yardımcı olur.",
-      ru: "Пакеты указаны в евро (как на сайте), а доступные способы оплаты студия подтверждает при записи. Оплату здесь я принять не могу, поэтому для покупки пакета команда поможет вам через форму записи или в WhatsApp.",
+      en: "The studio confirms the current tax-inclusive total in Turkish lira and the accepted payment method before contract. I cannot take payment here; the registration form is only a non-binding request, and the team confirms everything with you directly.",
+      tr: "Stüdyo, sözleşmeden önce güncel ve vergiler dâhil toplam tutarı Türk lirası olarak ve kabul edilen ödeme yöntemini teyit eder. Buradan ödeme alamıyorum; kayıt formu yalnızca bağlayıcı olmayan bir taleptir ve ekip tüm ayrıntıları sizinle doğrudan teyit eder.",
+      ru: "До договора студия подтверждает актуальную итоговую цену с налогами в турецких лирах и способ оплаты. Я не принимаю оплату; форма записи является только необязывающей заявкой, а команда подтверждает все детали напрямую.",
     },
   ],
 };
