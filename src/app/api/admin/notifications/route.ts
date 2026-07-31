@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth-guard";
 import { broadcastNotification, createNotification } from "@/lib/notifications/create";
 import { logAuditEntry } from "@/lib/audit";
 import { notificationBroadcastSchema } from "@/lib/schemas";
+import { actorId } from "@/lib/studio-settings";
 
 export async function POST(request: Request) {
   const auth = await requireAdmin();
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
         body: notifBody,
         link,
         actionText,
-        senderId: auth.user.id,
+        senderId: actorId(auth.user.id) ?? undefined,
       });
       if (!id) {
         return NextResponse.json({ error: "Failed to create notification" }, { status: 500 });
@@ -48,7 +49,7 @@ export async function POST(request: Request) {
       body: notifBody,
       link,
       actionText,
-      senderId: auth.user.id,
+      senderId: actorId(auth.user.id) ?? undefined,
       audience: "all",
     });
 

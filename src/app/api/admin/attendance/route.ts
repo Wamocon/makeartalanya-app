@@ -42,29 +42,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: updateErr.message }, { status: 500 });
     }
 
-    // Deduct from subscription if exists
+    // Deduct from subscription if one is linked.
+    //
+    // The deduction is owned by the `trg_deduct_lesson` BEFORE INSERT trigger on
+    // `attendance`: inserting the row with lesson_deducted = FALSE makes the
+    // trigger bump subscriptions.lessons_used atomically. Do NOT also increment
+    // here — that was the double-charge. The unique index on booking_id makes a
+    // second "mark attended" a no-op rather than a second deduction.
     if (enrollment.subscription_id) {
-      // Insert attendance record
-      await admin.from("attendance").insert({
+      const { error: attErr } = await admin.from("attendance").insert({
         booking_id: enrollment_id,
         subscription_id: enrollment.subscription_id,
         attended_at: now,
-        lesson_deducted: true,
-        deducted_at: now,
+        lesson_deducted: false,
       });
 
-      // Increment lessons_used
-      const { data: sub } = await admin
-        .from("subscriptions")
-        .select("lessons_used")
-        .eq("id", enrollment.subscription_id)
-        .single();
-
-      if (sub) {
+      // 23505 = already marked attended; the lesson was deducted the first time.
+      if (attErr && attErr.code !== "23505") {
+        // Roll the enrollment back so the UI doesn't show "attended" for a class
+        // that was never actually charged.
         await admin
-          .from("subscriptions")
-          .update({ lessons_used: sub.lessons_used + 1 })
-          .eq("id", enrollment.subscription_id);
+          .from("enrollments")
+          .update({ attended_at: null, status: "confirmed" })
+          .eq("id", enrollment_id);
+
+        return NextResponse.json({ error: attErr.message }, { status: 500 });
       }
     }
 
@@ -86,27 +88,33 @@ export async function POST(request: NextRequest) {
       .update({ attended_at: null, status: "confirmed" })
       .eq("id", enrollment_id);
 
-    // Reverse subscription deduction if applicable
+    // Reverse the deduction — but only for rows that were actually deducted.
+    // There is no DELETE trigger on `attendance`, so the refund is manual;
+    // gating it on the deleted rows keeps an un-marking from refunding a lesson
+    // that was never charged.
     if (enrollment.subscription_id) {
-      // Remove attendance record
-      await admin
+      const { data: removed } = await admin
         .from("attendance")
         .delete()
         .eq("booking_id", enrollment_id)
-        .eq("subscription_id", enrollment.subscription_id);
+        .eq("subscription_id", enrollment.subscription_id)
+        .select("id, lesson_deducted");
 
-      // Decrement lessons_used
-      const { data: sub } = await admin
-        .from("subscriptions")
-        .select("lessons_used")
-        .eq("id", enrollment.subscription_id)
-        .single();
+      const refunds = (removed ?? []).filter((r) => r.lesson_deducted).length;
 
-      if (sub && sub.lessons_used > 0) {
-        await admin
+      if (refunds > 0) {
+        const { data: sub } = await admin
           .from("subscriptions")
-          .update({ lessons_used: sub.lessons_used - 1 })
-          .eq("id", enrollment.subscription_id);
+          .select("lessons_used")
+          .eq("id", enrollment.subscription_id)
+          .single();
+
+        if (sub) {
+          await admin
+            .from("subscriptions")
+            .update({ lessons_used: Math.max(0, sub.lessons_used - refunds) })
+            .eq("id", enrollment.subscription_id);
+        }
       }
     }
 

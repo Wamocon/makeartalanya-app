@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { type Locale } from "@/i18n/translations";
 
 interface BookingProps {
@@ -13,6 +14,8 @@ interface BookingProps {
       phone: string;
       language: string;
       submit: string;
+      consent: string;
+      privacy: string;
       success: string;
       errorGeneric: string;
       errorNetwork: string;
@@ -36,6 +39,7 @@ export default function BookingSection({ t, locale }: BookingProps) {
     phone: "",
     language: locale,
     isTrial: false,
+    consentKvkk: false,
   });
 
   async function handleSubmit(e: React.FormEvent) {
@@ -64,6 +68,7 @@ export default function BookingSection({ t, locale }: BookingProps) {
         phone: "",
         language: locale,
         isTrial: false,
+        consentKvkk: false,
       });
     } catch {
       setError(t.booking.errorNetwork);
@@ -167,9 +172,31 @@ export default function BookingSection({ t, locale }: BookingProps) {
                 </div>
               </label>
 
+              <label className="flex items-start gap-3 rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 text-sm leading-relaxed text-[var(--muted)]">
+                <input
+                  required
+                  type="checkbox"
+                  checked={form.consentKvkk}
+                  onChange={(e) => setForm({ ...form, consentKvkk: e.target.checked })}
+                  className="mt-0.5 size-4 shrink-0 rounded accent-[#DCA8B2]"
+                />
+                <span>
+                  {t.booking.consent}{" "}
+                  <Link
+                    href="/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-[var(--pink-dark)] underline hover:text-[var(--pink)]"
+                  >
+                    {t.booking.privacy}
+                  </Link>
+                  <span className="text-[var(--pink-dark)]"> *</span>
+                </span>
+              </label>
+
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !form.consentKvkk}
                 className="w-full py-4 bg-[var(--foreground)] hover:opacity-90 text-white font-semibold rounded-full transition-all text-base disabled:opacity-60 shadow-[var(--shadow-lg)]"
               >
                 {loading ? "..." : t.booking.submit}

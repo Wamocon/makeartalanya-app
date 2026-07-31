@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { requireAdminPage } from "@/lib/auth-guard";
 import { ClipboardCheck } from "lucide-react";
 import AttendanceList from "./AttendanceList";
 import DateNavigator from "./DateNavigator";
@@ -9,7 +9,7 @@ export default async function AdminAttendancePage({
   searchParams: Promise<{ date?: string }>;
 }) {
   const params = await searchParams;
-  const supabase = await createClient();
+  const { admin: supabase } = await requireAdminPage();
 
   // Use date from query or default to today
   const selectedDate = params.date ? new Date(params.date) : new Date();

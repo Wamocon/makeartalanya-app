@@ -10,8 +10,8 @@ interface UnreadCounts {
   refetch: () => Promise<void>;
 }
 
-export function useUnreadCounts(): UnreadCounts {
-  const supabase = createClient();
+export function useUnreadCounts(enabled = true): UnreadCounts {
+  const supabase = useMemo(() => createClient(), []);
   const [notifications, setNotifications] = useState(0);
   const [chat, setChat] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -20,6 +20,11 @@ export function useUnreadCounts(): UnreadCounts {
   const chatChannelId = useMemo(() => `unread-chat-${Math.random().toString(36).slice(2, 10)}`, []);
 
   const fetchCounts = useCallback(async () => {
+    if (!enabled) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const [notifRes, chatRes, userRes] = await Promise.all([
         fetch("/api/notifications/count"),
@@ -35,27 +40,27 @@ export function useUnreadCounts(): UnreadCounts {
         const json = await chatRes.json();
         setChat(json.count ?? 0);
       }
-      if (userRes.data.user) {
-        setUserId(userRes.data.user.id);
-      }
+      setUserId(userRes.data.user?.id ?? null);
     } catch (err) {
       console.error("[useUnreadCounts] fetch failed", err);
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [enabled, supabase]);
 
   useEffect(() => {
+    if (!enabled) return;
+
     fetchCounts();
 
     const handleFocus = () => fetchCounts();
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
-  }, [fetchCounts]);
+  }, [enabled, fetchCounts]);
 
   // Subscribe to realtime changes for notifications and chat messages.
   useEffect(() => {
-    if (!userId) return;
+    if (!enabled || !userId) return;
 
     const notifChannel = supabase
       .channel(notifChannelId)
@@ -94,7 +99,7 @@ export function useUnreadCounts(): UnreadCounts {
       supabase.removeChannel(notifChannel);
       supabase.removeChannel(chatChannel);
     };
-  }, [supabase, userId]);
+  }, [chatChannelId, enabled, notifChannelId, supabase, userId]);
 
   return { notifications, chat, loading, refetch: fetchCounts };
 }

@@ -12,6 +12,14 @@ CREATE INDEX IF NOT EXISTS idx_notifications_user_id_read_at
   ON notifications(user_id, read_at)
   WHERE read_at IS NULL;
 
+-- Sample data from 0006 used type names the application never emits, and they
+-- fail the tightened CHECK below. Normalise onto the vocabulary in
+-- lib/notifications/create.ts first.
+UPDATE notifications SET type = 'class_reminder' WHERE type = 'session_reminder';
+UPDATE notifications SET type = 'sub_expiring'   WHERE type = 'subscription_expiring';
+UPDATE notifications SET type = 'sub_expired'    WHERE type = 'subscription_expired';
+UPDATE notifications SET type = 'sub_low'        WHERE type = 'subscription_low';
+
 -- Allow 'chat_message' and 'broadcast' notification types
 ALTER TABLE notifications DROP CONSTRAINT IF EXISTS notifications_type_check;
 ALTER TABLE notifications ADD CONSTRAINT notifications_type_check

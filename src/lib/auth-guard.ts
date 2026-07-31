@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
+import { verifyAdminSession } from "@/lib/admin-session";
 
 /**
  * Verifies the current request is from an authenticated admin/trainer user.
@@ -27,24 +30,11 @@ export async function requireAdmin(): Promise<
     }
   }
 
-  // Fallback: check legacy admin_session cookie
+  // Fallback: signed admin_session cookie (see lib/admin-session.ts).
   const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get("admin_session");
-  if (sessionCookie?.value) {
-    try {
-      const username = process.env.ADMIN_DASHBOARD_USER;
-      if (username) {
-        const decoded = Buffer.from(sessionCookie.value, "base64").toString();
-        const [sessionUser, timestamp] = decoded.split(":");
-        const sessionAge = Date.now() - Number(timestamp);
-        const maxAge = 8 * 60 * 60 * 1000; // 8 hours
-        if (sessionUser === username && sessionAge <= maxAge) {
-          return { user: { id: "legacy-admin", email: username } };
-        }
-      }
-    } catch {
-      // Invalid cookie — fall through to unauthorized
-    }
+  const session = await verifyAdminSession(cookieStore.get("admin_session")?.value);
+  if (session && session.username === process.env.ADMIN_DASHBOARD_USER) {
+    return { user: { id: "legacy-admin", email: session.username } };
   }
 
   if (!user) {
@@ -52,4 +42,27 @@ export async function requireAdmin(): Promise<
   }
 
   return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
+}
+
+/**
+ * Server-Component flavour of `requireAdmin` — redirects instead of returning a
+ * JSON response, and hands back a service-role client.
+ *
+ * Admin pages must not read through the RLS-scoped client: an admin signed in
+ * via the admin_session cookie has no Supabase JWT, so `is_admin()` is false and
+ * every policy-protected query comes back empty with no error. Pages rendered
+ * that way look like an empty studio rather than a broken one.
+ */
+export async function requireAdminPage() {
+  const auth = await requireAdmin();
+  if (auth.error) redirect("/admin/login");
+
+  const admin = createAdminClient();
+  if (!admin) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY is not configured — admin pages cannot load data.",
+    );
+  }
+
+  return { admin, user: auth.user };
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-guard";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { actorId } from "@/lib/studio-settings";
 
 export async function POST(request: NextRequest) {
   const auth = await requireAdmin();
@@ -32,7 +33,9 @@ export async function POST(request: NextRequest) {
       amount,
       currency: validCurrencies.includes(currency) ? currency : "EUR",
       method: validMethods.includes(method) ? method : "cash",
-      received_by: auth.user.id,
+      // NULL for the shared cookie login — "legacy-admin" is not a UUID and
+      // this column references profiles(id).
+      received_by: actorId(auth.user.id),
       notes: notes || null,
       paid_at: new Date().toISOString(),
     })

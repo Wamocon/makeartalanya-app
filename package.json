@@ -19,6 +19,10 @@
     "test:admin": "npx playwright test e2e/tests/admin.spec.ts",
     "test:visual": "npx playwright test e2e/tests/visual-regression.spec.ts",
     "test:e2e": "npx playwright test e2e/tests/e2e-journeys.spec.ts",
+    "telegram:status": "node scripts/telegram-setup.js status",
+    "telegram:webhook": "node scripts/telegram-setup.js set",
+    "telegram:unhook": "node scripts/telegram-setup.js delete",
+    "telegram:dev": "node scripts/telegram-poll.js",
     "test:report": "npx playwright show-report",
     "test:update-snapshots": "npx playwright test --update-snapshots"
   },

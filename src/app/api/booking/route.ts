@@ -1,24 +1,20 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { rateLimit } from "@/lib/rate-limit";
 import { notifyAdminNewBooking, telegramNotifyAdminNewBooking } from "@/lib/notifications";
+import { quickBookingSchema } from "@/lib/schemas";
+import { createAdminClient } from "@/lib/supabase/admin";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-type BookingPayload = {
-  name?: string;
-  phone?: string;
-  language?: "tr" | "en" | "ru";
-  isTrial?: boolean;
-};
+const CONSENT_VERSION = "2026-07-v1";
 
 export async function POST(req: Request) {
   try {
     // Rate limit: 5 bookings per IP per minute
     const forwarded = req.headers.get("x-forwarded-for");
-    const ip = forwarded?.split(",")[0]?.trim() || "unknown";
-    const { allowed, resetIn } = rateLimit(ip, { maxRequests: 5, windowMs: 60_000 });
+    const ip =
+      forwarded?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
+    const { allowed, resetIn } = rateLimit(`booking:${ip}`, { maxRequests: 5, windowMs: 60_000 });
 
     if (!allowed) {
       return NextResponse.json(
@@ -27,7 +23,8 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+    const supabase = createAdminClient();
+    if (!supabase) {
       return NextResponse.json(
         {
           ok: false,
@@ -38,33 +35,25 @@ export async function POST(req: Request) {
       );
     }
 
-    const payload = (await req.json()) as BookingPayload;
-
-    const guestName = payload.name?.trim() || "";
-    const guestPhone = payload.phone?.trim() || "";
-    const preferredLanguage = payload.language || "tr";
-    const isTrial = payload.isTrial === true;
-
-    if (!guestName || !guestPhone) {
+    const parsed = quickBookingSchema.safeParse(await req.json());
+    if (!parsed.success) {
       return NextResponse.json(
         { ok: false, error: "Please fill in all required fields." },
         { status: 400 }
       );
     }
+    const payload = parsed.data;
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-    });
-
-    const { error } = await supabase.from("bookings").insert({
-      guest_name: guestName,
-      guest_phone: guestPhone,
-      preferred_language: preferredLanguage,
+    const { error } = await supabase.from("legacy_bookings").insert({
+      guest_name: payload.name,
+      guest_phone: payload.phone,
+      preferred_language: payload.language,
       status: "pending",
-      notes: isTrial ? "TRIAL CLASS REQUEST" : null,
+      message: payload.isTrial ? "TRIAL CLASS REQUEST" : null,
+      consent_kvkk: true,
+      consent_version: CONSENT_VERSION,
+      consented_at: new Date().toISOString(),
+      consent_ip: ip,
     });
 
     if (error) {
@@ -75,7 +64,11 @@ export async function POST(req: Request) {
     }
 
     // Fire-and-forget notifications (don't block the response)
-    const notificationData = { guestName: guestName, guestPhone: guestPhone, language: preferredLanguage };
+    const notificationData = {
+      guestName: payload.name,
+      guestPhone: payload.phone,
+      language: payload.language,
+    };
     Promise.allSettled([
       notifyAdminNewBooking(notificationData),
       telegramNotifyAdminNewBooking(notificationData),

@@ -36,7 +36,7 @@ interface Room {
 }
 
 export function useChat(roomId: string | null, userId: string) {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
@@ -184,7 +184,7 @@ export function useChatRooms(userId: string) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, fetchRooms]);
+  }, [channelId, supabase, fetchRooms]);
 
   async function createRoom(targetUserId: string, title?: string) {
     const res = await fetch("/api/chat/rooms", {

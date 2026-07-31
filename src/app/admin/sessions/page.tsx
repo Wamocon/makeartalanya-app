@@ -1,9 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
+import { requireAdminPage } from "@/lib/auth-guard";
 import { CalendarCheck, Clock, Users, X } from "lucide-react";
 import Link from "next/link";
 
 export default async function AdminSessionsPage() {
-  const supabase = await createClient();
+  const { admin: supabase } = await requireAdminPage();
 
   // Fetch upcoming sessions (next 14 days)
   const now = new Date();

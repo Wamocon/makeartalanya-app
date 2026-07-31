@@ -44,18 +44,54 @@ interface Session {
   };
 }
 
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const DAYS_FULL = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+type Locale = "tr" | "en" | "ru";
+
+/** Intl locale tag used for dates and times rendered on this page. */
+const INTL: Record<Locale, string> = { tr: "tr-TR", en: "en-GB", ru: "ru-RU" };
+
+const COPY: Record<Locale, Record<string, string>> = {
+  tr: { all: "Tümü", today: "Bugün", spots: "yer", full: "Dolu", book: "Rezervasyon",
+        waitlist: "Sıraya gir", booked: "Kaydedildi", onWaitlist: "Sıradasınız", failed: "Başarısız" },
+  en: { all: "All", today: "Today", spots: "spots", full: "Full", book: "Book",
+        waitlist: "Waitlist", booked: "Booked", onWaitlist: "On waitlist", failed: "Failed to book" },
+  ru: { all: "Все", today: "Сегодня", spots: "мест", full: "Мест нет", book: "Записаться",
+        waitlist: "В очередь", booked: "Записано", onWaitlist: "В очереди", failed: "Не удалось" },
+};
+
+/** Class-type names are stored per language; fall back to English then Turkish. */
+function typeName(
+  ct: { name_en?: string; name_tr?: string; name_ru?: string } | null | undefined,
+  locale: Locale,
+): string {
+  if (!ct) return "";
+  const byLocale = locale === "tr" ? ct.name_tr : locale === "ru" ? ct.name_ru : ct.name_en;
+  return byLocale || ct.name_en || ct.name_tr || "";
+}
+
+/** Monday-first weekday labels for the active locale, derived from Intl. */
+function weekdayLabels(locale: Locale, style: "short" | "long"): string[] {
+  const fmt = new Intl.DateTimeFormat(INTL[locale], { weekday: style });
+  // 2024-01-01 was a Monday.
+  return Array.from({ length: 7 }, (_, i) =>
+    fmt.format(new Date(Date.UTC(2024, 0, 1 + i))),
+  );
+}
 
 export default function ScheduleView({
   classTypes,
   templates,
   sessions,
+  locale = "en",
 }: {
   classTypes: ClassType[];
   templates: Template[];
   sessions: Session[];
+  locale?: Locale;
 }) {
+  const L = COPY[locale] ?? COPY.en;
+  const intl = INTL[locale] ?? INTL.en;
+  const DAYS = weekdayLabels(locale, "short");
+  const DAYS_FULL = weekdayLabels(locale, "long");
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [weekOffset, setWeekOffset] = useState(0);
 
@@ -107,7 +143,7 @@ export default function ScheduleView({
               : "bg-white border border-[#F0E8EB] text-[#9B8A8F] hover:border-[#DCA8B2]"
           }`}
         >
-          All
+          {L.all}
         </button>
         {classTypes.map((ct) => (
           <button
@@ -124,7 +160,7 @@ export default function ScheduleView({
               className="w-2 h-2 rounded-full"
               style={{ backgroundColor: ct.color }}
             />
-            {ct.name_en}
+            {typeName(ct, locale)}
           </button>
         ))}
       </div>
@@ -138,9 +174,9 @@ export default function ScheduleView({
           <ChevronLeft className="w-5 h-5 text-[#9B8A8F]" />
         </button>
         <span className="text-sm font-medium text-[#2D2327]">
-          {weekDates[0].toLocaleDateString("en", { month: "short", day: "numeric" })}
+          {weekDates[0].toLocaleDateString(intl, { month: "short", day: "numeric" })}
           {" — "}
-          {weekDates[6].toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" })}
+          {weekDates[6].toLocaleDateString(intl, { month: "short", day: "numeric", year: "numeric" })}
         </span>
         <button
           onClick={() => setWeekOffset((w) => w + 1)}
@@ -185,11 +221,11 @@ export default function ScheduleView({
                   {DAYS_FULL[dayIndex]}
                 </span>
                 <span className="text-xs text-[#9B8A8F]">
-                  {dayDate.toLocaleDateString("en", { month: "short", day: "numeric" })}
+                  {dayDate.toLocaleDateString(intl, { month: "short", day: "numeric" })}
                 </span>
                 {isToday && (
                   <span className="px-2 py-0.5 rounded-full bg-[#DCA8B2] text-white text-[10px] font-medium">
-                    Today
+                    {L.today}
                   </span>
                 )}
               </div>
@@ -197,7 +233,7 @@ export default function ScheduleView({
               <div className="space-y-2">
                 {useTemplates
                   ? dayTemplates.map((tmpl) => (
-                      <TemplateCard key={tmpl.id} template={tmpl} />
+                      <TemplateCard key={tmpl.id} template={tmpl} locale={locale} L={L} />
                     ))
                   : daySessions
                       .filter(
@@ -205,7 +241,7 @@ export default function ScheduleView({
                           !selectedType || s.class_types?.slug === selectedType
                       )
                       .map((session) => (
-                        <SessionCard key={session.id} session={session} />
+                        <SessionCard key={session.id} session={session} locale={locale} intl={intl} L={L} />
                       ))}
               </div>
             </motion.div>
@@ -216,7 +252,9 @@ export default function ScheduleView({
   );
 }
 
-function TemplateCard({ template }: { template: Template }) {
+function TemplateCard({
+  template, locale, L,
+}: { template: Template; locale: Locale; L: Record<string, string> }) {
   const ct = template.class_types;
   if (!ct) return null;
 
@@ -227,7 +265,7 @@ function TemplateCard({ template }: { template: Template }) {
         style={{ backgroundColor: ct.color }}
       />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-[#2D2327]">{ct.name_en}</p>
+        <p className="text-sm font-medium text-[#2D2327]">{typeName(ct, locale)}</p>
         <div className="flex items-center gap-3 mt-0.5">
           <span className="flex items-center gap-1 text-xs text-[#9B8A8F]">
             <Clock className="w-3 h-3" />
@@ -235,7 +273,7 @@ function TemplateCard({ template }: { template: Template }) {
           </span>
           <span className="flex items-center gap-1 text-xs text-[#9B8A8F]">
             <Users className="w-3 h-3" />
-            {template.max_capacity || ct.max_capacity} spots
+            {template.max_capacity || ct.max_capacity} {L.spots}
           </span>
           {(ct.age_min || ct.age_max) && (
             <span className="flex items-center gap-1 text-xs text-[#9B8A8F]">
@@ -249,17 +287,20 @@ function TemplateCard({ template }: { template: Template }) {
   );
 }
 
-function SessionCard({ session }: { session: Session }) {
+function SessionCard({
+  session, locale, intl, L,
+}: { session: Session; locale: Locale; intl: string; L: Record<string, string> }) {
   const [booking, setBooking] = useState(false);
   const [booked, setBooked] = useState(false);
+  const [waitlisted, setWaitlisted] = useState<number | null>(null);
   const [error, setError] = useState("");
   const ct = session.class_types;
-  const startTime = new Date(session.starts_at).toLocaleTimeString("en", {
+  const startTime = new Date(session.starts_at).toLocaleTimeString(intl, {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
   });
-  const endTime = new Date(session.ends_at).toLocaleTimeString("en", {
+  const endTime = new Date(session.ends_at).toLocaleTimeString(intl, {
     hour: "2-digit",
     minute: "2-digit",
     hour12: false,
@@ -271,18 +312,26 @@ function SessionCard({ session }: { session: Session }) {
     setBooking(true);
     setError("");
     try {
-      const res = await fetch("/api/enroll", {
+      // A full session goes on the waitlist instead. The button used to say
+      // "Waitlist" but still POSTed to /api/enroll, which answered "Session is
+      // full" — a dead end.
+      const endpoint = isFull ? "/api/waitlist" : "/api/enroll";
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ session_id: session.id }),
       });
       const data = await res.json();
+
       if (res.ok) {
-        setBooked(true);
+        if (isFull) setWaitlisted(data.position ?? 0);
+        else setBooked(true);
       } else if (res.status === 401) {
         window.location.href = `/auth/login?redirect=/schedule`;
+      } else if (res.status === 409 && typeof data.position === "number") {
+        setWaitlisted(data.position);
       } else {
-        setError(data.error || "Failed to book");
+        setError(data.error || L.failed);
       }
     } catch {
       setError("Network error");
@@ -298,7 +347,7 @@ function SessionCard({ session }: { session: Session }) {
         style={{ backgroundColor: ct?.color || "#DCA8B2" }}
       />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-[#2D2327]">{ct?.name_en || "Class"}</p>
+        <p className="text-sm font-medium text-[#2D2327]">{typeName(ct, locale) || "Class"}</p>
         <div className="flex items-center gap-3 mt-0.5">
           <span className="flex items-center gap-1 text-xs text-[#9B8A8F]">
             <Clock className="w-3 h-3" />
@@ -310,14 +359,18 @@ function SessionCard({ session }: { session: Session }) {
             }`}
           >
             <Users className="w-3 h-3" />
-            {isFull ? "Full" : `${spotsLeft} spots`}
+            {isFull ? L.full : `${spotsLeft} ${L.spots}`}
           </span>
         </div>
       </div>
       <div className="flex flex-col items-end gap-1">
         {booked ? (
           <span className="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-            Booked ✓
+            {L.booked} ✓
+          </span>
+        ) : waitlisted !== null ? (
+          <span className="px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 whitespace-nowrap">
+            {waitlisted > 0 ? `${L.waitlist} #${waitlisted}` : L.onWaitlist}
           </span>
         ) : (
           <button
@@ -329,7 +382,7 @@ function SessionCard({ session }: { session: Session }) {
                 : "bg-[#DCA8B2] text-white hover:bg-[#B87A88] disabled:opacity-50"
             }`}
           >
-            {booking ? "..." : isFull ? "Waitlist" : "Book"}
+            {booking ? "…" : isFull ? L.waitlist : L.book}
           </button>
         )}
         {error && <span className="text-[10px] text-red-500 max-w-[80px] text-right">{error}</span>}

@@ -25,6 +25,7 @@ export const adminTranslations: Record<AdminLocale, {
     sessions: string;
     attendance: string;
     clients: string;
+    registrations: string;
     subscriptions: string;
     payments: string;
     system: string;
@@ -64,6 +65,7 @@ export const adminTranslations: Record<AdminLocale, {
       sessions: "Sessions",
       attendance: "Attendance",
       clients: "Clients",
+      registrations: "Registrations",
       subscriptions: "Subscriptions",
       payments: "Payments",
       system: "System",
@@ -103,6 +105,7 @@ export const adminTranslations: Record<AdminLocale, {
       sessions: "Seanslar",
       attendance: "Katılım",
       clients: "Müşteriler",
+      registrations: "Kayıtlar",
       subscriptions: "Abonelikler",
       payments: "Ödemeler",
       system: "Sistem",
@@ -142,6 +145,7 @@ export const adminTranslations: Record<AdminLocale, {
       sessions: "Сеансы",
       attendance: "Посещаемость",
       clients: "Клиенты",
+      registrations: "Заявки",
       subscriptions: "Подписки",
       payments: "Платежи",
       system: "Система",

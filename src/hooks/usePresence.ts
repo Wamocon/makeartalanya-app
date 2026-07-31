@@ -15,7 +15,7 @@ interface AdminPresence {
 }
 
 export function useAdminPresence(isAdmin: boolean) {
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
   const [admins, setAdmins] = useState<AdminPresence[]>([]);
   const [loading, setLoading] = useState(false);
   const channelId = useMemo(() => `admin-presence-changes-${Math.random().toString(36).slice(2, 10)}`, []);
@@ -41,6 +41,8 @@ export function useAdminPresence(isAdmin: boolean) {
   }, [fetchPresence]);
 
   useEffect(() => {
+    if (!isAdmin) return;
+
     const channel = supabase
       .channel(channelId)
       .on(
@@ -53,7 +55,7 @@ export function useAdminPresence(isAdmin: boolean) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, fetchPresence]);
+  }, [channelId, fetchPresence, isAdmin, supabase]);
 
   return { admins, loading, refetch: fetchPresence };
 }

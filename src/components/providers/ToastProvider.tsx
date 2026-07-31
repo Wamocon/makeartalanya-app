@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ToastContainer, type ToastItem, type ToastType } from "@/components/ui/Toast";
 import { useUnreadCounts } from "@/hooks/useUnreadCounts";
 
@@ -18,7 +19,11 @@ export function useToast() {
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
-  const { chat, notifications } = useUnreadCounts();
+  const pathname = usePathname();
+  const unreadEnabled =
+    pathname.startsWith("/my") ||
+    (pathname.startsWith("/admin") && pathname !== "/admin/login");
+  const { chat, notifications } = useUnreadCounts(unreadEnabled);
   const prevChat = useRef(chat);
   const prevNotifications = useRef(notifications);
 

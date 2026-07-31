@@ -70,6 +70,14 @@ export const registrationSchema = z.object({
 })
 
 // ── Booking ───────────────────────────────────────────────────────
+export const quickBookingSchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  phone: z.string().trim().min(7).max(25),
+  language: z.enum(["tr", "en", "ru"]).default("tr"),
+  isTrial: z.boolean().default(false),
+  consentKvkk: z.literal(true),
+})
+
 export const bookClassSchema = z.object({
   sessionId: z.string().uuid(),
   childId: z.string().uuid().optional(),

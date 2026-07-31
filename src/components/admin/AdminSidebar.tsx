@@ -14,6 +14,7 @@ import {
   FileText,
   Image as ImageIcon,
   ClipboardCheck,
+  ClipboardList,
   Banknote,
   Menu,
   X,
@@ -49,6 +50,7 @@ export default function AdminSidebar() {
     {
       title: t.sidebar.clients,
       items: [
+        { href: "/admin/registrations", icon: ClipboardList, label: t.sidebar.registrations },
         { href: "/admin/clients", icon: Users, label: t.sidebar.clients },
         { href: "/admin/subscriptions", icon: CreditCard, label: t.sidebar.subscriptions },
         { href: "/admin/payments", icon: Banknote, label: t.sidebar.payments },

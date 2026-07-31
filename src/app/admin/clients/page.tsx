@@ -1,9 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
+import { requireAdminPage } from "@/lib/auth-guard";
 import { Users } from "lucide-react";
 import ClientsTable from "./ClientsTable";
 
 export default async function AdminClientsPage() {
-  const supabase = await createClient();
+  const { admin: supabase } = await requireAdminPage();
 
   // Fetch all client profiles (role='user' in this schema)
   const { data: clients } = await supabase

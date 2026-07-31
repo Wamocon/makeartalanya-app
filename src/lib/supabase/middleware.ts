@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { verifyAdminSession } from "@/lib/admin-session";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -52,45 +53,40 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Protected: /admin/* requires admin/trainer role (Supabase auth OR legacy cookie)
+  // Protected: /admin/* requires admin/trainer role (Supabase auth OR signed cookie).
+  // The cookie is HMAC-verified — see lib/admin-session.ts. A merely *present*
+  // cookie proves nothing.
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    const adminSession = await verifyAdminSession(
+      request.cookies.get("admin_session")?.value,
+    );
+    const hasValidCookie =
+      adminSession !== null &&
+      adminSession.username === process.env.ADMIN_DASHBOARD_USER;
+
     if (!user) {
-      // Check legacy admin_session cookie
-      const sessionCookie = request.cookies.get("admin_session");
-      if (!sessionCookie?.value) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/admin/login";
-        return NextResponse.redirect(url);
-      }
-      // Validate legacy cookie
-      try {
-        const username = process.env.ADMIN_DASHBOARD_USER;
-        const decoded = atob(sessionCookie.value);
-        const [sessionUser, timestamp] = decoded.split(":");
-        const sessionAge = Date.now() - Number(timestamp);
-        const maxAge = 8 * 60 * 60 * 1000;
-        if (sessionUser !== username || sessionAge > maxAge) {
-          const url = request.nextUrl.clone();
-          url.pathname = "/admin/login";
-          return NextResponse.redirect(url);
-        }
-      } catch {
+      if (!hasValidCookie) {
         const url = request.nextUrl.clone();
         url.pathname = "/admin/login";
         return NextResponse.redirect(url);
       }
     } else {
-      // User is logged in via Supabase — check role
-      const role = user.user_metadata?.role;
-      if (role !== "admin" && role !== "trainer") {
-        // Not an admin — also check profiles table role via legacy cookie fallback
-        const sessionCookie = request.cookies.get("admin_session");
-        if (!sessionCookie?.value) {
-          // Regular user trying to access admin — redirect to their dashboard
-          const url = request.nextUrl.clone();
-          url.pathname = "/my";
-          return NextResponse.redirect(url);
-        }
+      // Logged in via Supabase — the profiles table is the ONLY authority here.
+      // user_metadata is writable by the account holder itself
+      // (supabase.auth.updateUser({ data: { role: 'admin' } })), so trusting it
+      // would let any registered parent promote themselves to admin.
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+      const isStaff = profile?.role === "admin" || profile?.role === "trainer";
+
+      if (!isStaff && !hasValidCookie) {
+        // Regular user trying to access admin — send them to their dashboard.
+        const url = request.nextUrl.clone();
+        url.pathname = "/my";
+        return NextResponse.redirect(url);
       }
     }
   }

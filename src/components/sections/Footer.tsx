@@ -9,7 +9,7 @@ interface FooterProps {
   locale: Locale;
 }
 
-export default function Footer({ t, locale: _locale }: FooterProps) {
+export default function Footer({ t }: FooterProps) {
   return (
     <footer className="bg-[var(--foreground)] text-white py-16 px-4 sm:px-6 relative overflow-hidden">
       {/* Decorative gradient orb */}
@@ -23,10 +23,9 @@ export default function Footer({ t, locale: _locale }: FooterProps) {
               <Image
                 src="/logo.jpg"
                 alt="MakeArt"
-                width={160}
+                width={56}
                 height={56}
                 className="object-contain rounded-lg bg-white p-2 shadow-sm"
-                style={{ height: 56, width: "auto" }}
               />
             </div>
             <div className="text-sm text-white/50 leading-relaxed">{t.footer.tagline}</div>

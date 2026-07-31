@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useOptimistic, useActionState } from "react";
+import { useState, useOptimistic, useEffect, useMemo } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { Plus, Pencil, Trash2, Baby, Calendar } from "lucide-react";
 
@@ -8,7 +8,8 @@ interface Child {
   id: string;
   full_name: string;
   birth_date: string;
-  notes: string | null;
+  /** Column is `medical_notes` in the schema — allergies, conditions, etc. */
+  medical_notes: string | null;
 }
 
 export default function MyChildrenPage() {
@@ -16,28 +17,49 @@ export default function MyChildrenPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingChild, setEditingChild] = useState<Child | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const supabase = createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  // Memoised: a fresh client every render would give the effect below a new
+  // dependency each time and re-run it forever.
+  const supabase = useMemo(
+    () =>
+      createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      ),
+    [],
   );
 
-  // Load children on first render
-  if (!loaded) {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
-        supabase
-          .from("children")
-          .select("*")
-          .eq("parent_id", user.id)
-          .order("birth_date")
-          .then(({ data }) => {
-            if (data) setChildren(data);
-            setLoaded(true);
-          });
+  // Load once on mount. This used to run as a side effect *during render*,
+  // firing a fetch on every pass — and if getUser() resolved to null, `loaded`
+  // was never set, so it span forever.
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        if (!cancelled) setLoaded(true);
+        return;
       }
-    });
-  }
+
+      const { data, error: loadError } = await supabase
+        .from("children")
+        .select("*")
+        .eq("parent_id", user.id)
+        .order("birth_date");
+
+      if (cancelled) return;
+      if (loadError) setError(loadError.message);
+      if (data) setChildren(data);
+      setLoaded(true);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [supabase]);
 
   const [optimisticChildren, addOptimistic] = useOptimistic(
     children,
@@ -47,18 +69,29 @@ export default function MyChildrenPage() {
   async function handleSave(formData: FormData) {
     const fullName = formData.get("full_name") as string;
     const birthDate = formData.get("birth_date") as string;
-    const notes = formData.get("notes") as string;
+    const medicalNotes = formData.get("medical_notes") as string;
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    setError(null);
+
     if (editingChild) {
-      const { data } = await supabase
+      const { data, error: updateError } = await supabase
         .from("children")
-        .update({ full_name: fullName, birth_date: birthDate, notes: notes || null })
+        .update({
+          full_name: fullName,
+          birth_date: birthDate,
+          medical_notes: medicalNotes || null,
+        })
         .eq("id", editingChild.id)
         .select()
         .single();
+
+      if (updateError) {
+        setError(updateError.message);
+        return;
+      }
       if (data) {
         setChildren((prev) => prev.map((c) => (c.id === data.id ? data : c)));
       }
@@ -67,15 +100,27 @@ export default function MyChildrenPage() {
         id: crypto.randomUUID(),
         full_name: fullName,
         birth_date: birthDate,
-        notes: notes || null,
+        medical_notes: medicalNotes || null,
       };
       addOptimistic(tempChild);
 
-      const { data } = await supabase
+      const { data, error: insertError } = await supabase
         .from("children")
-        .insert({ parent_id: user.id, full_name: fullName, birth_date: birthDate, notes: notes || null })
+        .insert({
+          parent_id: user.id,
+          full_name: fullName,
+          birth_date: birthDate,
+          medical_notes: medicalNotes || null,
+        })
         .select()
         .single();
+
+      if (insertError) {
+        // Surface it — this failed silently for every parent before, because
+        // the payload used a `notes` column that does not exist.
+        setError(insertError.message);
+        return;
+      }
       if (data) {
         setChildren((prev) => [...prev.filter((c) => c.id !== tempChild.id), data]);
       }
@@ -86,8 +131,17 @@ export default function MyChildrenPage() {
   }
 
   async function handleDelete(id: string) {
+    const previous = children;
     setChildren((prev) => prev.filter((c) => c.id !== id));
-    await supabase.from("children").delete().eq("id", id);
+    setError(null);
+
+    const { error: deleteError } = await supabase.from("children").delete().eq("id", id);
+
+    if (deleteError) {
+      // Put the row back rather than leaving the UI lying about what happened.
+      setChildren(previous);
+      setError(deleteError.message);
+    }
   }
 
   function getAge(birthDate: string) {
@@ -106,6 +160,12 @@ export default function MyChildrenPage() {
           <Plus className="w-4 h-4" /> Add Child
         </button>
       </div>
+
+      {error && (
+        <div className="rounded-xl border border-[#E5686B]/30 bg-[#E5686B]/5 px-4 py-3 text-sm text-[#E5686B]">
+          {error}
+        </div>
+      )}
 
       {/* Form */}
       {showForm && (
@@ -135,8 +195,8 @@ export default function MyChildrenPage() {
           <div>
             <label className="text-xs font-medium text-[#9B8A8F]">Notes (allergies, etc.)</label>
             <textarea
-              name="notes"
-              defaultValue={editingChild?.notes || ""}
+              name="medical_notes"
+              defaultValue={editingChild?.medical_notes || ""}
               rows={2}
               className="w-full mt-1 px-3 py-2 rounded-lg border border-[#F0E8EB] text-sm focus:outline-none focus:border-[#DCA8B2] resize-none"
             />
@@ -177,8 +237,8 @@ export default function MyChildrenPage() {
                     <Calendar className="w-3 h-3" />
                     {getAge(child.birth_date)} years old
                   </span>
-                  {child.notes && (
-                    <span className="text-xs text-[#9B8A8F]">• {child.notes}</span>
+                  {child.medical_notes && (
+                    <span className="text-xs text-[#9B8A8F]">• {child.medical_notes}</span>
                   )}
                 </div>
               </div>

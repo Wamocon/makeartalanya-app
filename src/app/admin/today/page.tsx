@@ -1,9 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
+import { requireAdminPage } from "@/lib/auth-guard";
 import { CalendarCheck, Users, Clock, CheckCircle } from "lucide-react";
 
 export default async function AdminTodayPage() {
-  const supabase = await createClient();
-  
+  const { admin: supabase } = await requireAdminPage();
+
   const today = new Date();
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
   const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toISOString();
@@ -19,6 +19,21 @@ export default async function AdminTodayPage() {
 
   const totalClasses = sessions?.length || 0;
   const totalEnrolled = sessions?.reduce((sum, s) => sum + s.enrolled_count, 0) || 0;
+
+  // "Completed" was hardcoded to 0. A class counts as done once its end time has
+  // passed; attendance marked so far is the more useful second number.
+  const nowMs = Date.now();
+  const completedClasses =
+    sessions?.filter((s) => new Date(s.ends_at).getTime() <= nowMs).length ?? 0;
+
+  const sessionIds = (sessions ?? []).map((s) => s.id);
+  const { count: attendedCount } = sessionIds.length
+    ? await supabase
+        .from("enrollments")
+        .select("id", { count: "exact", head: true })
+        .in("session_id", sessionIds)
+        .eq("status", "attended")
+    : { count: 0 };
 
   return (
     <div className="space-y-6">
@@ -43,8 +58,10 @@ export default async function AdminTodayPage() {
         </div>
         <div className="bg-white rounded-xl border border-[#F0E8EB] p-4">
           <CheckCircle className="w-5 h-5 text-[#6BBF7A] mb-2" />
-          <p className="text-2xl font-bold text-[#2D2327]">0</p>
-          <p className="text-xs text-[#9B8A8F]">Completed</p>
+          <p className="text-2xl font-bold text-[#2D2327]">{completedClasses}</p>
+          <p className="text-xs text-[#9B8A8F]">
+            Completed{attendedCount ? ` · ${attendedCount} attended` : ""}
+          </p>
         </div>
       </div>
 

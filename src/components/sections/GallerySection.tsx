@@ -29,6 +29,12 @@ const imageVariants = {
   visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const } },
 };
 
+/** A Supabase Storage list entry. `metadata` is absent for folder rows. */
+type GalleryObject = { name: string; metadata?: { size?: number } | null };
+
+/** Smallest plausible real photo. Test artefacts are 0 and 13 bytes. */
+const MIN_IMAGE_BYTES = 1024;
+
 export default function GallerySection({ t }: GalleryProps) {
   const [images, setImages] = useState<string[]>([]);
 
@@ -50,8 +56,13 @@ export default function GallerySection({ t }: GalleryProps) {
       .then((data) => {
         if (!Array.isArray(data)) return;
         const urls = data
-          .filter((f: { name: string }) => f.name !== ".emptyFolderPlaceholder")
-          .map((f: { name: string }) => `${url}/storage/v1/object/public/gallery/${f.name}`);
+          .filter((f: GalleryObject) => f.name !== ".emptyFolderPlaceholder")
+          // Skip anything too small to be a real photo. The bucket still holds
+          // 0-byte and 13-byte artefacts from upload testing, and next/image
+          // renders those as broken tiles. Guarding here means a bad upload can
+          // never break the landing page.
+          .filter((f: GalleryObject) => (f.metadata?.size ?? 0) >= MIN_IMAGE_BYTES)
+          .map((f: GalleryObject) => `${url}/storage/v1/object/public/gallery/${f.name}`);
         setImages(urls);
       })
       .catch(() => {});

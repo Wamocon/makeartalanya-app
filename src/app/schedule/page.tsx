@@ -1,12 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
+import { getLocale } from "@/i18n/server";
 import ScheduleView from "@/components/schedule/ScheduleView";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-export const revalidate = 60; // ISR: revalidate every 60 seconds
+/**
+ * Dynamic, not ISR.
+ *
+ * This page reads the `lang` cookie to localise class names, which opts the
+ * route into dynamic rendering regardless — a `revalidate` export alongside it
+ * would just be misleading. It is also the right call on the merits: the page
+ * shows live seat counts and a "Book" button, and a 60-second cache meant a
+ * class could read "3 spots" seconds after it filled up.
+ */
+export const dynamic = "force-dynamic";
 
 export default async function SchedulePage() {
   const supabase = await createClient();
+  const locale = await getLocale();
 
   // Fetch class types
   const { data: classTypes } = await supabase
@@ -61,6 +72,7 @@ export default async function SchedulePage() {
           classTypes={classTypes || []}
           templates={templates || []}
           sessions={sessions || []}
+          locale={locale}
         />
       </main>
     </div>

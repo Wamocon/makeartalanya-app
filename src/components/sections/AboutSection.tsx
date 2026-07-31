@@ -17,6 +17,12 @@ interface AboutProps {
   };
 }
 
+/** A Supabase Storage list entry. `metadata` is absent for folder rows. */
+type InstructorObject = { name: string; metadata?: { size?: number } | null };
+
+/** Smallest plausible real photo; guards against 0-byte upload artefacts. */
+const MIN_IMAGE_BYTES = 1024;
+
 export default function AboutSection({ t }: AboutProps) {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
@@ -32,12 +38,18 @@ export default function AboutSection({ t }: AboutProps) {
         Authorization: `Bearer ${key}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ prefix: "", limit: 1 }),
+      // Ask for a few, not one: the first entry may be a placeholder or a
+      // zero-byte artefact, and limit:1 would then yield no photo at all.
+      body: JSON.stringify({ prefix: "", limit: 10 }),
     })
       .then((r) => r.json())
       .then((data) => {
         if (!Array.isArray(data) || data.length === 0) return;
-        const file = data.find((f: { name: string }) => f.name !== ".emptyFolderPlaceholder");
+        const file = data.find(
+          (f: InstructorObject) =>
+            f.name !== ".emptyFolderPlaceholder" &&
+            (f.metadata?.size ?? 0) >= MIN_IMAGE_BYTES,
+        );
         if (file) {
           setPhotoUrl(`${url}/storage/v1/object/public/instructor/${file.name}`);
         }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-guard";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { actorId, getSetting } from "@/lib/studio-settings";
 
 export async function POST(request: NextRequest) {
   const auth = await requireAdmin();
@@ -73,7 +74,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Admin client not configured" }, { status: 500 });
   }
 
-  const { id, action } = await request.json();
+  const { id, action, reason } = await request.json();
 
   if (!id || !action) {
     return NextResponse.json({ error: "id and action required" }, { status: 400 });
@@ -87,24 +88,52 @@ export async function PATCH(request: NextRequest) {
       .eq("id", id)
       .single();
 
+
     if (!sub) return NextResponse.json({ error: "Not found" }, { status: 404 });
     if (sub.status !== "active") return NextResponse.json({ error: "Only active subs can be frozen" }, { status: 400 });
     if (sub.freezes_used >= sub.max_freezes) return NextResponse.json({ error: "Max freezes reached" }, { status: 400 });
 
-    await admin
+    // Write the freeze record FIRST. It used to run after the status flip and
+    // without an error check, so when the insert failed the subscription was
+    // left 'frozen' with no matching record — and unfreeze, which looks the
+    // record up, then matched nothing.
+    const now = new Date();
+    const freezeDays = await getSetting(admin, "max_freeze_days", 30);
+    const plannedResume = new Date(now.getTime() + freezeDays * 86_400_000);
+
+    const { error: freezeErr } = await admin.from("subscription_freezes").insert({
+      subscription_id: id,
+      frozen_at: now.toISOString(),
+      // NOT NULL in the schema — omitting it failed every insert.
+      planned_resume: plannedResume.toISOString(),
+      reason: reason?.trim() || "Admin freeze",
+      created_by: actorId(auth.user.id),
+    });
+
+    if (freezeErr) {
+      return NextResponse.json({ error: freezeErr.message }, { status: 500 });
+    }
+
+    const { error: statusErr } = await admin
       .from("subscriptions")
       .update({ status: "frozen", freezes_used: sub.freezes_used + 1 })
       .eq("id", id);
 
-    // Record freeze
-    await admin.from("subscription_freezes").insert({
-      subscription_id: id,
-      frozen_at: new Date().toISOString(),
-      reason: "Admin freeze",
-      created_by: auth.user.id,
-    });
+    if (statusErr) {
+      // Undo the record so the two never disagree.
+      await admin
+        .from("subscription_freezes")
+        .delete()
+        .eq("subscription_id", id)
+        .eq("frozen_at", now.toISOString());
+      return NextResponse.json({ error: statusErr.message }, { status: 500 });
+    }
 
-    return NextResponse.json({ success: true, status: "frozen" });
+    return NextResponse.json({
+      success: true,
+      status: "frozen",
+      planned_resume: plannedResume.toISOString(),
+    });
   }
 
   if (action === "unfreeze") {

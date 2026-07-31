@@ -1,6 +1,21 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+/**
+ * POST /api/enroll — book a seat in a class session.
+ *
+ * Two invariants this route deliberately does NOT maintain by hand:
+ *
+ *  1. `class_sessions.enrolled_count` is owned by the `trg_enrolled_count`
+ *     trigger. This route used to increment it as well, which counted every
+ *     booking twice and made classes look full at half capacity.
+ *
+ *  2. `subscriptions.lessons_used` is owned by the attendance flow
+ *     (/api/admin/attendance). This route used to deduct at booking time too,
+ *     so a parent who booked and then attended was charged two lessons for one
+ *     class. Booking now only *reserves* against the balance; the lesson is
+ *     spent when the trainer marks attendance.
+ */
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
@@ -16,7 +31,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "session_id is required" }, { status: 400 });
     }
 
-    // Check session exists and has capacity
     const { data: session, error: sessionErr } = await supabase
       .from("class_sessions")
       .select("id, max_capacity, enrolled_count, status, starts_at")
@@ -36,10 +50,26 @@ export async function POST(request: Request) {
     }
 
     if (session.enrolled_count >= session.max_capacity) {
-      return NextResponse.json({ error: "Session is full" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Session is full", code: "SESSION_FULL" },
+        { status: 409 },
+      );
     }
 
-    // Check if user already enrolled in this session
+    // A child must belong to the requesting parent.
+    if (child_id) {
+      const { data: child } = await supabase
+        .from("children")
+        .select("id")
+        .eq("id", child_id)
+        .eq("parent_id", user.id)
+        .maybeSingle();
+
+      if (!child) {
+        return NextResponse.json({ error: "Child not found" }, { status: 400 });
+      }
+    }
+
     const { data: existing } = await supabase
       .from("enrollments")
       .select("id")
@@ -52,38 +82,68 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Already enrolled in this session" }, { status: 409 });
     }
 
-    // If subscription_id provided, verify and deduct
-    if (subscription_id) {
-      const { data: sub } = await supabase
-        .from("subscriptions")
-        .select("id, lessons_total, lessons_used, status")
-        .eq("id", subscription_id)
-        .eq("user_id", user.id)
-        .single();
+    // Resolve which subscription pays for this class. An explicit id is
+    // validated; otherwise we pick the active subscription expiring soonest so
+    // the enrollment is actually linked — without a link, attendance can never
+    // deduct anything.
+    const subQuery = supabase
+      .from("subscriptions")
+      .select("id, lessons_total, lessons_used, status")
+      .eq("user_id", user.id)
+      .eq("status", "active");
 
-      if (!sub || sub.status !== "active") {
-        return NextResponse.json({ error: "Invalid or inactive subscription" }, { status: 400 });
-      }
+    const { data: candidates } = subscription_id
+      ? await subQuery.eq("id", subscription_id)
+      : await subQuery.order("expires_at", { ascending: true, nullsFirst: false });
 
-      if (sub.lessons_used >= sub.lessons_total) {
-        return NextResponse.json({ error: "No lessons remaining on this subscription" }, { status: 400 });
-      }
-
-      // Increment lessons_used
-      await supabase
-        .from("subscriptions")
-        .update({ lessons_used: sub.lessons_used + 1 })
-        .eq("id", subscription_id);
+    if (subscription_id && (!candidates || candidates.length === 0)) {
+      return NextResponse.json(
+        { error: "Invalid or inactive subscription" },
+        { status: 400 },
+      );
     }
 
-    // Create enrollment
+    let chosenSubscription: string | null = null;
+
+    if (candidates && candidates.length > 0) {
+      // Lessons already reserved by bookings that haven't been attended yet.
+      const { data: pending } = await supabase
+        .from("enrollments")
+        .select("subscription_id")
+        .eq("user_id", user.id)
+        .eq("status", "confirmed")
+        .not("subscription_id", "is", null);
+
+      const reserved = new Map<string, number>();
+      for (const row of pending ?? []) {
+        const id = row.subscription_id as string;
+        reserved.set(id, (reserved.get(id) ?? 0) + 1);
+      }
+
+      const usable = candidates.find(
+        (s) => s.lessons_total - s.lessons_used - (reserved.get(s.id) ?? 0) > 0,
+      );
+
+      if (!usable) {
+        return NextResponse.json(
+          {
+            error: "No lessons remaining on your subscription",
+            code: "NO_LESSONS_REMAINING",
+          },
+          { status: 400 },
+        );
+      }
+
+      chosenSubscription = usable.id;
+    }
+
     const { data: enrollment, error: enrollErr } = await supabase
       .from("enrollments")
       .insert({
         session_id,
         user_id: user.id,
         child_id: child_id || null,
-        subscription_id: subscription_id || null,
+        subscription_id: chosenSubscription,
         status: "confirmed",
         booked_at: new Date().toISOString(),
       })
@@ -91,16 +151,27 @@ export async function POST(request: Request) {
       .single();
 
     if (enrollErr) {
+      // Two bookings racing for the last seat: the trigger pushes enrolled_count
+      // past max_capacity and the capacity_not_exceeded CHECK rejects the loser.
+      if (enrollErr.message.includes("capacity_not_exceeded")) {
+        return NextResponse.json(
+          { error: "Session is full", code: "SESSION_FULL" },
+          { status: 409 },
+        );
+      }
+      if (enrollErr.code === "23505") {
+        return NextResponse.json({ error: "Already enrolled in this session" }, { status: 409 });
+      }
       return NextResponse.json({ error: enrollErr.message }, { status: 500 });
     }
 
-    // Increment enrolled_count on class_session
-    await supabase
-      .from("class_sessions")
-      .update({ enrolled_count: session.enrolled_count + 1 })
-      .eq("id", session_id);
+    // enrolled_count is maintained by trg_enrolled_count — do not touch it here.
 
-    return NextResponse.json({ success: true, enrollment_id: enrollment.id });
+    return NextResponse.json({
+      success: true,
+      enrollment_id: enrollment.id,
+      subscription_id: chosenSubscription,
+    });
   } catch {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }

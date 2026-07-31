@@ -15,7 +15,6 @@ export default function Logo({ size = 36, className = "", variant = "full" }: Lo
         width={size}
         height={size}
         className={`object-contain mix-blend-multiply ${className}`}
-        style={{ width: "auto", height: size }}
         priority
       />
     );
@@ -25,10 +24,9 @@ export default function Logo({ size = 36, className = "", variant = "full" }: Lo
     <Image
       src="/logo.jpg"
       alt="MakeArt - Create with Love"
-      width={200}
+      width={size}
       height={size}
       className={`object-contain mix-blend-multiply ${className}`}
-      style={{ height: size, width: "auto" }}
       priority
     />
   );

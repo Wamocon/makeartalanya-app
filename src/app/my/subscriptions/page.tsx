@@ -9,23 +9,25 @@ export default async function MySubscriptionsPage() {
   const t = dashboardTranslations[locale].subscriptions;
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Run queries in parallel
-  const [subsResult, freezeResult] = await Promise.all([
-    supabase
-      .from("subscriptions")
-      .select("*, packages(name, lessons_count, price_eur, price_per_lesson)")
-      .eq("user_id", user!.id)
-      .order("created_at", { ascending: false }),
-    supabase
-      .from("subscription_freezes")
-      .select("*")
-      .eq("user_id", user!.id)
-      .order("start_date", { ascending: false })
-      .limit(5),
-  ]);
+  const { data: subscriptions } = await supabase
+    .from("subscriptions")
+    .select("*, packages(name, lessons_count, price_eur, price_per_lesson)")
+    .eq("user_id", user!.id)
+    .order("created_at", { ascending: false });
 
-  const subscriptions = subsResult.data;
-  const freezes = freezeResult.data;
+  // subscription_freezes has no user_id — it hangs off subscription_id. The
+  // previous query filtered on user_id and ordered by start_date/end_date, none
+  // of which exist, so it always errored and the section never rendered.
+  const subscriptionIds = (subscriptions ?? []).map((s) => s.id);
+
+  const { data: freezes } = subscriptionIds.length
+    ? await supabase
+        .from("subscription_freezes")
+        .select("id, subscription_id, frozen_at, planned_resume, actual_resume, reason")
+        .in("subscription_id", subscriptionIds)
+        .order("frozen_at", { ascending: false })
+        .limit(5)
+    : { data: null };
 
   return (
     <div className="space-y-6">
@@ -115,17 +117,25 @@ export default async function MySubscriptionsPage() {
             Freeze History
           </h2>
           <div className="space-y-2">
-            {freezes.map((f) => (
-              <div key={f.id} className="flex items-center gap-3 bg-white rounded-xl border border-[#F0E8EB] p-3">
-                <Snowflake className="w-4 h-4 text-[#A9C7E5]" />
-                <div className="flex-1">
-                  <p className="text-sm text-[#2D2327]">
-                    {new Date(f.start_date).toLocaleDateString()} – {new Date(f.end_date).toLocaleDateString()}
-                  </p>
-                  <p className="text-xs text-[#9B8A8F]">{f.reason || "No reason"}</p>
+            {freezes.map((f) => {
+              const resumed = f.actual_resume ?? f.planned_resume;
+              return (
+                <div key={f.id} className="flex items-center gap-3 bg-white rounded-xl border border-[#F0E8EB] p-3">
+                  <Snowflake className="w-4 h-4 text-[#A9C7E5]" />
+                  <div className="flex-1">
+                    <p className="text-sm text-[#2D2327]">
+                      {new Date(f.frozen_at).toLocaleDateString()}
+                      {" – "}
+                      {resumed ? new Date(resumed).toLocaleDateString() : "ongoing"}
+                    </p>
+                    <p className="text-xs text-[#9B8A8F]">
+                      {f.reason || "No reason"}
+                      {!f.actual_resume && f.planned_resume && " · planned"}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
