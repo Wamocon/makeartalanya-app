@@ -22,7 +22,7 @@ interface PackagesProps {
 }
 
 const CARD_ACCENTS = ["#78dce8", "#ffc857", "#b9a6ff", "#f56a83", "#9de0ad", "#ff9f68"];
-const CARD_SURFACES = ["#eefbfc", "#fff8e7", "#f4f0ff", "#f56a83", "#effaf1", "#fff1e9"];
+const CARD_SURFACES = ["#def7fa", "#fff1c9", "#ebe2ff", "#f56a83", "#e1f7e7", "#ffe3d5"];
 const CARD_ACTIONS = ["#197f8d", "#aa6a00", "#7058c8", "#d84f70", "#2f864b", "#c65b2c"];
 const PACKAGE_PRICES: Record<number, number> = {
   1: 45,
@@ -89,7 +89,7 @@ export default function PackagesSection({ t, locale }: PackagesProps) {
   const copy = SUPPORTING_COPY[locale];
 
   return (
-    <section id="courses" className="relative overflow-hidden bg-[#17131e] py-24 text-white sm:py-32 lg:py-40">
+    <section id="courses" className="relative overflow-hidden bg-[radial-gradient(circle_at_9%_12%,rgba(243,67,128,0.2),transparent_29%),radial-gradient(circle_at_91%_78%,rgba(0,184,217,0.18),transparent_31%),#17131e] py-24 text-white sm:py-32 lg:py-40">
       <div className="future-grid-dark absolute inset-0 opacity-45" aria-hidden="true" />
       <div className="absolute -left-28 top-16 size-[28rem] rounded-full bg-[var(--pink)]/14 blur-[140px]" aria-hidden="true" />
       <div className="absolute -right-24 bottom-0 size-[26rem] rounded-full bg-[var(--blue)]/10 blur-[140px]" aria-hidden="true" />
@@ -154,9 +154,9 @@ export default function PackagesSection({ t, locale }: PackagesProps) {
                     alt={PACKAGE_IMAGES[index].alt}
                     fill
                     sizes="(min-width: 1024px) 25vw, (min-width: 640px) 45vw, 90vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="object-cover saturate-[1.18] contrast-[1.06] brightness-[1.03] transition-transform duration-700 ease-out group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#17131e]/90 via-[#17131e]/18 to-transparent" aria-hidden="true" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#17131e]/72 via-[#17131e]/8 to-transparent" aria-hidden="true" />
                   <div className="absolute inset-x-4 bottom-3 flex items-end gap-2 text-white">
                     <span className="font-display text-[4.7rem] font-semibold leading-[0.7] tracking-[-0.075em] drop-shadow-lg">{pkg.lessons}</span>
                     <span className="pb-1 text-[0.6rem] font-extrabold uppercase tracking-[0.18em] text-white/74">{t.packages.lessons}</span>

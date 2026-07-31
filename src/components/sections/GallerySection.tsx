@@ -23,7 +23,7 @@ const TILE_STYLES = [
   "md:col-span-4",
   "md:col-span-4",
   "md:col-span-3",
-  "md:col-span-5",
+  "md:col-span-12",
 ];
 
 interface GalleryProps {
@@ -89,7 +89,7 @@ export default function GallerySection({ t }: GalleryProps) {
                 src={src}
                 alt={`Make Art Studio creative work ${index + 1}`}
                 fill
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                className="object-cover saturate-[1.2] contrast-[1.06] brightness-[1.02] transition-transform duration-700 ease-out group-hover:scale-105"
                 sizes="(max-width: 767px) 50vw, 42vw"
               />
               <span className="absolute bottom-3 left-3 rounded-lg border border-white/22 bg-black/20 px-2 py-1 font-mono text-[0.58rem] text-white backdrop-blur-md">0{index + 1}</span>

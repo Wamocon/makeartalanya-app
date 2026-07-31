@@ -17,9 +17,11 @@ const validRegistration = {
   packageId: "",
   preferredLanguage: "en",
   message: "",
-  consentKvkk: true,
-  consentLiability: true,
-  consentMedia: false,
+  privacyNoticeAccepted: true,
+  termsAccepted: true,
+  consentHealth: false,
+  consentMediaWebsite: false,
+  consentMediaSocial: false,
 };
 
 test.describe("registration validation", () => {
@@ -35,5 +37,15 @@ test.describe("registration validation", () => {
         childGender: "unknown",
       }).success,
     ).toBe(false);
+  });
+
+  test("keeps website and social-media consent independent and optional", () => {
+    const websiteOnly = registrationSchema.parse({
+      ...validRegistration,
+      consentMediaWebsite: true,
+    });
+
+    expect(websiteOnly.consentMediaWebsite).toBe(true);
+    expect(websiteOnly.consentMediaSocial).toBe(false);
   });
 });

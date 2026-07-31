@@ -67,7 +67,8 @@ export const registrationSchema = z.object({
   privacyNoticeAccepted: z.literal(true),
   termsAccepted: z.literal(true),
   consentHealth: z.boolean().optional().default(false),
-  consentMedia: z.boolean().optional().default(false),
+  consentMediaWebsite: z.boolean().optional().default(false),
+  consentMediaSocial: z.boolean().optional().default(false),
 }).superRefine((data, ctx) => {
   if (data.childHealthNotes?.trim() && data.consentHealth !== true) {
     ctx.addIssue({

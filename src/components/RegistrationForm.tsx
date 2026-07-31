@@ -49,7 +49,17 @@ const COPY: Record<Locale, {
   branch: Record<Branch, string>;
   selectPlaceholder: string;
   lessons: string; perLesson: string;
-  consent: { notice: string; noticeLink: string; terms: string; termsLink: string; health: string; media: string };
+  consent: {
+    notice: string;
+    noticeLink: string;
+    terms: string;
+    termsLink: string;
+    health: string;
+    mediaIntro: string;
+    mediaWebsite: string;
+    mediaSocial: string;
+    mediaRights: string;
+  };
   submit: string; submitting: string;
   successTitle: string; successMsg: string;
   errGeneric: string; errNetwork: string;
@@ -79,7 +89,10 @@ const COPY: Record<Locale, {
       terms: "Bu formun ödeme yükümlülüğü doğurmayan bir kayıt talebi olduğunu ve hizmet koşulları ile ön bilgilendirmeyi okuduğumu kabul ediyorum.",
       termsLink: "Ön Bilgilendirme ve Hizmet Koşulları",
       health: "Yazdığım sağlık/alerji notlarının çocuğumun ders güvenliği amacıyla işlenmesine açık rıza veriyorum. Bu alanı boş bırakabileceğimi biliyorum.",
-      media: "Çocuğumun ders çalışmalarına ait fotoğraf/videoların stüdyonun galeri ve sosyal medyasında kullanılmasına izin veriyorum.",
+      mediaIntro: "İsteğe bağlı medya izinleri — her seçim birbirinden ve kayıttan bağımsızdır:",
+      mediaWebsite: "Veli/vasi sıfatıyla; benim ve/veya çocuğumun yazılı görüşlerinin, fotoğraflarının, ses ve video kayıtlarının stüdyo faaliyetlerini tanıtmak amacıyla çekilmesine/kaydedilmesine, düzenlenmesine, saklanmasına ve makeartalanya.com sitesinde yayımlanmasına açık rıza veriyorum.",
+      mediaSocial: "Veli/vasi sıfatıyla; benim ve/veya çocuğumun yazılı görüşlerinin, fotoğraflarının, ses ve video kayıtlarının stüdyo faaliyetlerini tanıtmak amacıyla çekilmesine/kaydedilmesine, düzenlenmesine, saklanmasına ve stüdyonun resmi sosyal medya hesaplarında yayımlanmasına açık rıza veriyorum.",
+      mediaRights: "Bu izinler tamamen gönüllüdür. Rıza vermemek kayıt veya hizmeti etkilemez. Rızamı makeartstudio.tr@gmail.com adresinden geleceğe etkili olarak istediğim zaman geri çekebilirim.",
     },
     submit: "Kaydı Gönder",
     submitting: "Gönderiliyor…",
@@ -113,7 +126,10 @@ const COPY: Record<Locale, {
       terms: "I understand this is a non-binding registration request with no payment obligation, and I have read the pre-contract information and service terms.",
       termsLink: "Pre-contract information and service terms",
       health: "I explicitly consent to the processing of the health/allergy notes I entered solely for my child's safety during class. I understand that I may leave this field blank.",
-      media: "I allow photos/videos of my child's work to be used on the studio's gallery and social media.",
+      mediaIntro: "Optional media permissions — each choice is independent from the other and from registration:",
+      mediaWebsite: "As parent/guardian, I explicitly consent to written testimonials, photographs, audio and video recordings of me and/or my child being captured/recorded, edited, stored and published on makeartalanya.com to present the studio's activities.",
+      mediaSocial: "As parent/guardian, I explicitly consent to written testimonials, photographs, audio and video recordings of me and/or my child being captured/recorded, edited, stored and published on the studio's official social-media accounts to present the studio's activities.",
+      mediaRights: "These permissions are entirely voluntary. Refusal does not affect registration or service. I may withdraw consent for future use at any time by emailing makeartstudio.tr@gmail.com.",
     },
     submit: "Submit registration",
     submitting: "Submitting…",
@@ -147,7 +163,10 @@ const COPY: Record<Locale, {
       terms: "Я понимаю, что это необязывающая заявка без обязанности платить, и прочитал(а) преддоговорную информацию и условия услуг.",
       termsLink: "Преддоговорная информация и условия",
       health: "Я явно соглашаюсь на обработку введённых сведений о здоровье/аллергии только для безопасности ребёнка на занятии. Поле можно оставить пустым.",
-      media: "Я разрешаю использовать фото/видео работ моего ребёнка в галерее и соцсетях студии.",
+      mediaIntro: "Необязательные разрешения на материалы — каждый выбор независим от другого и от записи:",
+      mediaWebsite: "Как родитель/опекун я явно соглашаюсь, чтобы письменные отзывы, фотографии, аудио- и видеозаписи со мной и/или моим ребёнком создавались, редактировались, хранились и публиковались на makeartalanya.com для представления деятельности студии.",
+      mediaSocial: "Как родитель/опекун я явно соглашаюсь, чтобы письменные отзывы, фотографии, аудио- и видеозаписи со мной и/или моим ребёнком создавались, редактировались, хранились и публиковались в официальных аккаунтах студии в социальных сетях для представления деятельности студии.",
+      mediaRights: "Эти разрешения полностью добровольны. Отказ не влияет на запись или услуги. Согласие на дальнейшее использование можно отозвать в любое время по адресу makeartstudio.tr@gmail.com.",
     },
     submit: "Отправить заявку",
     submitting: "Отправка…",
@@ -164,7 +183,8 @@ const emptyForm = {
   childName: "", childBirthDate: "", childGender: "" as Gender | "",
   childHealthNotes: "", emergencyContact: "",
   branch: "" as Branch | "", packageId: "", message: "",
-  privacyNoticeAccepted: false, termsAccepted: false, consentHealth: false, consentMedia: false,
+  privacyNoticeAccepted: false, termsAccepted: false, consentHealth: false,
+  consentMediaWebsite: false, consentMediaSocial: false,
 };
 
 export function RegistrationForm() {
@@ -393,9 +413,21 @@ export function RegistrationForm() {
                     {t.consent.health}
                   </Consent>
                 )}
-                <Consent checked={form.consentMedia} onChange={(v) => setForm({ ...form, consentMedia: v })}>
-                  {t.consent.media}
-                </Consent>
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--pink-light)]/25 p-4 space-y-4">
+                  <div>
+                    <p className="text-sm font-semibold text-[var(--foreground)]">{t.consent.mediaIntro}</p>
+                    <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">{t.consent.mediaRights}</p>
+                  </div>
+                  <Consent checked={form.consentMediaWebsite} onChange={(v) => setForm({ ...form, consentMediaWebsite: v })}>
+                    {t.consent.mediaWebsite}
+                  </Consent>
+                  <Consent checked={form.consentMediaSocial} onChange={(v) => setForm({ ...form, consentMediaSocial: v })}>
+                    {t.consent.mediaSocial}
+                  </Consent>
+                  <Link href="/privacy#media-consent" target="_blank" rel="noopener noreferrer" className="inline-flex text-xs font-medium text-[var(--pink-dark)] underline hover:text-[var(--pink)]">
+                    {t.consent.noticeLink}
+                  </Link>
+                </div>
               </Section>
 
               {error && <p role="alert" className="text-sm text-red-600 font-medium">{error}</p>}

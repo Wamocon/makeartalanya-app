@@ -148,4 +148,38 @@ test.describe("KVKK and order-request controls", () => {
     await booking.getByText("Ön Bilgilendirme").locator("xpath=ancestor::label").getByRole("checkbox").check();
     await expect(submit).toBeEnabled();
   });
+
+  test("media permissions are specific, independent and voluntary", async ({ page }) => {
+    await page.goto("/kayit");
+
+    const mediaPanel = page.getByText("İsteğe bağlı medya izinleri").locator("xpath=ancestor::div[contains(@class, 'rounded-2xl')]");
+    await expect(mediaPanel).toContainText("yazılı görüşlerinin, fotoğraflarının, ses ve video kayıtlarının");
+    await expect(mediaPanel).toContainText("Rıza vermemek kayıt veya hizmeti etkilemez");
+    await expect(mediaPanel).toContainText("istediğim zaman geri çekebilirim");
+
+    const choices = mediaPanel.getByRole("checkbox");
+    await expect(choices).toHaveCount(2);
+    await expect(choices.nth(0)).not.toBeChecked();
+    await expect(choices.nth(1)).not.toBeChecked();
+    await expect(choices.nth(0)).not.toHaveAttribute("required", "");
+    await expect(choices.nth(1)).not.toHaveAttribute("required", "");
+
+    await choices.nth(0).check();
+    await expect(choices.nth(0)).toBeChecked();
+    await expect(choices.nth(1)).not.toBeChecked();
+  });
+
+  test("privacy and cookie notices explain media processing", async ({ page }) => {
+    await page.goto("/privacy#media-consent");
+    const mediaNotice = page.locator("#media-consent");
+    await expect(mediaNotice).toBeVisible();
+    await expect(mediaNotice).toContainText("Yazılı görüşler, fotoğraf, ses ve video kayıtları");
+    await expect(mediaNotice).toContainText("Web sitesinde yayımlama");
+    await expect(mediaNotice).toContainText("sosyal medya hesaplarında yayımlama ayrı tercihlerdir");
+
+    await page.goto("/cookies#media-and-cookies");
+    const cookieMediaNotice = page.locator("#media-and-cookies").locator("xpath=parent::section");
+    await expect(cookieMediaNotice).toContainText("bir çerez tercihi değildir");
+    await expect(cookieMediaNotice).toContainText("Çerezleri silmek medya rızasını geri çekmez");
+  });
 });

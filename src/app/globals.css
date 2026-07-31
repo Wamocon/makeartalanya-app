@@ -445,24 +445,38 @@ body:has(.public-v2) {
 }
 
 .public-v2 .painted-backdrop__stroke {
-  background:
-    linear-gradient(98deg, transparent 0 3%, currentColor 8% 87%, transparent 98%),
-    repeating-linear-gradient(177deg, currentColor 0 7px, transparent 8px 12px);
+  overflow: hidden;
+  border-radius: 41% 59% 64% 36% / 48% 36% 64% 52%;
+  background: linear-gradient(102deg, transparent 0%, currentColor 8%, currentColor 88%, transparent 100%);
   color: var(--paint-primary, rgba(255, 43, 105, 0.35));
-  clip-path: polygon(0 17%, 7% 8%, 19% 13%, 31% 3%, 46% 12%, 61% 5%, 74% 15%, 88% 7%, 100% 18%, 97% 76%, 84% 89%, 69% 80%, 53% 94%, 37% 82%, 20% 92%, 5% 78%);
   mix-blend-mode: multiply;
+}
+
+.public-v2 .painted-backdrop__stroke::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0.12;
+  background:
+    repeating-linear-gradient(176deg, rgba(255, 255, 255, 0.72) 0 2px, transparent 3px 9px),
+    repeating-linear-gradient(92deg, transparent 0 18px, rgba(16, 10, 35, 0.2) 19px 20px);
+  mix-blend-mode: overlay;
 }
 
 .public-v2 .painted-backdrop__stroke--secondary {
   color: var(--paint-secondary, rgba(255, 130, 29, 0.3));
+  border-radius: 63% 37% 46% 54% / 36% 57% 43% 64%;
 }
 
 .public-v2 .painted-backdrop__stroke--accent {
   color: var(--paint-accent, rgba(0, 176, 236, 0.28));
+  border-radius: 34% 66% 55% 45% / 62% 35% 65% 38%;
 }
 
 .public-v2 .painted-backdrop__stroke--deep {
   color: var(--paint-deep, rgba(45, 31, 119, 0.2));
+  border-radius: 58% 42% 36% 64% / 44% 63% 37% 56%;
 }
 
 .public-v2 .painted-backdrop__bristle {

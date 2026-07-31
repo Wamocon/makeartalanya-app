@@ -25,9 +25,8 @@ export function useGsapScrollAnimations() {
       const children = grid.children;
       gsap.fromTo(
         children,
-        { opacity: 0.5, y: 30, scale: 0.98 },
+        { y: 24, scale: 0.985 },
         {
-          opacity: 1,
           y: 0,
           scale: 1,
           duration: 0.6,
@@ -63,9 +62,8 @@ export function useGsapScrollAnimations() {
     reveals.forEach((el) => {
       gsap.fromTo(
         el,
-        { opacity: 0.5, y: 20 },
+        { y: 16 },
         {
-          opacity: 1,
           y: 0,
           duration: 0.7,
           ease: "power2.out",
@@ -83,10 +81,9 @@ export function useGsapScrollAnimations() {
     images.forEach((el) => {
       gsap.fromTo(
         el,
-        { scale: 0.95, opacity: 0.6 },
+        { scale: 0.985 },
         {
           scale: 1,
-          opacity: 1,
           duration: 0.8,
           ease: "power2.out",
           scrollTrigger: {
@@ -130,9 +127,8 @@ export function useGsapFadeIn(ref: React.RefObject<HTMLElement | null>, options?
 
     gsap.fromTo(
       el,
-      { opacity: 0.5, y: options?.y ?? 20 },
+      { y: options?.y ?? 20 },
       {
-        opacity: 1,
         y: 0,
         duration: options?.duration ?? 0.7,
         delay: options?.delay ?? 0,

@@ -81,7 +81,26 @@ The chat API accepts text only, blocks common identifiers/contact details,
 limits context and output, has no tools or database access, and is restricted
 to Make Art Studio information.
 
-### 2b. Mandatory business/legal launch data
+### 2b. Strato email notifications
+
+For the `info@makeartalanya.com` mailbox, configure `SMTP_HOST=smtp.strato.de`,
+`SMTP_PORT=465`, `SMTP_USER=info@makeartalanya.com`, the mailbox password in
+`SMTP_PASS`, and `ADMIN_NOTIFICATION_EMAIL=info@makeartalanya.com`. Port 465 is
+used with implicit TLS and TLS 1.2 or newer.
+
+Verify authentication without sending a message:
+
+```bash
+npm run email:status
+```
+
+Send one clearly labelled test message to the configured admin recipient:
+
+```bash
+npm run email:test
+```
+
+### 2c. Mandatory business/legal launch data
 
 Set the following from the trade registry/accountant before launch:
 

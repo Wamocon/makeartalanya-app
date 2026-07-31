@@ -23,6 +23,8 @@
     "telegram:webhook": "node scripts/telegram-setup.js set",
     "telegram:unhook": "node scripts/telegram-setup.js delete",
     "telegram:dev": "node scripts/telegram-poll.js",
+    "email:status": "node scripts/email-setup.js status",
+    "email:test": "node scripts/email-setup.js test",
     "test:report": "npx playwright show-report",
     "test:update-snapshots": "npx playwright test --update-snapshots"
   },

@@ -3,6 +3,7 @@
  * Requires SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in environment variables.
  */
 
+import "server-only";
 import nodemailer from "nodemailer";
 
 const SMTP_HOST = process.env.SMTP_HOST || "smtp.strato.de";
@@ -23,11 +24,47 @@ function createTransport() {
     host: SMTP_HOST,
     port: SMTP_PORT,
     secure: SMTP_PORT === 465,
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 20_000,
+    tls: { minVersion: "TLSv1.2" },
     auth: {
       user: SMTP_USER,
       pass: SMTP_PASS,
     },
   });
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Unknown SMTP error";
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function safeSubject(value: string): string {
+  return value.replace(/[\r\n]+/g, " ").trim().slice(0, 100);
+}
+
+export async function verifyEmailService(): Promise<
+  { ok: true } | { ok: false; reason: string }
+> {
+  if (!SMTP_USER || !SMTP_PASS) {
+    return { ok: false, reason: "SMTP_USER or SMTP_PASS is missing" };
+  }
+
+  try {
+    await createTransport().verify();
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, reason: errorMessage(error) };
+  }
 }
 
 async function sendEmail(payload: EmailPayload): Promise<boolean> {
@@ -46,9 +83,28 @@ async function sendEmail(payload: EmailPayload): Promise<boolean> {
     });
     return true;
   } catch (err) {
-    console.error("[Email] Error:", err);
+    console.error("[Email] Delivery failed:", errorMessage(err));
     return false;
   }
+}
+
+export async function sendEmailServiceTest(): Promise<boolean> {
+  if (!ADMIN_EMAIL) {
+    console.warn("[Email] ADMIN_NOTIFICATION_EMAIL not set — test skipped");
+    return false;
+  }
+
+  return sendEmail({
+    to: ADMIN_EMAIL,
+    subject: "Make Art Studio — email service test",
+    html: `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; color: #2D2327;">
+        <h2 style="margin: 0 0 12px; color: #D06E85;">Email service is working</h2>
+        <p style="line-height: 1.6;">Strato SMTP authentication and delivery were successfully triggered by Make Art Studio.</p>
+        <p style="font-size: 12px; color: #7B6E72;">This is a configuration test; no customer booking was created.</p>
+      </div>
+    `,
+  });
 }
 
 export async function notifyAdminNewBooking(booking: {
@@ -56,18 +112,18 @@ export async function notifyAdminNewBooking(booking: {
   guestPhone: string;
   language: string;
 }) {
-  if (!ADMIN_EMAIL) return;
+  if (!ADMIN_EMAIL) return false;
 
-  await sendEmail({
+  return sendEmail({
     to: ADMIN_EMAIL,
-    subject: `🎨 New Booking: ${booking.guestName}`,
+    subject: `🎨 New Booking: ${safeSubject(booking.guestName)}`,
     html: `
       <div style="font-family: -apple-system, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
         <h2 style="color: #2D2327; margin-bottom: 16px;">New Booking Request</h2>
         <div style="background: #FAFAFA; border: 1px solid #F0E8EB; border-radius: 12px; padding: 20px;">
-          <p style="margin: 8px 0;"><strong>Name:</strong> ${booking.guestName}</p>
-          <p style="margin: 8px 0;"><strong>Phone:</strong> ${booking.guestPhone}</p>
-          <p style="margin: 8px 0;"><strong>Language:</strong> ${booking.language.toUpperCase()}</p>
+          <p style="margin: 8px 0;"><strong>Name:</strong> ${escapeHtml(booking.guestName)}</p>
+          <p style="margin: 8px 0;"><strong>Phone:</strong> ${escapeHtml(booking.guestPhone)}</p>
+          <p style="margin: 8px 0;"><strong>Language:</strong> ${escapeHtml(booking.language.toUpperCase())}</p>
         </div>
         <p style="color: #9B8A8F; font-size: 13px; margin-top: 16px;">
           Go to your admin dashboard to confirm or manage this booking.
@@ -84,7 +140,7 @@ export async function notifyBookingStatusChange(booking: {
   language: string;
   email?: string;
 }) {
-  if (!booking.email) return;
+  if (!booking.email) return false;
 
   const messages: Record<string, Record<string, { subject: string; body: string }>> = {
     confirmed: {
@@ -101,9 +157,9 @@ export async function notifyBookingStatusChange(booking: {
 
   const lang = booking.language || "en";
   const msg = messages[booking.status]?.[lang] || messages[booking.status]?.en;
-  if (!msg) return;
+  if (!msg) return false;
 
-  await sendEmail({
+  return sendEmail({
     to: booking.email,
     subject: msg.subject,
     html: `
@@ -112,7 +168,7 @@ export async function notifyBookingStatusChange(booking: {
           <h1 style="color: #DCA8B2; font-size: 20px; font-weight: 600;">Make Art Studio</h1>
         </div>
         <div style="background: #FAFAFA; border: 1px solid #F0E8EB; border-radius: 12px; padding: 20px;">
-          <p style="color: #2D2327; line-height: 1.6;">${msg.body}</p>
+          <p style="color: #2D2327; line-height: 1.6;">${escapeHtml(msg.body)}</p>
         </div>
         <p style="color: #9B8A8F; font-size: 12px; margin-top: 16px; text-align: center;">
           Make Art Studio · Alanya, Turkey

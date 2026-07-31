@@ -58,7 +58,7 @@ export default function AboutSection({ t }: AboutProps) {
       <PaintedBackdrop tone="lilac" flow="right" composition="burst" />
       <div className="relative z-[1] mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-24 lg:px-10">
         <motion.div
-          initial={{ opacity: 0, x: -26 }}
+          initial={{ opacity: 0.88, x: -18 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
@@ -84,7 +84,7 @@ export default function AboutSection({ t }: AboutProps) {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, x: 26 }}
+          initial={{ opacity: 0.88, x: 18 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.75, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}

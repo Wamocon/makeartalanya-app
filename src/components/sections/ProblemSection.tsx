@@ -32,7 +32,7 @@ export default function ProblemSection({ t }: ProblemSectionProps) {
       <div className="relative z-[1] mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
         <div className="grid gap-14 lg:grid-cols-[0.92fr_1.08fr] lg:gap-24">
           <motion.div
-            initial={{ opacity: 0, y: 28 }}
+            initial={{ opacity: 0.88, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-90px" }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -50,7 +50,7 @@ export default function ProblemSection({ t }: ProblemSectionProps) {
               return (
                 <motion.div
                   key={item.text}
-                  initial={{ opacity: 0, x: 30 }}
+                  initial={{ opacity: 0.88, x: 18 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-70px" }}
                   transition={{ duration: 0.6, delay: index * 0.08 }}
@@ -68,7 +68,7 @@ export default function ProblemSection({ t }: ProblemSectionProps) {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 22 }}
+          initial={{ opacity: 0.88, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="mt-20 grid border-y border-[var(--border)] sm:grid-cols-3 lg:mt-28"

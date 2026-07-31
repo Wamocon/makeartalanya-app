@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { notifyAdminNewBooking, telegramNotifyAdminNewBooking } from "@/lib/notifications";
 import { quickBookingSchema } from "@/lib/schemas";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PRIVACY_NOTICE_VERSION, TERMS_VERSION } from "@/lib/legal";
+
+export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
@@ -66,16 +68,24 @@ export async function POST(req: Request) {
       );
     }
 
-    // Fire-and-forget notifications (don't block the response)
+    // Keep the serverless invocation alive until notification attempts settle,
+    // without making the visitor wait for SMTP/Telegram delivery.
     const notificationData = {
       guestName: payload.name,
       guestPhone: payload.phone,
       language: payload.language,
     };
-    Promise.allSettled([
-      notifyAdminNewBooking(notificationData),
-      telegramNotifyAdminNewBooking(notificationData),
-    ]).catch(() => {/* silently ignore notification failures */});
+    after(async () => {
+      const results = await Promise.allSettled([
+        notifyAdminNewBooking(notificationData),
+        telegramNotifyAdminNewBooking(notificationData),
+      ]);
+      for (const result of results) {
+        if (result.status === "rejected") {
+          console.error("[Booking notification] Delivery task failed:", result.reason);
+        }
+      }
+    });
 
     return NextResponse.json({ ok: true });
   } catch (err) {

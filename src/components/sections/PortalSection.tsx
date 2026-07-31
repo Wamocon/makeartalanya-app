@@ -28,7 +28,7 @@ export default function PortalSection({ t }: PortalSectionProps) {
       <div className="future-grid absolute inset-0 opacity-40" aria-hidden="true" />
       <div className="relative z-[1] mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center lg:gap-24 lg:px-10">
         <motion.div
-          initial={{ opacity: 0, x: -28 }}
+          initial={{ opacity: 0.88, x: -18 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
@@ -54,7 +54,7 @@ export default function PortalSection({ t }: PortalSectionProps) {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 28, rotate: 1 }}
+          initial={{ opacity: 0.88, y: 18, rotate: 0.6 }}
           whileInView={{ opacity: 1, y: 0, rotate: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}

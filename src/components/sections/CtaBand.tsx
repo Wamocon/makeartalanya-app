@@ -38,7 +38,7 @@ export default function CtaBand({ locale }: { locale: Locale }) {
 
       <div className="relative z-10 mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-10">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0.88, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
@@ -53,7 +53,7 @@ export default function CtaBand({ locale }: { locale: Locale }) {
         </motion.div>
 
         <motion.a
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0.88, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           href="/kayit"
