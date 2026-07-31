@@ -4,7 +4,6 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Check, Infinity as InfinityIcon, Sparkles, TicketCheck } from "lucide-react";
 import { packages, type Locale } from "@/i18n/translations";
-import { SectionHeading } from "@/components/sections/SectionHeading";
 
 interface PackagesProps {
   t: {
@@ -89,22 +88,42 @@ export default function PackagesSection({ t, locale }: PackagesProps) {
   const copy = SUPPORTING_COPY[locale];
 
   return (
-    <section id="courses" className="relative overflow-hidden bg-[radial-gradient(circle_at_9%_12%,rgba(243,67,128,0.2),transparent_29%),radial-gradient(circle_at_91%_78%,rgba(0,184,217,0.18),transparent_31%),#17131e] py-24 text-white sm:py-32 lg:py-40">
+    <section
+      id="courses"
+      className="relative isolate overflow-hidden py-20 text-white sm:py-24 lg:py-28"
+      style={{
+        backgroundColor: "#17131e",
+        backgroundImage:
+          "radial-gradient(circle at 9% 12%, rgba(243,67,128,0.24), transparent 30%), radial-gradient(circle at 91% 78%, rgba(0,184,217,0.2), transparent 32%)",
+      }}
+    >
       <div className="future-grid-dark absolute inset-0 opacity-45" aria-hidden="true" />
       <div className="absolute -left-28 top-16 size-[28rem] rounded-full bg-[var(--pink)]/14 blur-[140px]" aria-hidden="true" />
       <div className="absolute -right-24 bottom-0 size-[26rem] rounded-full bg-[var(--blue)]/10 blur-[140px]" aria-hidden="true" />
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-        <div className="grid gap-8 border-b border-white/14 pb-12 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end lg:pb-16">
-          <SectionHeading label={t.packages.badge} title={t.packages.headline} tone="dark" />
-          <div className="rounded-[1.4rem] border border-white/14 bg-white/[0.055] p-5 backdrop-blur-sm">
+        <div data-testid="packages-intro" className="grid gap-8 overflow-hidden rounded-[2rem] border border-white/12 bg-[#211a2b]/95 p-7 shadow-[0_30px_100px_rgba(0,0,0,0.34)] backdrop-blur-sm sm:p-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end lg:p-12">
+          <div>
+            <div className="mb-5 flex items-center gap-3 text-[0.68rem] font-extrabold uppercase tracking-[0.24em] text-[#ff8da2]">
+              <span className="h-0.5 w-9 rounded-full bg-current" aria-hidden="true" />
+              {t.packages.badge}
+            </div>
+            <h2 className="max-w-4xl font-display text-[clamp(2.65rem,5.8vw,5.7rem)] font-semibold leading-[0.94] tracking-[-0.05em] text-white drop-shadow-[0_3px_22px_rgba(0,0,0,0.28)]">
+              {t.packages.headline.split("\n").map((line, index) => (
+                <span key={`${line}-${index}`} className="block">
+                  {line}
+                </span>
+              ))}
+            </h2>
+          </div>
+          <div className="rounded-[1.4rem] border border-[#78dce8]/35 bg-[#78dce8]/10 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             <div className="flex items-center gap-3">
-              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[var(--blue)] text-[#17131e]">
+              <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[#78dce8] text-[#17131e] shadow-[0_10px_30px_rgba(120,220,232,0.24)]">
                 <InfinityIcon aria-hidden="true" className="size-5" strokeWidth={2.1} />
               </span>
               <div>
-                <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.2em] text-white/42">Make Art Pass</p>
-                <p className="mt-1 text-sm font-semibold text-white/88">{t.packages.validity}</p>
+                <p className="text-[0.65rem] font-extrabold uppercase tracking-[0.2em] text-[#a9edf4]">Make Art Pass</p>
+                <p className="mt-1 text-base font-bold text-white">{t.packages.validity}</p>
               </div>
             </div>
           </div>

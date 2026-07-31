@@ -12,6 +12,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { packages, type Locale } from "@/i18n/translations";
+import { OrbitMark } from "@/components/sections/OrbitMark";
+import { PaintedBackdrop } from "@/components/sections/PaintedBackdrop";
 
 type Relationship = "mother" | "father" | "guardian";
 type Gender = "male" | "female" | "other";
@@ -245,14 +247,18 @@ export function RegistrationForm() {
   }
 
   return (
-    <main className="min-h-screen relative">
-      <div className="absolute inset-0 mesh-gradient -z-10" aria-hidden="true" />
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+    <main className="public-v2 relative min-h-screen overflow-hidden bg-[#fff8f5]">
+      <div className="absolute inset-0" aria-hidden="true">
+        <div className="painted-section painted-section--lilac h-full">
+          <PaintedBackdrop tone="lilac" flow="right" composition="palette" />
+        </div>
+      </div>
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
         {/* header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-10 flex items-center justify-between rounded-full border border-white/70 bg-white/75 px-4 py-3 shadow-[0_18px_60px_rgba(52,25,88,0.12)] backdrop-blur-xl sm:px-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--foreground)] transition-transform hover:-translate-x-0.5"
           >
             <ArrowLeft className="w-4 h-4" aria-hidden="true" />
             {t.back}
@@ -264,8 +270,10 @@ export function RegistrationForm() {
                 type="button"
                 onClick={() => switchLocale(l)}
                 aria-pressed={l === locale}
-                className={`px-3 py-1 rounded-full text-xs font-semibold uppercase transition-colors ${
-                  l === locale ? "bg-[var(--foreground)] text-white" : "text-[var(--muted)] hover:text-[var(--foreground)]"
+                className={`rounded-full px-3 py-1.5 text-xs font-bold uppercase transition-all ${
+                  l === locale
+                    ? "bg-[linear-gradient(135deg,#ff3d76,#7559d9)] text-white shadow-md"
+                    : "text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)]"
                 }`}
               >
                 {l}
@@ -275,8 +283,8 @@ export function RegistrationForm() {
         </div>
 
         {done ? (
-          <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-[var(--shadow-lg)] border border-[var(--border)] text-center">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-5">
+          <div className="mx-auto max-w-2xl rounded-[2.25rem] border border-white/80 bg-white/85 p-8 text-center shadow-[0_30px_100px_rgba(52,25,88,0.18)] backdrop-blur-xl sm:p-12">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[linear-gradient(135deg,#dffbea,#c8f1ff)] shadow-inner">
               <Check className="w-8 h-8 text-emerald-500" aria-hidden="true" />
             </div>
             <h1
@@ -290,23 +298,37 @@ export function RegistrationForm() {
             <p className="text-[var(--muted)] leading-relaxed">{t.successMsg}</p>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 mt-6 bg-[var(--foreground)] text-white font-semibold px-6 py-3 rounded-full hover:opacity-90 transition-opacity"
+              className="mt-7 inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#ff3d76,#7559d9)] px-7 py-3.5 font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"
             >
               {t.back}
             </Link>
           </div>
         ) : (
-          <>
-            <div className="mb-8">
-              <h1 className="text-3xl sm:text-4xl font-bold text-[var(--foreground)] mb-2 tracking-tight" style={{ fontFamily: "var(--font-display)" }}>
+          <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:gap-14">
+            <aside className="lg:sticky lg:top-10 lg:pt-6">
+              <OrbitMark className="mb-6 text-[#f23f73]" />
+              <p className="mb-4 text-xs font-black uppercase tracking-[0.32em] text-[#ce2b62]">Make Art · Studio Alanya</p>
+              <h1 className="max-w-xl text-5xl font-bold leading-[0.92] tracking-[-0.045em] text-[var(--foreground)] sm:text-6xl lg:text-7xl" style={{ fontFamily: "var(--font-display)" }}>
                 {t.title}
               </h1>
-              <p className="text-[var(--muted)] leading-relaxed">{t.subtitle}</p>
-            </div>
+              <p className="mt-6 max-w-lg text-base leading-7 text-[var(--foreground)]/70 sm:text-lg">{t.subtitle}</p>
 
-            <form onSubmit={handleSubmit} className="space-y-8" aria-busy={loading}>
+              <div className="mt-9 grid max-w-lg grid-cols-2 gap-3">
+                {[t.sections.parent, t.sections.child, t.sections.enrollment, t.sections.consent].map((label, index) => (
+                  <div
+                    key={label}
+                    className="rounded-2xl border border-white/70 bg-white/60 p-4 shadow-[0_14px_40px_rgba(61,31,95,0.08)] backdrop-blur-md"
+                  >
+                    <span className="mb-2 block text-xs font-black tracking-[0.22em] text-[#c72f68]">0{index + 1}</span>
+                    <span className="text-sm font-bold text-[var(--foreground)]">{label}</span>
+                  </div>
+                ))}
+              </div>
+            </aside>
+
+            <form onSubmit={handleSubmit} className="space-y-6" aria-busy={loading}>
               {/* Parent */}
-              <Section title={t.sections.parent}>
+              <Section title={t.sections.parent} index="01" tone="aqua">
                 <Field label={t.f.parentName} required>
                   <input required value={form.parentName} onChange={(e) => setForm({ ...form, parentName: e.target.value })} className={inputCls} placeholder="Ayşe Yılmaz" />
                 </Field>
@@ -337,7 +359,7 @@ export function RegistrationForm() {
               </Section>
 
               {/* Child */}
-              <Section title={t.sections.child}>
+              <Section title={t.sections.child} index="02" tone="rose">
                 <Field label={t.f.childName} required>
                   <input required value={form.childName} onChange={(e) => setForm({ ...form, childName: e.target.value })} className={inputCls} />
                 </Field>
@@ -363,7 +385,7 @@ export function RegistrationForm() {
               </Section>
 
               {/* Enrollment */}
-              <Section title={t.sections.enrollment}>
+              <Section title={t.sections.enrollment} index="03" tone="amber">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <Field label={t.f.branch} required>
                     <select required value={form.branch} onChange={(e) => setForm({ ...form, branch: e.target.value as Branch })} className={inputCls}>
@@ -390,7 +412,7 @@ export function RegistrationForm() {
               </Section>
 
               {/* Consents */}
-              <Section title={t.sections.consent}>
+              <Section title={t.sections.consent} index="04" tone="lilac">
                 <Consent checked={form.privacyNoticeAccepted} onChange={(v) => setForm({ ...form, privacyNoticeAccepted: v })} required>
                   {t.consent.notice}{" "}
                   <Link
@@ -430,18 +452,22 @@ export function RegistrationForm() {
                 </div>
               </Section>
 
-              {error && <p role="alert" className="text-sm text-red-600 font-medium">{error}</p>}
+              {error && (
+                <p role="alert" className="rounded-2xl border border-red-200 bg-red-50/90 px-5 py-4 text-sm font-semibold text-red-700 shadow-sm">
+                  {error}
+                </p>
+              )}
 
               <button
                 type="submit"
                 disabled={!canSubmit}
-                className="w-full py-4 bg-[var(--foreground)] hover:opacity-90 text-white font-semibold rounded-full transition-all text-base disabled:opacity-40 disabled:cursor-not-allowed shadow-[var(--shadow-lg)] inline-flex items-center justify-center gap-2"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(115deg,#ff3f76_0%,#ff8a24_42%,#7258d7_100%)] py-4 text-base font-bold text-white shadow-[0_18px_45px_rgba(197,48,104,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_55px_rgba(106,72,197,0.32)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
               >
                 {loading && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
                 {loading ? t.submitting : t.submit}
               </button>
             </form>
-          </>
+          </div>
         )}
       </div>
     </main>
@@ -449,21 +475,34 @@ export function RegistrationForm() {
 }
 
 const inputCls =
-  "w-full px-4 py-3 rounded-xl border border-[var(--border)] focus-visible:outline-none focus-visible:border-[var(--pink)] focus-visible:ring-2 focus-visible:ring-[var(--pink)]/30 text-sm bg-white/80";
+  "w-full rounded-2xl border border-black/10 bg-white/80 px-4 py-3.5 text-base text-[var(--foreground)] shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] transition-all placeholder:text-black/30 focus-visible:border-[#df4c7b] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#f36b96]/15";
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+type SectionTone = "aqua" | "rose" | "amber" | "lilac";
+
+const SECTION_STYLES: Record<SectionTone, string> = {
+  aqua: "border-cyan-200/80 bg-[linear-gradient(145deg,rgba(231,252,255,0.94),rgba(255,255,255,0.82))]",
+  rose: "border-rose-200/80 bg-[linear-gradient(145deg,rgba(255,235,242,0.95),rgba(255,255,255,0.84))]",
+  amber: "border-amber-200/80 bg-[linear-gradient(145deg,rgba(255,246,215,0.96),rgba(255,255,255,0.84))]",
+  lilac: "border-violet-200/80 bg-[linear-gradient(145deg,rgba(243,235,255,0.96),rgba(255,255,255,0.84))]",
+};
+
+function Section({ title, index, tone, children }: { title: string; index: string; tone: SectionTone; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-3xl p-5 sm:p-7 shadow-[var(--shadow-sm)] border border-[var(--border)] space-y-4">
-      <h2 className="text-sm font-bold uppercase tracking-wide text-[var(--pink-dark)]">{title}</h2>
+    <section className={`relative space-y-4 overflow-hidden rounded-[2rem] border p-5 shadow-[0_24px_70px_rgba(61,31,95,0.11)] backdrop-blur-xl sm:p-7 ${SECTION_STYLES[tone]}`}>
+      <div className="absolute inset-x-8 top-0 h-1 rounded-b-full bg-[linear-gradient(90deg,#20b8cc,#ff477d,#ff9f24,#7559d9)]" aria-hidden="true" />
+      <div className="mb-1 flex items-center justify-between gap-4">
+        <h2 className="text-sm font-black uppercase tracking-[0.15em] text-[var(--foreground)]">{title}</h2>
+        <span className="text-xs font-black tracking-[0.2em] text-[#c72f68]">{index}</span>
+      </div>
       {children}
-    </div>
+    </section>
   );
 }
 
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="block text-xs font-semibold text-[var(--muted)] mb-1.5">
+      <span className="mb-2 block text-xs font-bold text-[var(--foreground)]/65">
         {label} {required && <span className="text-[var(--pink-dark)]">*</span>}
         {hint && <span className="font-normal normal-case"> ({hint})</span>}
       </span>
@@ -474,15 +513,15 @@ function Field({ label, required, hint, children }: { label: string; required?: 
 
 function Consent({ checked, onChange, required, children }: { checked: boolean; onChange: (v: boolean) => void; required?: boolean; children: React.ReactNode }) {
   return (
-    <label className="flex items-start gap-3 cursor-pointer group">
+    <label className="group flex cursor-pointer items-start gap-3 rounded-2xl border border-white/80 bg-white/[0.58] p-4 transition-colors hover:bg-white/[0.82]">
       <input
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
         required={required}
-        className="mt-0.5 w-5 h-5 rounded accent-[var(--pink-dark)] shrink-0"
+        className="mt-0.5 h-5 w-5 shrink-0 rounded accent-[#d43f72]"
       />
-      <span className="text-sm text-[var(--foreground)]/85 leading-relaxed">
+      <span className="text-sm leading-relaxed text-[var(--foreground)]/85">
         {children} {required && <span className="text-[var(--pink-dark)]">*</span>}
       </span>
     </label>
