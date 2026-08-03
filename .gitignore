@@ -56,3 +56,8 @@ e2e/tests/*.spec.ts-snapshots/
 /dev.log
 /start.log
 .gstack/
+.gallery-cache/
+
+# Original studio photos (HEIC/full-res). Source for scripts/build-gallery.mjs;
+# never deployed. Backed up by OneDrive at this path.
+source-photos/

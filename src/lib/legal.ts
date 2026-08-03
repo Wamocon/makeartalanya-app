@@ -1,8 +1,10 @@
-export const PRIVACY_NOTICE_VERSION = "2026-07-v3";
-export const TERMS_VERSION = "2026-07-v1";
+export const PRIVACY_NOTICE_VERSION = "2026-08-v4";
+export const TERMS_VERSION = "2026-08-v2";
 export const COOKIE_NOTICE_VERSION = "2026-07-v2";
 export const AI_NOTICE_VERSION = "2026-07-v1";
-export const MEDIA_CONSENT_VERSION = "2026-07-v1";
+export const MEDIA_CONSENT_VERSION = "2026-08-v2";
+/** Participation agreement + studio rules published at /rules. */
+export const RULES_VERSION = "2026-08-v1";
 
 export const COMPANY = {
   legalName: "Make Art Resim Atölyesi Turizm ve Ticaret Limited Şirketi",
@@ -22,5 +24,5 @@ export const COMPANY = {
   email: "makeartstudio.tr@gmail.com",
   instagram: "make_art.tr",
   website: "https://makeartalanya.com",
-  lastUpdated: "31.07.2026",
+  lastUpdated: "03.08.2026",
 } as const;

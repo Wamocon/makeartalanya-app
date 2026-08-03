@@ -46,6 +46,7 @@ const COPY: Record<Locale, {
   language: string;
   sections: { parent: string; child: string; enrollment: string; consent: string };
   f: Record<string, string>;
+  hints: Record<"parentPhone" | "authorizedPickup" | "childHealthNotes", string>;
   rel: Record<Relationship, string>;
   gender: Record<Gender, string>;
   branch: Record<Branch, string>;
@@ -56,6 +57,7 @@ const COPY: Record<Locale, {
     noticeLink: string;
     terms: string;
     termsLink: string;
+    rulesLink: string;
     health: string;
     mediaIntro: string;
     mediaWebsite: string;
@@ -76,10 +78,16 @@ const COPY: Record<Locale, {
     sections: { parent: "Veli Bilgileri", child: "Çocuk Bilgileri", enrollment: "Ders Seçimi", consent: "Onaylar" },
     f: {
       parentName: "Ad Soyad", parentIdNo: "T.C. Kimlik / Pasaport No", relationship: "Yakınlık",
-      parentEmail: "E-posta", parentPhone: "Telegram Telefon", parentAddress: "Adres",
+      parentEmail: "E-posta", parentPhone: "WhatsApp Telefon", parentAddress: "Adres",
       childName: "Çocuğun Adı Soyadı", childBirthDate: "Doğum Tarihi", childGender: "Cinsiyet",
       childHealthNotes: "Sağlık / alerji notları", emergencyContact: "Acil durum kişisi (ad, telefon)",
+      authorizedPickup: "Çocuğu kimler alabilir (ad, yakınlık, telefon)",
       branch: "Branş", package: "Paket", message: "Mesajınız",
+    },
+    hints: {
+      parentPhone: "Stüdyo sizinle bu numaradan WhatsApp üzerinden iletişime geçer.",
+      authorizedPickup: "Çocuk yalnızca burada belirttiğiniz kişilere teslim edilir.",
+      childHealthNotes: "Boş bırakabilirsiniz; kaydınızı veya ücreti etkilemez.",
     },
     rel: { mother: "Anne", father: "Baba", guardian: "Veli / Vasi" },
     gender: { male: "Erkek", female: "Kız", other: "Diğer" },
@@ -91,6 +99,7 @@ const COPY: Record<Locale, {
       noticeLink: "Aydınlatma Metni",
       terms: "Bu formun ödeme yükümlülüğü doğurmayan bir kayıt talebi olduğunu ve hizmet koşulları ile ön bilgilendirmeyi okuduğumu kabul ediyorum.",
       termsLink: "Ön Bilgilendirme ve Hizmet Koşulları",
+      rulesLink: "Katılım Sözleşmesi ve Stüdyo Kuralları",
       health: "Yazdığım sağlık/alerji notlarının çocuğumun ders güvenliği amacıyla işlenmesine açık rıza veriyorum. Bu alanı boş bırakabileceğimi biliyorum.",
       mediaIntro: "İsteğe bağlı medya izinleri — her seçim birbirinden ve kayıttan bağımsızdır:",
       mediaWebsite: "Veli/vasi sıfatıyla; benim ve/veya çocuğumun yazılı görüşlerinin, fotoğraflarının, ses ve video kayıtlarının stüdyo faaliyetlerini tanıtmak amacıyla çekilmesine/kaydedilmesine, düzenlenmesine, saklanmasına ve makeartalanya.com sitesinde yayımlanmasına açık rıza veriyorum.",
@@ -102,7 +111,7 @@ const COPY: Record<Locale, {
     telegramCta: "Telegram'da bildirim al",
     telegramHint: "Dokunun; kaydınızla ilgili güncellemeleri Telegram'dan gönderelim.",
     successTitle: "Teşekkürler!",
-    successMsg: "Kaydınızı aldık. Stüdyo, gün, saat ve paket detayları için en kısa sürede Telegram'dan sizinle iletişime geçecek.",
+    successMsg: "Kaydınızı aldık. Stüdyo, gün, saat ve paket detayları için en kısa sürede WhatsApp'tan sizinle iletişime geçecek.",
     errGeneric: "Kayıt gönderilemedi. Lütfen alanları kontrol edip tekrar deneyin.",
     errNetwork: "Bağlantı hatası. Lütfen tekrar deneyin.",
   },
@@ -115,10 +124,16 @@ const COPY: Record<Locale, {
     sections: { parent: "Parent / Guardian", child: "Child's Details", enrollment: "Class Choice", consent: "Consents" },
     f: {
       parentName: "Full name", parentIdNo: "ID / Passport no.", relationship: "Relationship",
-      parentEmail: "Email", parentPhone: "Telegram phone", parentAddress: "Address",
+      parentEmail: "Email", parentPhone: "WhatsApp phone", parentAddress: "Address",
       childName: "Child's full name", childBirthDate: "Date of birth", childGender: "Gender",
       childHealthNotes: "Health / allergy notes", emergencyContact: "Emergency contact (name, phone)",
+      authorizedPickup: "Who may collect the child (name, relationship, phone)",
       branch: "Class", package: "Package", message: "Your message",
+    },
+    hints: {
+      parentPhone: "The studio contacts you on this number via WhatsApp.",
+      authorizedPickup: "Your child is released only to the people you name here.",
+      childHealthNotes: "You may leave this blank; it does not affect your registration or the price.",
     },
     rel: { mother: "Mother", father: "Father", guardian: "Guardian" },
     gender: { male: "Boy", female: "Girl", other: "Other" },
@@ -130,6 +145,7 @@ const COPY: Record<Locale, {
       noticeLink: "Privacy notice",
       terms: "I understand this is a non-binding registration request with no payment obligation, and I have read the pre-contract information and service terms.",
       termsLink: "Pre-contract information and service terms",
+      rulesLink: "Participation agreement and studio rules",
       health: "I explicitly consent to the processing of the health/allergy notes I entered solely for my child's safety during class. I understand that I may leave this field blank.",
       mediaIntro: "Optional media permissions — each choice is independent from the other and from registration:",
       mediaWebsite: "As parent/guardian, I explicitly consent to written testimonials, photographs, audio and video recordings of me and/or my child being captured/recorded, edited, stored and published on makeartalanya.com to present the studio's activities.",
@@ -141,7 +157,7 @@ const COPY: Record<Locale, {
     telegramCta: "Get updates on Telegram",
     telegramHint: "Tap to let us send you updates about this registration on Telegram.",
     successTitle: "Thank you!",
-    successMsg: "We've received your registration. The studio will contact you shortly on Telegram to confirm days, times and package details.",
+    successMsg: "We've received your registration. The studio will contact you shortly on WhatsApp to confirm days, times and package details.",
     errGeneric: "Registration failed. Please check the fields and try again.",
     errNetwork: "Network error. Please try again.",
   },
@@ -154,10 +170,16 @@ const COPY: Record<Locale, {
     sections: { parent: "Родитель / опекун", child: "Данные ребёнка", enrollment: "Выбор занятия", consent: "Согласия" },
     f: {
       parentName: "Имя и фамилия", parentIdNo: "Удостоверение / паспорт", relationship: "Кем приходится",
-      parentEmail: "Email", parentPhone: "Телефон Telegram", parentAddress: "Адрес",
+      parentEmail: "Email", parentPhone: "Телефон WhatsApp", parentAddress: "Адрес",
       childName: "Имя и фамилия ребёнка", childBirthDate: "Дата рождения", childGender: "Пол",
       childHealthNotes: "Здоровье / аллергии", emergencyContact: "Контакт на случай экстренной ситуации (имя, телефон)",
+      authorizedPickup: "Кто может забирать ребёнка (имя, кем приходится, телефон)",
       branch: "Занятие", package: "Пакет", message: "Ваше сообщение",
+    },
+    hints: {
+      parentPhone: "Студия свяжется с вами по этому номеру в WhatsApp.",
+      authorizedPickup: "Ребёнок передаётся только тем, кого вы укажете здесь.",
+      childHealthNotes: "Поле можно оставить пустым — это не влияет на запись и стоимость.",
     },
     rel: { mother: "Мама", father: "Папа", guardian: "Опекун" },
     gender: { male: "Мальчик", female: "Девочка", other: "Другое" },
@@ -169,6 +191,7 @@ const COPY: Record<Locale, {
       noticeLink: "Уведомление о конфиденциальности",
       terms: "Я понимаю, что это необязывающая заявка без обязанности платить, и прочитал(а) преддоговорную информацию и условия услуг.",
       termsLink: "Преддоговорная информация и условия",
+      rulesLink: "Договор об участии и правила студии",
       health: "Я явно соглашаюсь на обработку введённых сведений о здоровье/аллергии только для безопасности ребёнка на занятии. Поле можно оставить пустым.",
       mediaIntro: "Необязательные разрешения на материалы — каждый выбор независим от другого и от записи:",
       mediaWebsite: "Как родитель/опекун я явно соглашаюсь, чтобы письменные отзывы, фотографии, аудио- и видеозаписи со мной и/или моим ребёнком создавались, редактировались, хранились и публиковались на makeartalanya.com для представления деятельности студии.",
@@ -180,7 +203,7 @@ const COPY: Record<Locale, {
     telegramCta: "Получать обновления в Telegram",
     telegramHint: "Нажмите, чтобы мы присылали обновления по этой заявке в Telegram.",
     successTitle: "Спасибо!",
-    successMsg: "Мы получили вашу заявку. Студия свяжется с вами в Telegram, чтобы подтвердить дни, время и детали пакета.",
+    successMsg: "Мы получили вашу заявку. Студия свяжется с вами в WhatsApp, чтобы подтвердить дни, время и детали пакета.",
     errGeneric: "Не удалось отправить. Проверьте поля и попробуйте снова.",
     errNetwork: "Ошибка сети. Попробуйте ещё раз.",
   },
@@ -190,7 +213,7 @@ const emptyForm = {
   parentName: "", parentIdNo: "", parentRelationship: "" as Relationship | "",
   parentEmail: "", parentPhone: "", parentAddress: "",
   childName: "", childBirthDate: "", childGender: "" as Gender | "",
-  childHealthNotes: "", emergencyContact: "",
+  childHealthNotes: "", emergencyContact: "", authorizedPickup: "",
   branch: "" as Branch | "", packageId: "", message: "",
   privacyNoticeAccepted: false, termsAccepted: false, consentHealth: false,
   consentMediaWebsite: false, consentMediaSocial: false,
@@ -219,11 +242,17 @@ export function RegistrationForm() {
     window.dispatchEvent(new CustomEvent("localechange", { detail: l }));
   }
 
+  // Mirrors registrationSchema so the button disables instead of the server
+  // rejecting a filled-in form. The required set is the paper questionnaire's.
   const canSubmit =
     !loading &&
     form.parentName.trim().length >= 2 &&
     form.parentPhone.trim().length >= 7 &&
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.parentEmail.trim()) &&
     form.childName.trim().length >= 2 &&
+    /^\d{4}-\d{2}-\d{2}$/.test(form.childBirthDate) &&
+    form.emergencyContact.trim().length >= 3 &&
+    form.authorizedPickup.trim().length >= 2 &&
     !!form.branch &&
     form.privacyNoticeAccepted &&
     form.termsAccepted &&
@@ -377,17 +406,17 @@ export function RegistrationForm() {
                     <input value={form.parentIdNo} onChange={(e) => setForm({ ...form, parentIdNo: e.target.value })} className={inputCls} />
                   </Field>
                 </div>
-                <Field label={t.f.parentPhone} required>
-                  <input required type="tel" value={form.parentPhone} onChange={(e) => setForm({ ...form, parentPhone: e.target.value })} className={inputCls} placeholder="+90 5xx xxx xx xx" />
-                </Field>
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <Field label={t.f.parentEmail} hint={t.optional}>
-                    <input type="email" value={form.parentEmail} onChange={(e) => setForm({ ...form, parentEmail: e.target.value })} className={inputCls} />
+                  <Field label={t.f.parentPhone} required note={t.hints.parentPhone}>
+                    <input required type="tel" value={form.parentPhone} onChange={(e) => setForm({ ...form, parentPhone: e.target.value })} className={inputCls} placeholder="+90 5xx xxx xx xx" />
                   </Field>
-                  <Field label={t.f.parentAddress} hint={t.optional}>
-                    <input value={form.parentAddress} onChange={(e) => setForm({ ...form, parentAddress: e.target.value })} className={inputCls} />
+                  <Field label={t.f.parentEmail} required>
+                    <input required type="email" value={form.parentEmail} onChange={(e) => setForm({ ...form, parentEmail: e.target.value })} className={inputCls} />
                   </Field>
                 </div>
+                <Field label={t.f.parentAddress} hint={t.optional}>
+                  <input value={form.parentAddress} onChange={(e) => setForm({ ...form, parentAddress: e.target.value })} className={inputCls} />
+                </Field>
               </Section>
 
               {/* Child */}
@@ -396,8 +425,8 @@ export function RegistrationForm() {
                   <input required value={form.childName} onChange={(e) => setForm({ ...form, childName: e.target.value })} className={inputCls} />
                 </Field>
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <Field label={t.f.childBirthDate} hint={t.optional}>
-                    <input type="date" value={form.childBirthDate} onChange={(e) => setForm({ ...form, childBirthDate: e.target.value })} className={inputCls} />
+                  <Field label={t.f.childBirthDate} required>
+                    <input required type="date" value={form.childBirthDate} onChange={(e) => setForm({ ...form, childBirthDate: e.target.value })} className={inputCls} />
                   </Field>
                   <Field label={t.f.childGender} hint={t.optional}>
                     <select value={form.childGender} onChange={(e) => setForm({ ...form, childGender: e.target.value as Gender })} className={inputCls}>
@@ -408,11 +437,14 @@ export function RegistrationForm() {
                     </select>
                   </Field>
                 </div>
-                <Field label={t.f.childHealthNotes} hint={t.optional}>
-                  <input value={form.childHealthNotes} onChange={(e) => setForm({ ...form, childHealthNotes: e.target.value })} className={inputCls} />
+                <Field label={t.f.emergencyContact} required>
+                  <input required value={form.emergencyContact} onChange={(e) => setForm({ ...form, emergencyContact: e.target.value })} className={inputCls} />
                 </Field>
-                <Field label={t.f.emergencyContact} hint={t.optional}>
-                  <input value={form.emergencyContact} onChange={(e) => setForm({ ...form, emergencyContact: e.target.value })} className={inputCls} />
+                <Field label={t.f.authorizedPickup} required note={t.hints.authorizedPickup}>
+                  <textarea required rows={2} value={form.authorizedPickup} onChange={(e) => setForm({ ...form, authorizedPickup: e.target.value })} className={`${inputCls} resize-none`} />
+                </Field>
+                <Field label={t.f.childHealthNotes} hint={t.optional} note={t.hints.childHealthNotes}>
+                  <textarea rows={2} value={form.childHealthNotes} onChange={(e) => setForm({ ...form, childHealthNotes: e.target.value })} className={`${inputCls} resize-none`} />
                 </Field>
               </Section>
 
@@ -460,6 +492,10 @@ export function RegistrationForm() {
                   {t.consent.terms}{" "}
                   <Link href="/terms" target="_blank" rel="noopener noreferrer" className="text-[var(--pink-dark)] underline hover:text-[var(--pink)]">
                     {t.consent.termsLink}
+                  </Link>
+                  {" · "}
+                  <Link href="/rules" target="_blank" rel="noopener noreferrer" className="text-[var(--pink-dark)] underline hover:text-[var(--pink)]">
+                    {t.consent.rulesLink}
                   </Link>
                 </Consent>
                 {form.childHealthNotes.trim() && (
@@ -531,7 +567,7 @@ function Section({ title, index, tone, children }: { title: string; index: strin
   );
 }
 
-function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
+function Field({ label, required, hint, note, children }: { label: string; required?: boolean; hint?: string; note?: string; children: React.ReactNode }) {
   return (
     <label className="block">
       <span className="mb-2 block text-xs font-bold text-[var(--foreground)]/65">
@@ -539,6 +575,7 @@ function Field({ label, required, hint, children }: { label: string; required?: 
         {hint && <span className="font-normal normal-case"> ({hint})</span>}
       </span>
       {children}
+      {note && <span className="mt-1.5 block text-xs font-normal leading-relaxed text-[var(--foreground)]/50">{note}</span>}
     </label>
   );
 }

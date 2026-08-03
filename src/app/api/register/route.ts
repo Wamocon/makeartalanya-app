@@ -30,6 +30,8 @@ const MEDIA_CONSENT_COLUMNS = [
   "media_consent_ip",
 ] as const;
 
+const AUTHORIZED_PICKUP_COLUMNS = ["authorized_pickup"] as const;
+
 const TELEGRAM_LINK_COLUMNS = ["telegram_link_token"] as const;
 
 type RegistrationInsertError = {
@@ -94,14 +96,14 @@ export async function POST(req: Request) {
       parent_name: d.parentName.trim(),
       parent_id_no: d.parentIdNo?.trim() || null,
       parent_relationship: d.parentRelationship || null,
-      parent_email: d.parentEmail?.trim() || null,
-      parent_phone: d.parentPhone.trim(),
+      parent_email: d.parentEmail.trim(),
+      parent_phone: d.parentPhone.trim(), // WhatsApp
       parent_address: d.parentAddress?.trim() || null,
       child_name: d.childName.trim(),
-      child_birth_date: d.childBirthDate || null,
+      child_birth_date: d.childBirthDate,
       child_gender: d.childGender || null,
       child_health_notes: d.childHealthNotes?.trim() || null,
-      emergency_contact: d.emergencyContact?.trim() || null,
+      emergency_contact: d.emergencyContact.trim(),
       branch: d.branch,
       package_id: d.packageId?.trim() || null,
       preferred_language: d.preferredLanguage,
@@ -142,7 +144,21 @@ export async function POST(req: Request) {
     // the parent's own /start ties their chat back to this row.
     const telegramToken = newLinkToken();
 
+    // Who may collect the child (agreement clause 3.5) — a safeguarding field,
+    // so it gets its own fallback layer rather than riding along with the
+    // Telegram token, which is a convenience and may be dropped independently.
+    const pickupRegistration = {
+      ...mediaConsentRegistration,
+      authorized_pickup: d.authorizedPickup.trim(),
+    };
+
     const currentRegistration = {
+      ...pickupRegistration,
+      telegram_link_token: telegramToken,
+    };
+
+    // Shape used when only the pickup column is missing: keep the token.
+    const mediaConsentWithTelegram = {
       ...mediaConsentRegistration,
       telegram_link_token: telegramToken,
     };
@@ -158,7 +174,24 @@ export async function POST(req: Request) {
         { code: error?.code },
       );
       telegramLinkAvailable = false;
-      ({ error } = await supabase.from("registrations").insert(mediaConsentRegistration));
+      ({ error } = await supabase.from("registrations").insert(pickupRegistration));
+    }
+
+    // Same story for migration 0022. Losing the pickup list is worse than the
+    // Telegram token, so it is logged at error level: the studio needs to ask
+    // for it by hand until the migration lands.
+    //
+    // Keep the Telegram token on this retry when that column does exist —
+    // dropping it here would still hand the parent a deep link whose token was
+    // never stored, so tapping it could never bind their chat.
+    if (isMissingRegistrationColumn(error, AUTHORIZED_PICKUP_COLUMNS)) {
+      console.error(
+        "authorized_pickup column is missing (migration 0022 not applied); saving without the pickup list.",
+        { code: error?.code },
+      );
+      ({ error } = telegramLinkAvailable
+        ? await supabase.from("registrations").insert(mediaConsentWithTelegram)
+        : await supabase.from("registrations").insert(mediaConsentRegistration));
     }
 
     // Deployments can briefly run this form before migration 0020 reaches
@@ -203,10 +236,10 @@ export async function POST(req: Request) {
     Promise.allSettled([
       notifyAdminNewBooking(notificationData),
       telegramNotifyAdminNewBooking(notificationData),
-      // Confirmation to the parent. No-ops when they left the (optional) email
-      // field blank, so it never blocks a phone-only registration.
+      // Confirmation to the parent. Email is a required field, so this always
+      // has an address to send to.
       sendRegistrationConfirmation({
-        parentEmail: d.parentEmail?.trim() || "",
+        parentEmail: d.parentEmail.trim(),
         parentName: d.parentName.trim(),
         childName: d.childName.trim(),
         branch: d.branch,

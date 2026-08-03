@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getLocale } from "@/i18n/server";
 import { COMPANY, COOKIE_NOTICE_VERSION } from "@/lib/legal";
+import { LegalLangSwitcher } from "@/components/legal/LegalLangSwitcher";
 
 export const metadata = { title: "Çerez Politikası · Cookie Policy | Make Art Studio" };
 
@@ -71,9 +72,12 @@ export default async function CookiesPage() {
   return (
     <main className="min-h-screen bg-[var(--background)] px-4 py-12 text-[var(--foreground)] sm:px-6">
       <article className="mx-auto max-w-4xl">
-        <Link href="/" className="mb-6 inline-flex text-sm text-[var(--pink-dark)] hover:underline">
-          ← {t.back}
-        </Link>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <Link href="/" className="inline-flex text-sm text-[var(--pink-dark)] hover:underline">
+            ← {t.back}
+          </Link>
+          <LegalLangSwitcher current={locale} />
+        </div>
         <div className="rounded-3xl border border-[var(--border)] bg-white p-6 sm:p-9">
           <h1 className="text-2xl font-bold sm:text-3xl">{t.title}</h1>
           <p className="mt-2 text-xs text-[var(--muted)]">{COMPANY.lastUpdated} · {COOKIE_NOTICE_VERSION}</p>
@@ -108,6 +112,7 @@ export default async function CookiesPage() {
           <div className="mt-7 flex flex-wrap gap-4 text-sm">
             <Link href="/privacy#media-consent" className="text-[var(--pink-dark)] underline">KVKK</Link>
             <Link href="/terms" className="text-[var(--pink-dark)] underline">Terms</Link>
+            <Link href="/rules" className="text-[var(--pink-dark)] underline">Studio rules</Link>
           </div>
         </div>
       </article>

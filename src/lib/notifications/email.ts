@@ -16,6 +16,10 @@ const FROM_EMAIL =
   (SMTP_USER ? `Make Art Studio <${SMTP_USER}>` : "Make Art Studio <noreply@makeartalanya.com>");
 const ADMIN_EMAIL = process.env.ADMIN_NOTIFICATION_EMAIL || "";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.makeartalanya.com";
+// Mail goes out as noreply@ so it passes SPF/DKIM on the verified domain, but a
+// parent hitting reply on their confirmation is trying to reach a person. Point
+// replies at the studio inbox rather than dropping them.
+const REPLY_TO = process.env.REPLY_TO_EMAIL?.trim() || ADMIN_EMAIL;
 
 interface EmailPayload {
   to: string;
@@ -91,6 +95,7 @@ async function sendViaResend(payload: EmailPayload): Promise<boolean> {
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: [payload.to],
+        ...(REPLY_TO ? { reply_to: [REPLY_TO] } : {}),
         subject: payload.subject,
         html: payload.html,
         // Some providers penalise HTML-only mail; a text part also makes the
@@ -143,6 +148,7 @@ async function sendEmail(payload: EmailPayload): Promise<boolean> {
     await transporter.sendMail({
       from: FROM_EMAIL,
       to: payload.to,
+      ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
       subject: payload.subject,
       html: payload.html,
       text: payload.text ?? htmlToText(payload.html),
@@ -242,7 +248,8 @@ export async function sendRegistrationConfirmation(registration: {
   language: string;
 }): Promise<boolean> {
   const email = registration.parentEmail?.trim();
-  if (!email) return false; // email is optional on the form
+  // Email is a required form field; this guard only covers other callers.
+  if (!email) return false;
 
   const lang: Lang = (["tr", "en", "ru"] as const).includes(registration.language as Lang)
     ? (registration.language as Lang)

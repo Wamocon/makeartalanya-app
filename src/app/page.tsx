@@ -108,7 +108,7 @@ export default function Home() {
         <ProblemSection t={t} />
         <TutorialSection t={t} />
         <PackagesSection t={t} locale={locale} />
-        <GallerySection t={t} />
+        <GallerySection t={t} locale={locale} />
         <CtaBand locale={locale} />
         <BookingSection t={t} locale={locale} />
         <PortalSection t={t} />

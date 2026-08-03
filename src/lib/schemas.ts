@@ -44,20 +44,27 @@ export const createSubscriptionSchema = z.object({
 const optionalText = (max: number) =>
   z.string().max(max).optional().or(z.literal(""))
 
+// Fields marked required below are the ones the signed participation agreement
+// collects in its participant questionnaire (section 1). Keeping the web form
+// and the paper form asking for the same set is what stops the two records
+// drifting apart. Optional extras (ID number, address, gender) are not in the
+// questionnaire and stay optional — see the data-minimisation note in /privacy.
 export const registrationSchema = z.object({
   // Parent / guardian (Veli)
   parentName: z.string().min(2).max(120),
   parentIdNo: optionalText(40),
   parentRelationship: z.enum(["mother", "father", "guardian"]).optional().or(z.literal("")),
-  parentEmail: z.string().email().max(160).optional().or(z.literal("")),
+  parentEmail: z.string().email().max(160),
   parentPhone: z.string().min(7).max(25), // WhatsApp
   parentAddress: optionalText(300),
   // Child (Çocuk)
   childName: z.string().min(2).max(120),
-  childBirthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal("")),
+  childBirthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   childGender: z.enum(["male", "female", "other"]).optional().or(z.literal("")),
   childHealthNotes: optionalText(500),
-  emergencyContact: optionalText(120),
+  emergencyContact: z.string().min(3).max(120),
+  // Clause 3.5: the child is released only to these people.
+  authorizedPickup: z.string().min(2).max(300),
   // Enrollment interest
   branch: z.enum(["painting", "chess", "crafts", "individual"]),
   packageId: optionalText(20),

@@ -12,6 +12,7 @@ interface FooterProps {
       privacy: string;
       imprint: string;
       terms: string;
+      rules: string;
       cookies: string;
       rights: string;
       navigation: string;
@@ -59,6 +60,7 @@ export default function Footer({ t }: FooterProps) {
             <ul className="mt-6 grid gap-3 text-sm text-white/58">
               <li><a href="/privacy" className="transition-colors hover:text-white">{t.footer.privacy}</a></li>
               <li><a href="/terms" className="transition-colors hover:text-white">{t.footer.terms}</a></li>
+              <li><a href="/rules" className="transition-colors hover:text-white">{t.footer.rules}</a></li>
               <li><a href="/cookies" className="transition-colors hover:text-white">{t.footer.cookies}</a></li>
               <li><a href="/imprint" className="transition-colors hover:text-white">{t.footer.imprint}</a></li>
               <li><a href="/admin/login" className="text-white/28 transition-colors hover:text-white">Admin</a></li>

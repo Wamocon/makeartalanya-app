@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getLocale } from "@/i18n/server";
 import { COMPANY } from "@/lib/legal";
+import { LegalLangSwitcher } from "@/components/legal/LegalLangSwitcher";
 
 export const metadata = {
   title: "Künye · Imprint | Make Art Studio Alanya",
@@ -82,15 +83,18 @@ export default async function ImprintPage() {
   return (
     <main className="min-h-screen bg-[var(--background)] text-[var(--foreground)] py-12 px-4 sm:px-6">
       <div className="max-w-3xl mx-auto">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm text-[var(--pink-dark)] hover:underline mb-6"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          {t.back}
-        </Link>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-sm text-[var(--pink-dark)] hover:underline"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            {t.back}
+          </Link>
+          <LegalLangSwitcher current={locale} />
+        </div>
 
         <div className="bg-white border border-[var(--border)] rounded-2xl p-6 sm:p-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">{t.title}</h1>

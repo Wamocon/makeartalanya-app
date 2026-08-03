@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getLocale } from "@/i18n/server";
 import { COMPANY, TERMS_VERSION } from "@/lib/legal";
+import { LegalLangSwitcher } from "@/components/legal/LegalLangSwitcher";
 
 export const metadata = { title: "Ön Bilgilendirme ve Hizmet Koşulları | Make Art Studio" };
 
@@ -55,7 +56,10 @@ export default async function TermsPage() {
   return (
     <main className="min-h-screen bg-[var(--background)] px-4 py-12 text-[var(--foreground)] sm:px-6">
       <article className="mx-auto max-w-3xl">
-        <Link href="/" className="mb-6 inline-flex text-sm text-[var(--pink-dark)] hover:underline">← {t.back}</Link>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <Link href="/" className="inline-flex text-sm text-[var(--pink-dark)] hover:underline">← {t.back}</Link>
+          <LegalLangSwitcher current={locale} />
+        </div>
         <div className="rounded-3xl border border-[var(--border)] bg-white p-6 sm:p-9">
           <h1 className="text-2xl font-bold sm:text-3xl">{t.title}</h1>
           <p className="mt-2 text-xs text-[var(--muted)]">{t.updated}: {COMPANY.lastUpdated} · {TERMS_VERSION}</p>
@@ -63,7 +67,7 @@ export default async function TermsPage() {
           <div className="mt-8 space-y-7 text-sm leading-relaxed text-[var(--muted)]">
             {t.sections.map(([heading, paragraphs]) => <section key={heading}><h2 className="mb-2 text-base font-semibold text-[var(--foreground)]">{heading}</h2><div className="space-y-3">{paragraphs.map((p) => <p key={p}>{p}</p>)}</div></section>)}
           </div>
-          <div className="mt-8 flex gap-4 border-t border-[var(--border)] pt-5 text-sm"><Link href="/privacy" className="text-[var(--pink-dark)] underline">KVKK</Link><Link href="/cookies" className="text-[var(--pink-dark)] underline">Cookies</Link><Link href="/imprint" className="text-[var(--pink-dark)] underline">Imprint</Link></div>
+          <div className="mt-8 flex gap-4 border-t border-[var(--border)] pt-5 text-sm"><Link href="/privacy" className="text-[var(--pink-dark)] underline">KVKK</Link><Link href="/rules" className="text-[var(--pink-dark)] underline">Studio rules</Link><Link href="/cookies" className="text-[var(--pink-dark)] underline">Cookies</Link><Link href="/imprint" className="text-[var(--pink-dark)] underline">Imprint</Link></div>
         </div>
       </article>
     </main>

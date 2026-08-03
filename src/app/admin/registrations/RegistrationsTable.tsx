@@ -18,6 +18,8 @@ export interface Registration {
   child_gender: string | null;
   child_health_notes: string | null;
   emergency_contact: string | null;
+  // NULL only for registrations created before migration 0022.
+  authorized_pickup: string | null;
   branch: string;
   package_id: string | null;
   preferred_language: string;
@@ -302,6 +304,17 @@ export default function RegistrationsTable({
                       )}
                     </Field>
                     <Field label="Package interest">{r.package_id || "—"}</Field>
+
+                    {/* Staff check this before releasing a child (agreement 3.5). */}
+                    <div className="sm:col-span-2">
+                      <Field label="Authorised to collect the child">
+                        {r.authorized_pickup ? (
+                          <span className="whitespace-pre-line">{r.authorized_pickup}</span>
+                        ) : (
+                          <span className="text-[var(--muted)]">— not recorded, ask the parent before release</span>
+                        )}
+                      </Field>
+                    </div>
 
                     {r.child_health_notes && (
                       <div className="sm:col-span-2">

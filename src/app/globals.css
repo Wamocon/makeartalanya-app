@@ -677,3 +677,33 @@ body:has(.public-v2) {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Gallery rails ────────────────────────────────────────────────────────
+   The rails scroll horizontally and drift on their own. A visible scrollbar
+   under a filmstrip reads as a bug rather than an affordance, so it is hidden
+   and the "Drag to explore" label carries the affordance instead. Keyboard and
+   touch scrolling are unaffected. */
+.public-v2 .gallery-rail {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: auto; /* smooth would fight the rAF drift */
+}
+.public-v2 .gallery-rail::-webkit-scrollbar {
+  display: none;
+}
+/* Fade the rail into the section edges so tiles enter and leave rather than
+   being abruptly clipped at the viewport boundary. */
+.public-v2 .gallery-rail-mask {
+  -webkit-mask-image: linear-gradient(
+    to right, transparent 0, #000 4rem, #000 calc(100% - 4rem), transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right, transparent 0, #000 4rem, #000 calc(100% - 4rem), transparent 100%
+  );
+}
+@media (max-width: 640px) {
+  .public-v2 .gallery-rail-mask {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
