@@ -5,6 +5,9 @@ import { handbook } from "@/i18n/handbook";
 import { LegalLangSwitcher } from "@/components/legal/LegalLangSwitcher";
 import { HandbookSections, HandbookToc } from "@/components/handbook/HandbookBody";
 import { HandbookVideo } from "@/components/handbook/HandbookVideo";
+
+/** Single switch for the walkthrough player — see the note at its usage below. */
+const SHOW_WALKTHROUGH_VIDEO = false;
 import { PrintButton } from "@/components/handbook/PrintButton";
 
 export const metadata = {
@@ -52,8 +55,11 @@ export default async function HandbookPage() {
           </header>
 
           {/* Video first, then the written text it summarises. The recording is
-              the fast path; the text below stays the complete and binding one. */}
-          <HandbookVideo locale={locale} />
+              the fast path; the text below stays the complete and binding one.
+              Hidden until the recordings play reliably — a permanently broken
+              player reads worse than no player, and the text below already
+              carries the whole content. Flip this back on once fixed. */}
+          {SHOW_WALKTHROUGH_VIDEO && <HandbookVideo locale={locale} />}
 
           <p className="mt-8 rounded-2xl bg-[var(--pink-light)]/55 p-4 text-sm leading-relaxed print:bg-transparent print:px-0">
             {t.intro}
