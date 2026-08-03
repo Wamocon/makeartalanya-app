@@ -34,18 +34,25 @@ const EASE = [0.16, 1, 0.3, 1] as const;
  * Deriving the step from the character count keeps every translation on one
  * line, including ones added later.
  */
-function headlineSize(lines: string[]) {
-  // Character count alone is not enough: "с любовью" and "With Love" are both
-  // nine characters, but the Cyrillic sets far wider and overflowed the column
-  // at the size the Latin one needs. Weight Cyrillic so it drops a step.
-  const width = (line: string) =>
-    line.length * (/[Ѐ-ӿ]/.test(line) ? 1.2 : 1);
+// Character count alone is not enough: "с любовью" and "With Love" are both
+// nine characters, but the Cyrillic sets far wider and overflowed the column
+// at the size the Latin one needs. Weight Cyrillic so it drops a step.
+const lineWidth = (line: string) => line.length * (/[Ѐ-ӿ]/.test(line) ? 1.2 : 1);
 
-  const longest = Math.max(...lines.map(width));
+function headlineSize(lines: string[]) {
+  const longest = Math.max(...lines.map(lineWidth));
   if (longest <= 8) return "clamp(4.5rem,12.5vw,10.5rem)";
   if (longest <= 10) return "clamp(3.3rem,9vw,7.75rem)";
   return "clamp(2.6rem,6.4vw,5.5rem)";
 }
+
+/**
+ * The second line is the accent, not the headline. Sizing both lines from the
+ * longest let it match or tower over the word it is meant to support. Setting
+ * it a step down applies in every language, so the proportions read the same
+ * in Turkish, English and Russian.
+ */
+const ACCENT_SCALE = "0.78em";
 
 export default function Hero({ t }: HeroProps) {
   const lines = t.hero.headline.split("\n");
@@ -85,6 +92,7 @@ export default function Hero({ t }: HeroProps) {
                   /* nowrap is safe because the size above is chosen to fit — it
                      stops a long line breaking into a ragged third line. */
                   className={`block whitespace-nowrap ${index === 1 ? "ml-[0.12em] text-[var(--pink)]" : ""}`}
+                  style={index === 1 ? { fontSize: ACCENT_SCALE } : undefined}
                 >
                   {line}
                 </motion.span>
