@@ -53,21 +53,21 @@ export const registrationSchema = z.object({
   // Parent / guardian (Veli)
   parentName: z.string().min(2).max(120),
   parentIdNo: optionalText(40),
-  parentRelationship: z.enum(["mother", "father", "guardian"]).optional().or(z.literal("")),
+  parentRelationship: z.enum(["mother", "father", "guardian"]),
   parentEmail: z.string().email().max(160),
   parentPhone: z.string().min(7).max(25), // WhatsApp
   parentAddress: optionalText(300),
   // Child (Çocuk)
   childName: z.string().min(2).max(120),
   childBirthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  childGender: z.enum(["male", "female", "other"]).optional().or(z.literal("")),
+  childGender: z.enum(["male", "female", "other"]),
   childHealthNotes: optionalText(500),
   emergencyContact: z.string().min(3).max(120),
   // Clause 3.5: the child is released only to these people.
   authorizedPickup: z.string().min(2).max(300),
   // Enrollment interest
   branch: z.enum(["painting", "chess", "crafts", "individual"]),
-  packageId: optionalText(20),
+  packageId: z.string().min(1).max(20),
   preferredLanguage: z.enum(["tr", "en", "ru"]).default("tr"),
   message: optionalText(1000),
   // Notice acknowledgment and service terms are separate from optional consent.

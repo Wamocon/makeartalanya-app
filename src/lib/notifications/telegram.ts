@@ -94,6 +94,27 @@ export async function sendTelegramMessage(
   }
 }
 
+/**
+ * Acknowledges a tapped inline button.
+ *
+ * Telegram shows a spinner on the button until this is called, and gives up
+ * after about 15 seconds with a "query is too old" error. It is purely visual
+ * feedback, so a failure here is logged at debug level and never blocks the
+ * reply the tap was meant to produce.
+ */
+export async function answerCallbackQuery(queryId: string, text?: string): Promise<void> {
+  if (!BOT_TOKEN) return;
+  try {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ callback_query_id: queryId, text }),
+    });
+  } catch {
+    /* cosmetic only */
+  }
+}
+
 /** Chat ids that should receive admin alerts: database first, env as fallback. */
 export async function adminChatIds(): Promise<string[]> {
   const ids = new Set<string>();

@@ -26,6 +26,27 @@ const HERO_VIDEOS = [
 ];
 const EASE = [0.16, 1, 0.3, 1] as const;
 
+/**
+ * The headline size follows the longest line rather than being a fixed clamp.
+ * A single clamp tuned for "Sevgiyle / Yarat" overflows the column once the
+ * line gets longer — Cyrillic is the worst case, where "с любовью" runs far
+ * wider than "Yarat" at the same font size and spilled past the hero cards.
+ * Deriving the step from the character count keeps every translation on one
+ * line, including ones added later.
+ */
+function headlineSize(lines: string[]) {
+  // Character count alone is not enough: "с любовью" and "With Love" are both
+  // nine characters, but the Cyrillic sets far wider and overflowed the column
+  // at the size the Latin one needs. Weight Cyrillic so it drops a step.
+  const width = (line: string) =>
+    line.length * (/[Ѐ-ӿ]/.test(line) ? 1.2 : 1);
+
+  const longest = Math.max(...lines.map(width));
+  if (longest <= 8) return "clamp(4.5rem,12.5vw,10.5rem)";
+  if (longest <= 10) return "clamp(3.3rem,9vw,7.75rem)";
+  return "clamp(2.6rem,6.4vw,5.5rem)";
+}
+
 export default function Hero({ t }: HeroProps) {
   const lines = t.hero.headline.split("\n");
 
@@ -51,14 +72,19 @@ export default function Hero({ t }: HeroProps) {
               <OrbitMark />
             </motion.div>
 
-            <h1 className="font-display text-[clamp(4.5rem,12.5vw,10.5rem)] font-semibold leading-[0.76] tracking-[-0.075em] text-white">
+            <h1
+              className="font-display font-semibold leading-[0.82] tracking-[-0.06em] text-white"
+              style={{ fontSize: headlineSize(lines) }}
+            >
               {lines.map((line, index) => (
                 <motion.span
                   key={`${line}-${index}`}
                   initial={{ opacity: 0, y: 46 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.9, delay: 0.12 + index * 0.1, ease: EASE }}
-                  className={`block ${index === 1 ? "ml-[0.12em] text-[var(--pink)]" : ""}`}
+                  /* nowrap is safe because the size above is chosen to fit — it
+                     stops a long line breaking into a ragged third line. */
+                  className={`block whitespace-nowrap ${index === 1 ? "ml-[0.12em] text-[var(--pink)]" : ""}`}
                 >
                   {line}
                 </motion.span>

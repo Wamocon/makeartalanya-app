@@ -267,6 +267,9 @@ export function Concierge({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduceMotion ? undefined : { opacity: 0, y: 10, scale: 0.94 }}
             transition={{ duration: reduceMotion ? 0 : 0.32, ease: [0.22, 1, 0.36, 1] }}
+            /* Stable hook for tests and for the walkthrough recorder, which
+               hides the launcher so it does not sit on top of the captions. */
+            data-concierge="launcher"
             className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-[calc(1rem+env(safe-area-inset-right))] z-[90] flex items-center gap-2 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] sm:right-[calc(1.5rem+env(safe-area-inset-right))]"
           >
             <span className="pointer-events-none hidden rounded-full border border-white/20 bg-[#1d181a]/92 px-4 py-2.5 text-sm font-semibold tracking-[-0.01em] text-white shadow-[0_18px_50px_rgba(0,0,0,.28)] backdrop-blur-md sm:block">

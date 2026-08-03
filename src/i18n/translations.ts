@@ -105,6 +105,7 @@ export const translations = {
     },
     footer: {
       tagline: "Mahmutlar'da deniz kenarında sanat stüdyosu. Çocuklar ve yetişkinler için.",
+      handbook: "Aile El Kitabı",
       privacy: "Gizlilik Politikası",
       imprint: "Künye",
       terms: "Hizmet Koşulları",
@@ -220,6 +221,7 @@ export const translations = {
     },
     footer: {
       tagline: "Art studio by the sea in Mahmutlar. For kids and adults.",
+      handbook: "Family Handbook",
       privacy: "Privacy Policy",
       imprint: "Imprint",
       terms: "Service Terms",
@@ -335,6 +337,7 @@ export const translations = {
     },
     footer: {
       tagline: "Арт-студия у моря в Махмутларе. Для детей и взрослых.",
+      handbook: "Справочник для родителей",
       privacy: "Политика конфиденциальности",
       imprint: "Импрессум",
       terms: "Условия услуг",

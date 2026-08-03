@@ -94,7 +94,9 @@ async function set(baseUrl) {
   const res = await call("setWebhook", {
     url,
     secret_token: SECRET,
-    allowed_updates: ["message"],
+    // callback_query is required for the inline buttons in the registration
+    // flow. Omit it and every tap is silently dropped by Telegram.
+    allowed_updates: ["message", "callback_query"],
     drop_pending_updates: true,
   });
   if (!res.ok) {

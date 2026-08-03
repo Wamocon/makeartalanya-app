@@ -17,11 +17,18 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { handleStartToken, unlinkParentChat } from "@/lib/telegram/parent-link";
 import {
   sendTelegramMessage,
+  answerCallbackQuery,
   adminChatIds,
   linkAdminChat,
   unlinkAdminChat,
   escapeHtml,
 } from "@/lib/notifications/telegram";
+import {
+  startLanguagePick,
+  handleCallback,
+  handleFlowText,
+  cancelFlow,
+} from "@/lib/telegram/flow-runner";
 
 export interface TelegramUpdate {
   update_id?: number;
@@ -31,6 +38,12 @@ export interface TelegramUpdate {
     chat: { id: number; type: string; title?: string; first_name?: string };
     text?: string;
     date?: number;
+  };
+  callback_query?: {
+    id: string;
+    from?: { id: number; language_code?: string };
+    message?: { chat: { id: number } };
+    data?: string;
   };
 }
 
@@ -221,6 +234,18 @@ async function stats(): Promise<string> {
  * used by tests and by the poller's log output.
  */
 export async function handleTelegramUpdate(update: TelegramUpdate): Promise<string | null> {
+  // Inline buttons arrive as callback_query, not as a message. Acknowledge the
+  // tap first so the button stops spinning, then act on it.
+  const callback = update.callback_query;
+  if (callback) {
+    const cbChatId = callback.message?.chat.id ?? callback.from?.id;
+    await answerCallbackQuery(callback.id);
+    if (cbChatId && callback.data) {
+      await handleCallback(cbChatId, callback.data);
+    }
+    return null;
+  }
+
   const message = update.message;
   if (!message?.text) return null;
 
@@ -235,9 +260,21 @@ export async function handleTelegramUpdate(update: TelegramUpdate): Promise<stri
 
   const admin = await isAdminChat(chatId);
 
+  // Mid-registration, a plain message is an answer to the question just asked —
+  // not a command and not a reason to show the generic help text.
+  if (!command.startsWith("/") && (await handleFlowText(chatId, text))) {
+    return null;
+  }
+
   let reply: string;
 
   switch (command) {
+    case "/cancel":
+    case "/iptal":
+    case "/otmena":
+      await cancelFlow(chatId);
+      return null;
+
     case "/start": {
       // Telegram appends the deep-link payload to /start. A parent arriving from
       // the /kayit success screen carries a one-time token here — and this
@@ -252,8 +289,14 @@ export async function handleTelegramUpdate(update: TelegramUpdate): Promise<stri
         // Unknown, expired or already-redeemed token: fall through to the normal
         // greeting rather than confirming a link that did not happen.
       }
-      reply = admin ? `${t.greet}\n\n${ADMIN_HELP}` : `${t.greet}\n\n${t.publicHelp}`;
-      break;
+      if (admin) {
+        reply = `${t.greet}\n\n${ADMIN_HELP}`;
+        break;
+      }
+      // A parent: offer the language picker, which leads into the menu and the
+      // registration conversation.
+      await startLanguagePick(chatId);
+      return null;
     }
 
     case "/stop": {

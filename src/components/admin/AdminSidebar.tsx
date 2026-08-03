@@ -16,6 +16,7 @@ import {
   ClipboardCheck,
   ClipboardList,
   Banknote,
+  BookOpen,
   Menu,
   X,
   MessageSquare,
@@ -64,6 +65,7 @@ export default function AdminSidebar() {
         { href: "/admin/content", icon: FileText, label: t.sidebar.content },
         { href: "/admin/media", icon: ImageIcon, label: t.sidebar.media },
         { href: "/admin/settings", icon: Settings, label: t.sidebar.settings },
+        { href: "/admin/handbook", icon: BookOpen, label: t.sidebar.handbook },
       ],
     },
   ];

@@ -9,6 +9,7 @@ interface FooterProps {
     nav: { courses: string; gallery: string; booking: string; about: string };
     footer: {
       tagline: string;
+      handbook: string;
       privacy: string;
       imprint: string;
       terms: string;
@@ -58,6 +59,7 @@ export default function Footer({ t }: FooterProps) {
           <div>
             <h2 className="text-[0.62rem] font-bold uppercase tracking-[0.22em] text-white/32">{t.footer.legal}</h2>
             <ul className="mt-6 grid gap-3 text-sm text-white/58">
+              <li><a href="/handbook" className="transition-colors hover:text-white">{t.footer.handbook}</a></li>
               <li><a href="/privacy" className="transition-colors hover:text-white">{t.footer.privacy}</a></li>
               <li><a href="/terms" className="transition-colors hover:text-white">{t.footer.terms}</a></li>
               <li><a href="/rules" className="transition-colors hover:text-white">{t.footer.rules}</a></li>
