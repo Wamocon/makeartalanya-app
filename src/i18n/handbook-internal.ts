@@ -386,6 +386,10 @@ export const internalHandbook: Record<"en" | "tr" | "ru", HandbookDoc> = {
                 "Correct the landing-page package copy: it advertises 'no expiry' while /rules gives the 8-lesson subscription one calendar month",
                 "Team",
               ],
+              [
+                "Review the package prices shown in euros (€45/€42/€40 per lesson) on the landing page: /rules §3.2 and the Price Tag Regulation require the total including taxes in Turkish lira. A 'reference price, TRY confirmed before contract' footnote may not be enough",
+                "Lawyer + Team",
+              ],
             ],
           },
         ],
@@ -776,6 +780,10 @@ export const internalHandbook: Record<"en" | "tr" | "ru", HandbookDoc> = {
                 "Ana sayfadaki paket metninin düzeltilmesi: «geçerlilik süresi yok» yazıyor, oysa /rules 8 derslik abonmana 1 takvim ayı veriyor",
                 "Ekip",
               ],
+              [
+                "Ana sayfada euro cinsinden gösterilen paket fiyatlarının (ders başına €45/€42/€40) gözden geçirilmesi: /rules m.3.2 ve Fiyat Etiketi Yönetmeliği, vergiler dâhil toplam tutarın Türk lirası olarak gösterilmesini gerektirir. «Referans fiyat, TL tutarı sözleşmeden önce teyit edilir» dipnotu yeterli olmayabilir",
+                "Hukuk danışmanı + Ekip",
+              ],
             ],
           },
         ],
@@ -1165,6 +1173,10 @@ export const internalHandbook: Record<"en" | "tr" | "ru", HandbookDoc> = {
               [
                 "Исправить текст о пакетах на главной странице: там указано «без срока действия», тогда как /rules даёт абонементу на 8 занятий один календарный месяц",
                 "Команда",
+              ],
+              [
+                "Проверить цены пакетов, указанные на главной странице в евро (€45/€42/€40 за занятие): ст. 3.2 /rules и Регламент о ценниках требуют указывать итоговую сумму с налогами в турецких лирах. Сноски «справочная цена, сумма в TRY подтверждается до договора» может быть недостаточно",
+                "Юрист + Команда",
               ],
             ],
           },
