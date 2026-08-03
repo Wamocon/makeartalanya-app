@@ -91,6 +91,24 @@ async function set(baseUrl) {
     process.exit(1);
   }
   const url = `${baseUrl.replace(/\/$/, "")}/api/telegram/webhook`;
+
+  // Telegram does not follow redirects. Registering the apex domain when the
+  // deployment redirects to www leaves a webhook that looks correctly set and
+  // silently fails every update with "Wrong response: 307". Catch it here
+  // rather than in getWebhookInfo days later.
+  try {
+    const probe = await fetch(url, { method: "POST", redirect: "manual" });
+    if (probe.status >= 300 && probe.status < 400) {
+      const target = probe.headers.get("location");
+      console.error(`✗ ${url} responds ${probe.status} and redirects to:\n    ${target}`);
+      console.error("  Telegram does not follow redirects. Register that URL instead:");
+      console.error(`    node scripts/telegram-setup.js set ${new URL(target).origin}`);
+      process.exit(1);
+    }
+  } catch (err) {
+    console.warn(`! Could not reach ${url} to check for redirects (${err.message}). Continuing.`);
+  }
+
   const res = await call("setWebhook", {
     url,
     secret_token: SECRET,
