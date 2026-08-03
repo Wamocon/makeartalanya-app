@@ -3,6 +3,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { registrationSchema } from "@/lib/schemas";
 import { notifyAdminNewBooking, telegramNotifyAdminNewBooking } from "@/lib/notifications";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { newLinkToken, botUsername } from "@/lib/telegram/parent-link";
 import {
   MEDIA_CONSENT_VERSION,
   PRIVACY_NOTICE_VERSION,
@@ -24,6 +25,8 @@ const MEDIA_CONSENT_COLUMNS = [
   "media_consented_at",
   "media_consent_ip",
 ] as const;
+
+const TELEGRAM_LINK_COLUMNS = ["telegram_link_token"] as const;
 
 type RegistrationInsertError = {
   code?: string;
@@ -121,7 +124,7 @@ export async function POST(req: Request) {
       consent_health: d.consentHealth,
     };
 
-    const currentRegistration = {
+    const mediaConsentRegistration = {
       ...noticeAndTermsRegistration,
       consent_media_website: d.consentMediaWebsite,
       consent_media_social: d.consentMediaSocial,
@@ -130,7 +133,29 @@ export async function POST(req: Request) {
       media_consent_ip: mediaConsentGranted ? ip : null,
     };
 
+    // Single-use token backing the "get updates on Telegram" deep link on the
+    // success screen. A bot cannot message someone first, so this token is how
+    // the parent's own /start ties their chat back to this row.
+    const telegramToken = newLinkToken();
+
+    const currentRegistration = {
+      ...mediaConsentRegistration,
+      telegram_link_token: telegramToken,
+    };
+
     let { error } = await supabase.from("registrations").insert(currentRegistration);
+
+    // Telegram opt-in is a convenience — never let a missing column (or a
+    // lagging PostgREST schema cache) cost the studio an actual registration.
+    let telegramLinkAvailable = true;
+    if (isMissingRegistrationColumn(error, TELEGRAM_LINK_COLUMNS)) {
+      console.warn(
+        "Telegram link columns are not available yet; saving without the opt-in token.",
+        { code: error?.code },
+      );
+      telegramLinkAvailable = false;
+      ({ error } = await supabase.from("registrations").insert(mediaConsentRegistration));
+    }
 
     // Deployments can briefly run this form before migration 0020 reaches
     // PostgREST's schema cache. Missing-column failures occur before insertion,
@@ -178,7 +203,18 @@ export async function POST(req: Request) {
       /* silently ignore notification failures */
     });
 
-    return NextResponse.json({ ok: true });
+    // Deep link the parent can tap to receive updates. Telegram forbids the bot
+    // from writing first, so this button — which makes the parent send
+    // "/start <token>" — is the only way to open that channel.
+    let telegramLink: string | null = null;
+    if (telegramLinkAvailable) {
+      const username = await botUsername();
+      if (username) {
+        telegramLink = `https://t.me/${username}?start=${telegramToken}`;
+      }
+    }
+
+    return NextResponse.json({ ok: true, telegramLink });
   } catch (err) {
     console.error("Registration API error:", err);
     return NextResponse.json({ ok: false, error: "Unexpected server error." }, { status: 500 });

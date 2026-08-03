@@ -10,7 +10,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Check, Loader2, Send } from "lucide-react";
 import { packages, type Locale } from "@/i18n/translations";
 import { OrbitMark } from "@/components/sections/OrbitMark";
 import { PaintedBackdrop } from "@/components/sections/PaintedBackdrop";
@@ -64,6 +64,7 @@ const COPY: Record<Locale, {
   };
   submit: string; submitting: string;
   successTitle: string; successMsg: string;
+  telegramCta: string; telegramHint: string;
   errGeneric: string; errNetwork: string;
 }> = {
   tr: {
@@ -75,7 +76,7 @@ const COPY: Record<Locale, {
     sections: { parent: "Veli Bilgileri", child: "Çocuk Bilgileri", enrollment: "Ders Seçimi", consent: "Onaylar" },
     f: {
       parentName: "Ad Soyad", parentIdNo: "T.C. Kimlik / Pasaport No", relationship: "Yakınlık",
-      parentEmail: "E-posta", parentPhone: "WhatsApp Telefon", parentAddress: "Adres",
+      parentEmail: "E-posta", parentPhone: "Telegram Telefon", parentAddress: "Adres",
       childName: "Çocuğun Adı Soyadı", childBirthDate: "Doğum Tarihi", childGender: "Cinsiyet",
       childHealthNotes: "Sağlık / alerji notları", emergencyContact: "Acil durum kişisi (ad, telefon)",
       branch: "Branş", package: "Paket", message: "Mesajınız",
@@ -98,8 +99,10 @@ const COPY: Record<Locale, {
     },
     submit: "Kaydı Gönder",
     submitting: "Gönderiliyor…",
+    telegramCta: "Telegram'da bildirim al",
+    telegramHint: "Dokunun; kaydınızla ilgili güncellemeleri Telegram'dan gönderelim.",
     successTitle: "Teşekkürler!",
-    successMsg: "Kaydınızı aldık. Stüdyo, gün, saat ve paket detayları için en kısa sürede WhatsApp'tan sizinle iletişime geçecek.",
+    successMsg: "Kaydınızı aldık. Stüdyo, gün, saat ve paket detayları için en kısa sürede Telegram'dan sizinle iletişime geçecek.",
     errGeneric: "Kayıt gönderilemedi. Lütfen alanları kontrol edip tekrar deneyin.",
     errNetwork: "Bağlantı hatası. Lütfen tekrar deneyin.",
   },
@@ -112,7 +115,7 @@ const COPY: Record<Locale, {
     sections: { parent: "Parent / Guardian", child: "Child's Details", enrollment: "Class Choice", consent: "Consents" },
     f: {
       parentName: "Full name", parentIdNo: "ID / Passport no.", relationship: "Relationship",
-      parentEmail: "Email", parentPhone: "WhatsApp phone", parentAddress: "Address",
+      parentEmail: "Email", parentPhone: "Telegram phone", parentAddress: "Address",
       childName: "Child's full name", childBirthDate: "Date of birth", childGender: "Gender",
       childHealthNotes: "Health / allergy notes", emergencyContact: "Emergency contact (name, phone)",
       branch: "Class", package: "Package", message: "Your message",
@@ -135,8 +138,10 @@ const COPY: Record<Locale, {
     },
     submit: "Submit registration",
     submitting: "Submitting…",
+    telegramCta: "Get updates on Telegram",
+    telegramHint: "Tap to let us send you updates about this registration on Telegram.",
     successTitle: "Thank you!",
-    successMsg: "We've received your registration. The studio will contact you shortly on WhatsApp to confirm days, times and package details.",
+    successMsg: "We've received your registration. The studio will contact you shortly on Telegram to confirm days, times and package details.",
     errGeneric: "Registration failed. Please check the fields and try again.",
     errNetwork: "Network error. Please try again.",
   },
@@ -149,7 +154,7 @@ const COPY: Record<Locale, {
     sections: { parent: "Родитель / опекун", child: "Данные ребёнка", enrollment: "Выбор занятия", consent: "Согласия" },
     f: {
       parentName: "Имя и фамилия", parentIdNo: "Удостоверение / паспорт", relationship: "Кем приходится",
-      parentEmail: "Email", parentPhone: "Телефон WhatsApp", parentAddress: "Адрес",
+      parentEmail: "Email", parentPhone: "Телефон Telegram", parentAddress: "Адрес",
       childName: "Имя и фамилия ребёнка", childBirthDate: "Дата рождения", childGender: "Пол",
       childHealthNotes: "Здоровье / аллергии", emergencyContact: "Контакт на случай экстренной ситуации (имя, телефон)",
       branch: "Занятие", package: "Пакет", message: "Ваше сообщение",
@@ -172,8 +177,10 @@ const COPY: Record<Locale, {
     },
     submit: "Отправить заявку",
     submitting: "Отправка…",
+    telegramCta: "Получать обновления в Telegram",
+    telegramHint: "Нажмите, чтобы мы присылали обновления по этой заявке в Telegram.",
     successTitle: "Спасибо!",
-    successMsg: "Мы получили вашу заявку. Студия свяжется с вами в WhatsApp, чтобы подтвердить дни, время и детали пакета.",
+    successMsg: "Мы получили вашу заявку. Студия свяжется с вами в Telegram, чтобы подтвердить дни, время и детали пакета.",
     errGeneric: "Не удалось отправить. Проверьте поля и попробуйте снова.",
     errNetwork: "Ошибка сети. Попробуйте ещё раз.",
   },
@@ -195,6 +202,7 @@ export function RegistrationForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [telegramLink, setTelegramLink] = useState<string | null>(null);
   const successHeadingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => setLocale(readLocale()), []);
@@ -232,12 +240,17 @@ export function RegistrationForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, preferredLanguage: locale }),
       });
-      const data = (await res.json()) as { ok: boolean; error?: string };
+      const data = (await res.json()) as {
+        ok: boolean;
+        error?: string;
+        telegramLink?: string | null;
+      };
       if (!res.ok || !data.ok) {
         setError(data.error || t.errGeneric);
         setLoading(false);
         return;
       }
+      setTelegramLink(data.telegramLink ?? null);
       setDone(true);
       setForm({ ...emptyForm });
     } catch {
@@ -296,6 +309,25 @@ export function RegistrationForm() {
               {t.successTitle}
             </h1>
             <p className="text-[var(--muted)] leading-relaxed">{t.successMsg}</p>
+
+            {/* A Telegram bot may not message anyone first. Tapping this sends
+                "/start <token>" from the parent, which is what lets the studio
+                reply — so this button is the opt-in, not a decoration. */}
+            {telegramLink && (
+              <a
+                href={telegramLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#229ED9] px-7 py-3.5 font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"
+              >
+                <Send className="h-4 w-4" aria-hidden="true" />
+                {t.telegramCta}
+              </a>
+            )}
+            {telegramLink && (
+              <p className="mt-3 text-sm text-[var(--muted)]">{t.telegramHint}</p>
+            )}
+
             <Link
               href="/"
               className="mt-7 inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,#ff3d76,#7559d9)] px-7 py-3.5 font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5"

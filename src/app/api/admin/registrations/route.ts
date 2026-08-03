@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAuditEntry } from "@/lib/audit";
+import { notifyParentStatusChange } from "@/lib/telegram/parent-link";
 
 const STATUSES = ["new", "contacted", "enrolled", "archived"] as const;
 type Status = (typeof STATUSES)[number];
@@ -56,6 +57,12 @@ export async function PATCH(request: NextRequest) {
     entityType: "registration",
     entityId: id,
     changes: { status },
+  });
+
+  // Tell the parent, if they opted in on the success screen. Fire-and-forget:
+  // a Telegram outage must not fail the status change the admin just made.
+  notifyParentStatusChange(id, status).catch(() => {
+    /* delivery failures are logged inside the helper */
   });
 
   return NextResponse.json({ success: true, registration: data });

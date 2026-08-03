@@ -14,6 +14,7 @@
  */
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { handleStartToken, unlinkParentChat } from "@/lib/telegram/parent-link";
 import {
   sendTelegramMessage,
   adminChatIds,
@@ -58,6 +59,8 @@ const COPY: Record<Lang, Record<string, string>> = {
       "Sorularınız için bize WhatsApp'tan yazabilirsiniz — en kısa sürede dönüş yapıyoruz.",
     ].join("\n"),
     unknown: "Bu komutu bilmiyorum. /help yazarak neler yapabileceğimi görebilirsiniz.",
+    updatesOff: "🔕 Kayıt bildirimleri kapatıldı.",
+    nothingToStop: "Bu sohbete bağlı bir kayıt bulunamadı.",
     linked: "✅ Bu sohbet artık yönetici bildirimlerini alacak.",
     unlinked: "🔕 Bu sohbet artık yönetici bildirimi almayacak.",
     badCode: "❌ Kod hatalı.",
@@ -74,6 +77,8 @@ const COPY: Record<Lang, Record<string, string>> = {
       "For anything else just message us on WhatsApp — we reply quickly.",
     ].join("\n"),
     unknown: "I don't know that command. Send /help to see what I can do.",
+    updatesOff: "🔕 Registration updates turned off.",
+    nothingToStop: "No registration is linked to this chat.",
     linked: "✅ This chat will now receive admin alerts.",
     unlinked: "🔕 This chat will no longer receive admin alerts.",
     badCode: "❌ Wrong code.",
@@ -90,6 +95,8 @@ const COPY: Record<Lang, Record<string, string>> = {
       "По другим вопросам напишите нам в WhatsApp — мы быстро отвечаем.",
     ].join("\n"),
     unknown: "Я не знаю такую команду. Отправьте /help, чтобы посмотреть возможности.",
+    updatesOff: "🔕 Уведомления по заявке отключены.",
+    nothingToStop: "К этому чату не привязана заявка.",
     linked: "✅ Этот чат будет получать уведомления администратора.",
     unlinked: "🔕 Этот чат больше не будет получать уведомления.",
     badCode: "❌ Неверный код.",
@@ -231,11 +238,29 @@ export async function handleTelegramUpdate(update: TelegramUpdate): Promise<stri
   let reply: string;
 
   switch (command) {
-    case "/start":
-      reply = admin
-        ? `${t.greet}\n\n${ADMIN_HELP}`
-        : `${t.greet}\n\n${t.publicHelp}`;
+    case "/start": {
+      // Telegram appends the deep-link payload to /start. A parent arriving from
+      // the /kayit success screen carries a one-time token here — and this
+      // message is what grants the bot permission to reply to them at all.
+      const payload = args.join(" ").trim();
+      if (payload) {
+        const confirmation = await handleStartToken(payload, chatId);
+        if (confirmation) {
+          reply = confirmation;
+          break;
+        }
+        // Unknown, expired or already-redeemed token: fall through to the normal
+        // greeting rather than confirming a link that did not happen.
+      }
+      reply = admin ? `${t.greet}\n\n${ADMIN_HELP}` : `${t.greet}\n\n${t.publicHelp}`;
       break;
+    }
+
+    case "/stop": {
+      const stopped = await unlinkParentChat(chatId);
+      reply = stopped > 0 ? t.updatesOff : t.nothingToStop;
+      break;
+    }
 
     case "/help":
       reply = admin ? ADMIN_HELP : t.publicHelp;

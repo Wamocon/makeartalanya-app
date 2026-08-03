@@ -217,15 +217,26 @@ export async function telegramNotifyAdminNewBooking(booking: {
   guestPhone: string;
   language: string;
 }) {
+  const site = process.env.NEXT_PUBLIC_SITE_URL || "https://www.makeartalanya.com";
+  // wa.me needs a bare number. Telegram has no equivalent "open a chat with this
+  // phone number" link, so WhatsApp stays the one-tap reply channel here.
+  const digits = booking.guestPhone.replace(/[^\d]/g, "");
+
   const text = [
-    "🎨 <b>New Booking Request</b>",
+    "🎨 <b>New registration</b>",
     "",
-    `👤 <b>Name:</b> ${escapeHtml(booking.guestName)}`,
-    `📞 <b>Phone:</b> ${escapeHtml(booking.guestPhone)}`,
-    `🌐 <b>Language:</b> ${escapeHtml(booking.language.toUpperCase())}`,
+    `👤 ${escapeHtml(booking.guestName)}`,
+    `📞 ${escapeHtml(booking.guestPhone)}`,
+    `🌐 ${escapeHtml(booking.language.toUpperCase())}`,
     "",
-    "Open the admin panel to confirm.",
-  ].join("\n");
+    // The child's name, birth date and health notes are deliberately absent —
+    // a minor's data stays off third-party messaging (KVKK). Open the
+    // RLS-protected dashboard for those.
+    `<a href="${site}/admin/registrations">Open dashboard</a>`,
+    digits ? `<a href="https://wa.me/${digits}">Message on WhatsApp</a>` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   await broadcastToAdmins(text);
 }
