@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KVKK Veri Koruma ve Yurt Dışına Aktarım Dokümanı — Make Art Studio Alanya</title>
+<style>
+  :root{
+    --ci-text:#140B0B;
+    --ci-bg:#FFFFFF;
+    --ci-primary:#F40E0E;
+    --ci-primary-soft:rgba(244,14,14,.07);
+    --ci-primary-line:rgba(244,14,14,.28);
+    --ci-muted:#5A4A4A;
+    --ci-rule:#E4DCDC;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--ci-bg);color:var(--ci-text);
+    font-family:"Georgia","Times New Roman",serif;
+    font-size:10.6pt;line-height:1.62;
+  }
+  .sheet{max-width:210mm;margin:0 auto;padding:22mm 20mm}
+  h1,h2,h3,h4,.brand,.meta,table,.badge,.tag{font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif}
+
+  /* Cover */
+  .cover{border-top:6px solid var(--ci-primary);padding-top:14mm;margin-bottom:12mm}
+  .brand{font-size:12pt;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ci-primary)}
+  .brand small{display:block;font-size:8.5pt;font-weight:600;letter-spacing:.1em;color:var(--ci-muted);margin-top:3mm}
+  .cover h1{font-size:27pt;line-height:1.14;margin:9mm 0 4mm;font-weight:800;letter-spacing:-.015em}
+  .cover .sub{font-size:12pt;color:var(--ci-muted);font-weight:400;margin:0 0 8mm}
+  .cover .rule{height:3px;background:var(--ci-primary);width:38mm;margin:0 0 8mm}
+
+  h2{font-size:14pt;margin:11mm 0 3mm;padding-bottom:2mm;border-bottom:2px solid var(--ci-primary);font-weight:700;letter-spacing:-.01em}
+  h3{font-size:11.5pt;margin:7mm 0 2mm;font-weight:700}
+  h4{font-size:10.5pt;margin:5mm 0 1.5mm;font-weight:700;color:var(--ci-muted)}
+  p{margin:0 0 3.2mm;text-align:justify}
+  ul,ol{margin:0 0 3.2mm;padding-left:6mm}
+  li{margin-bottom:1.4mm}
+  a{color:var(--ci-primary);text-decoration:none;word-break:break-word}
+  strong{font-weight:700}
+  code{font-family:"Consolas",monospace;font-size:9.2pt;background:var(--ci-primary-soft);padding:.4mm 1.2mm;border-radius:2px}
+
+  table{width:100%;border-collapse:collapse;margin:0 0 4mm;font-size:8.9pt;line-height:1.45}
+  caption{caption-side:top;text-align:left;font-weight:700;font-size:9.5pt;margin-bottom:1.5mm;color:var(--ci-primary)}
+  th,td{border:1px solid var(--ci-rule);padding:2mm 2.2mm;vertical-align:top;text-align:left}
+  th{background:var(--ci-primary-soft);font-weight:700}
+  tbody tr:nth-child(even) td{background:#FCFAFA}
+  td.num{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+
+  .meta{width:100%;border-collapse:collapse;font-size:9pt;margin-bottom:10mm}
+  .meta th{width:42mm;background:var(--ci-primary-soft)}
+
+  .callout{border-left:4px solid var(--ci-primary);background:var(--ci-primary-soft);padding:3.5mm 4mm;margin:0 0 4mm;font-size:9.6pt}
+  .callout p:last-child{margin-bottom:0}
+  .callout .lbl{display:block;font-family:"Segoe UI",Arial,sans-serif;font-weight:800;font-size:8.4pt;letter-spacing:.1em;text-transform:uppercase;color:var(--ci-primary);margin-bottom:1.5mm}
+
+  .note{border:1px dashed var(--ci-primary-line);padding:3.5mm 4mm;margin:0 0 4mm;font-size:9.4pt;color:var(--ci-muted)}
+  .note p:last-child{margin-bottom:0}
+
+  .badge{display:inline-block;font-size:7.6pt;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:.7mm 2mm;border-radius:3px;white-space:nowrap}
+  .b-open{background:var(--ci-primary);color:#fff}
+  .b-part{background:#FFE9C7;color:#7A4A00}
+  .b-ok{background:#E2F3E4;color:#1B5E20}
+
+  .toc{font-size:9.6pt;columns:2;column-gap:10mm}
+  .toc ol{padding-left:5mm;margin:0}
+  .toc li{break-inside:avoid;margin-bottom:1mm}
+
+  .fill{display:inline-block;min-width:42mm;border-bottom:1px solid var(--ci-text)}
+  .sigblock{display:flex;gap:10mm;margin-top:10mm;page-break-inside:avoid}
+  .sigblock > div{flex:1;border-top:1px solid var(--ci-text);padding-top:2mm;font-size:9pt}
+
+  footer.docfoot{margin-top:14mm;padding-top:4mm;border-top:2px solid var(--ci-primary);font-size:8.4pt;color:var(--ci-muted);font-family:"Segoe UI",Arial,sans-serif}
+
+  @media print{
+    @page{size:A4;margin:16mm 15mm 18mm}
+    body{font-size:9.6pt}
+    .sheet{padding:0;max-width:none}
+    h2{page-break-after:avoid}
+    table,.callout,.note,.sigblock{page-break-inside:avoid}
+    .pagebreak{page-break-before:always}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<!-- ══════════════════════════ COVER ══════════════════════════ -->
+<div class="cover">
+  <div class="brand">Make Art Studio Alanya
+    <small>Make Art Resim Atölyesi Turizm ve Ticaret Limited Şirketi</small>
+  </div>
+  <h1>Kişisel Verilerin Korunması,<br>İşlenmesi ve Yurt Dışına<br>Aktarılması Dokümanı</h1>
+  <div class="rule"></div>
+  <p class="sub">6698 sayılı Kişisel Verilerin Korunması Kanunu ve<br>
+  Kişisel Verilerin Yurt Dışına Aktarılmasına İlişkin Usul ve Esaslar Hakkında Yönetmelik kapsamında<br>
+  hazırlanan veri sorumlusu uyum ve aktarım dokümanı</p>
+</div>
+
+<table class="meta">
+  <tr><th>Doküman adı</th><td>Kişisel Verilerin Korunması, İşlenmesi ve Yurt Dışına Aktarılması Dokümanı</td></tr>
+  <tr><th>Doküman no</th><td>MAS-KVKK-01</td></tr>
+  <tr><th>Sürüm</th><td>1.0</td></tr>
+  <tr><th>Yürürlük tarihi</th><td>03.08.2026</td></tr>
+  <tr><th>Gözden geçirme</th><td>Yılda bir kez; ayrıca hizmet sağlayıcı, veri kategorisi, aktarım ülkesi veya mevzuat değişikliğinde derhâl</td></tr>
+  <tr><th>Veri sorumlusu</th><td>Make Art Resim Atölyesi Turizm ve Ticaret Limited Şirketi</td></tr>
+  <tr><th>Hazırlayan</th><td>Bilgi teknolojileri ve uyum ekibi</td></tr>
+  <tr><th>Onaylayan</th><td>Şirket müdürü / yönetim organı</td></tr>
+  <tr><th>Gizlilik sınıfı</th><td>Şirket içi — denetim makamlarıyla ve ilgili kişilerle talep hâlinde paylaşılabilir</td></tr>
+</table>
+
+<div class="callout">
+  <span class="lbl">Bu doküman ne değildir</span>
+  <p>Bu doküman, veri sorumlusunun 6698 sayılı Kanun ve ikincil mevzuat kapsamındaki hesap verebilirlik yükümlülüğünü karşılamak üzere hazırlanmış <strong>kurumsal uyum dokümanıdır</strong>. Hukuki mütalaa değildir. Türkiye'de yerleşik veri koruma alanında yetkin bir avukat tarafından, şirketin ticaret sicil kayıtları ve fiilî iş süreçleriyle karşılaştırılarak onaylanmadan yürürlüğe konulmamalıdır. Aşağıda <span class="badge b-open">Aksiyon</span> etiketiyle işaretlenen alanlar, doküman yürürlüğe girmeden önce doldurulması veya tamamlanması gereken noktalardır.</p>
+</div>
+
+<h2>İçindekiler</h2>
+<div class="toc">
+<ol>
+  <li>Amaç ve kapsam</li>
+  <li>Tanımlar</li>
+  <li>Dayanak mevzuat</li>
+  <li>Veri sorumlusunun kimliği</li>
+  <li>İşlenen kişisel veri kategorileri</li>
+  <li>İşleme amaçları ve hukuki sebepler</li>
+  <li>Özel nitelikli kişisel veriler</li>
+  <li>Çocukların kişisel verileri</li>
+  <li>Yurt içi alıcı grupları</li>
+  <li><strong>Kişisel verilerin yurt dışına aktarılması</strong></li>
+  <li>Aktarım envanteri (hizmet sağlayıcı bazında)</li>
+  <li>Sonraki aktarımlar ve alt veri işleyenler</li>
+  <li>Aktarım mekanizması ve Kuruma bildirim</li>
+  <li>Teknik ve idari tedbirler</li>
+  <li>Saklama süreleri ve imha</li>
+  <li>İlgili kişinin hakları ve başvuru usulü</li>
+  <li>Kişisel veri ihlali müdahale prosedürü</li>
+  <li>VERBİS kayıt yükümlülüğü değerlendirmesi</li>
+  <li>İdari yaptırımlar</li>
+  <li>KVKK dışı mevzuat uyumu</li>
+  <li>Görev, yetki ve sorumluluklar</li>
+  <li>Yürürlük ve gözden geçirme</li>
+  <li>EK-A — Kişisel veri işleme envanteri</li>
+  <li>EK-B — Yurt dışına aktarım kayıt tablosu</li>
+  <li>EK-C — Standart Sözleşme-2 Ek I / Ek II / Ek III setleri</li>
+  <li>EK-D — Uyum aksiyon planı</li>
+  <li>EK-E — English executive summary</li>
+</ol>
+</div>
+
+<!-- ══════════════════════════ 1 ══════════════════════════ -->
+<h2 class="pagebreak">1. Amaç ve kapsam</h2>
+
+<p><strong>1.1.</strong> Bu dokümanın amacı, Make Art Resim Atölyesi Turizm ve Ticaret Limited Şirketi'nin (bundan sonra "<strong>Stüdyo</strong>" veya "<strong>veri sorumlusu</strong>") <code>makeartalanya.com</code> alan adı altında işlettiği web sitesi, çevrim içi kayıt sistemi, veli/öğrenci portalı ve yönetim paneli aracılığıyla gerçekleştirdiği kişisel veri işleme faaliyetlerini; bu faaliyetlerin hukuki sebeplerini; ve özellikle <strong>kişisel verilerin Türkiye Cumhuriyeti sınırları dışına aktarılmasına ilişkin usul, mekanizma ve güvenceleri</strong> yazılı olarak tespit etmektir.</p>
+
+<p><strong>1.2.</strong> Doküman; Stüdyo'nun fiziksel atölyesinde ve elektronik ortamlarında yürütülen tüm kişisel veri işleme faaliyetlerini, bu faaliyetlerde görev alan tüm çalışan, eğitmen, stajyer ve dış hizmet sağlayıcıları kapsar.</p>
+
+<p><strong>1.3.</strong> Bu doküman, kamuya açık <em>aydınlatma metninin</em> yerine geçmez. Aydınlatma metni ayrı bir belgedir (bkz. <code>MAS-KVKK-02</code>) ve <code>makeartalanya.com/privacy</code> adresinde yayımlanır. Bu doküman, aydınlatma metninin arkasındaki kurumsal gerekçe, envanter ve kanıt setidir.</p>
+
+<div class="callout">
+  <span class="lbl">Bu dokümanın çekirdek tespiti</span>
+  <p>Stüdyo, Türkiye'de yerleşik bir veri sorumlusudur ve hizmetini fiziksel olarak Alanya'da sunar. Ancak <strong>kişisel verilerin barındırıldığı, işlendiği ve yedeklendiği teknik altyapının tamamına yakını Türkiye dışındadır</strong>: veritabanı ve dosya depolaması İrlanda'da (Avrupa Birliği), uygulama sunucusu, e-posta gönderim altyapısı, alan adı/DNS hizmeti ve kaynak kodu deposu ise Avrupa Birliği ve Amerika Birleşik Devletleri'nde yerleşik hizmet sağlayıcılardadır. Bu nedenle Stüdyo'nun her kayıt işlemi, 6698 sayılı Kanunun 9 uncu maddesi anlamında <strong>sürekli ve sistematik bir yurt dışına aktarım</strong> içerir ve bu aktarımın Kanunun öngördüğü mekanizmalardan biriyle güvenceye alınması zorunludur.</p>
+</div>
+
+<!-- ══════════════════════════ 2 ══════════════════════════ -->
+<h2>2. Tanımlar</h2>
+
+<table>
+  <tr><th style="width:44mm">Terim</th><th>Tanım</th></tr>
+  <tr><td><strong>Kanun</strong></td><td>24/3/2016 tarihli ve 6698 sayılı Kişisel Verilerin Korunması Kanunu.</td></tr>
+  <tr><td><strong>Yönetmelik</strong></td><td>10/7/2024 tarihli ve 32598 sayılı Resmî Gazete'de yayımlanan Kişisel Verilerin Yurt Dışına Aktarılmasına İlişkin Usul ve Esaslar Hakkında Yönetmelik.</td></tr>
+  <tr><td><strong>Kurul / Kurum</strong></td><td>Kişisel Verileri Koruma Kurulu / Kişisel Verileri Koruma Kurumu.</td></tr>
+  <tr><td><strong>Kişisel veri</strong></td><td>Kimliği belirli veya belirlenebilir gerçek kişiye ilişkin her türlü bilgi.</td></tr>
+  <tr><td><strong>Özel nitelikli kişisel veri</strong></td><td>Kanunun 6 ncı maddesinde sayılan veriler; bu doküman kapsamında fiilen yalnızca <strong>sağlık verisi</strong> (çocuğa ait alerji/sağlık notu) söz konusudur.</td></tr>
+  <tr><td><strong>İlgili kişi</strong></td><td>Kişisel verisi işlenen gerçek kişi: veli/vasi, çocuk, öğrenci, çalışan, eğitmen, ziyaretçi.</td></tr>
+  <tr><td><strong>Veri sorumlusu</strong></td><td>Kişisel verilerin işleme amaçlarını ve vasıtalarını belirleyen, veri kayıt sisteminin kurulmasından ve yönetilmesinden sorumlu gerçek veya tüzel kişi. Bu dokümanda: Stüdyo.</td></tr>
+  <tr><td><strong>Veri işleyen</strong></td><td>Veri sorumlusunun verdiği yetkiye dayanarak onun adına kişisel verileri işleyen gerçek veya tüzel kişi. Bu dokümanda: barındırma, veritabanı, e-posta, DNS ve yapay zekâ hizmeti sağlayıcıları.</td></tr>
+  <tr><td><strong>Veri aktaran</strong></td><td>Kişisel verileri yurt dışına aktaran veri sorumlusu veya veri işleyen (Yönetmelik m.4/1-ğ). Bu dokümanda: Stüdyo.</td></tr>
+  <tr><td><strong>Veri alıcısı</strong></td><td>Veri aktarandan kişisel verileri alan yurt dışındaki veri sorumlusu veya veri işleyen (Yönetmelik m.4/1-h).</td></tr>
+  <tr><td><strong>Yurt dışına aktarım</strong></td><td>Kişisel verilerin, Kanun kapsamındaki bir veri sorumlusu veya veri işleyen tarafından yurt dışındaki bir veri sorumlusu veya veri işleyene <strong>iletilmesi ya da başka bir suretle erişilebilir hâle getirilmesi</strong> (Yönetmelik m.4/1-e). Uzaktan erişim, bulut barındırma ve yurt dışındaki bir sunucuya kayıt bu tanıma dâhildir.</td></tr>
+  <tr><td><strong>Standart sözleşme</strong></td><td>Kurul tarafından ilan edilen, üzerinde değişiklik yapılamayan aktarım sözleşmesi metni (Yönetmelik m.14).</td></tr>
+  <tr><td><strong>Arızi aktarım</strong></td><td>Düzenli olmayan, tek veya birkaç sefer gerçekleşen, süreklilik arz etmeyen ve olağan faaliyet akışı içinde bulunmayan aktarım (Yönetmelik m.16/1).</td></tr>
+</table>
+
+<!-- ══════════════════════════ 3 ══════════════════════════ -->
+<h2>3. Dayanak mevzuat</h2>
+
+<h3>3.1. Anayasa ve temel kanunlar</h3>
+<ul>
+  <li><strong>T.C. Anayasası m.20/3</strong> — Herkes, kendisiyle ilgili kişisel verilerin korunmasını isteme hakkına sahiptir. Kişisel veriler ancak kanunda öngörülen hâllerde veya kişinin açık rızasıyla işlenebilir.</li>
+  <li><strong>6698 sayılı Kişisel Verilerin Korunması Kanunu</strong> (RG 7/4/2016, 29677) — 2/3/2024 tarihli ve <strong>7499 sayılı Kanun</strong> ile değiştirilmiş hâliyle. 7499 sayılı Kanun; Kanunun 6 ncı maddesindeki özel nitelikli veri rejimini yeniden düzenlemiş ve <strong>9 uncu maddesini bütünüyle değiştirerek</strong> yurt dışına aktarımda yeterlilik kararı / uygun güvence / istisnai hâl şeklinde üç kademeli bir yapı kurmuştur. Değişiklik <strong>1/6/2024</strong> tarihinde yürürlüğe girmiş, Kanunun 9 uncu maddesinin eski birinci fıkrası geçiş hükmü uyarınca <strong>1/9/2024</strong> tarihine kadar birlikte uygulanmıştır.</li>
+  <li><strong>5237 sayılı Türk Ceza Kanunu m.135–140</strong> — Kişisel verilerin hukuka aykırı olarak kaydedilmesi, verilmesi, yayılması, ele geçirilmesi ve yok edilmemesi suçları.</li>
+  <li><strong>6098 sayılı Türk Borçlar Kanunu</strong> — Sözleşme ilişkisi, kusur ve tazminat sorumluluğu.</li>
+  <li><strong>4721 sayılı Türk Medenî Kanunu</strong> — Velayet ve çocuğun temsili (m.335 vd.); kişilik hakkının korunması (m.23–25).</li>
+</ul>
+
+<h3>3.2. KVKK ikincil mevzuatı</h3>
+<table>
+  <tr><th style="width:64mm">Düzenleme</th><th style="width:36mm">Resmî Gazete</th><th>Konu</th></tr>
+  <tr><td>Kişisel Verilerin Yurt Dışına Aktarılmasına İlişkin Usul ve Esaslar Hakkında Yönetmelik</td><td>10/7/2024 — 32598</td><td>Yeterlilik kararı, uygun güvenceler, standart sözleşme, taahhütname, bağlayıcı şirket kuralları, istisnai aktarımlar, bildirim usulü.</td></tr>
+  <tr><td>Aydınlatma Yükümlülüğünün Yerine Getirilmesinde Uyulacak Usul ve Esaslar Hakkında Tebliğ</td><td>10/3/2018 — 30356</td><td>Aydınlatmanın zorunlu asgari içeriği ve şekil şartları (m.4 ve m.5).</td></tr>
+  <tr><td>Veri Sorumlusuna Başvuru Usul ve Esasları Hakkında Tebliğ</td><td>10/3/2018 — 30356</td><td>İlgili kişi başvurusunun şekli, asgari içeriği, 30 günlük cevap süresi, ücret tarifesi.</td></tr>
+  <tr><td>Kişisel Verilerin Silinmesi, Yok Edilmesi veya Anonim Hâle Getirilmesi Hakkında Yönetmelik</td><td>28/10/2017 — 30224</td><td>Saklama ve imha politikası, periyodik imha (azami 6 ay), imha kayıtlarının asgari 3 yıl saklanması.</td></tr>
+  <tr><td>Veri Sorumluları Sicili Hakkında Yönetmelik</td><td>30/12/2017 — 30286</td><td>VERBİS kayıt yükümlülüğü, istisnalar, bildirim içeriği.</td></tr>
+  <tr><td>Kurul kararı 31/1/2018, <strong>2018/10</strong></td><td>—</td><td>Özel nitelikli kişisel verilerin işlenmesinde veri sorumlularınca alınması gereken <em>yeterli önlemler</em>.</td></tr>
+  <tr><td>Kurul kararı 24/1/2019, <strong>2019/10</strong></td><td>—</td><td>Kişisel veri ihlali bildiriminin usul ve esasları: Kurula <strong>en geç 72 saat</strong> içinde bildirim.</td></tr>
+  <tr><td>Kurul'un ilan ettiği Standart Sözleşmeler (1–4)</td><td>—</td><td>Veri sorumlusundan veri sorumlusuna / veri işleyene, veri işleyenden veri işleyene / veri sorumlusuna aktarım metinleri.</td></tr>
+  <tr><td>Çerez Uygulamaları Hakkında Rehber</td><td>—</td><td>Zorunlu olmayan çerezlerde açık rıza; çerez aydınlatması.</td></tr>
+  <tr><td>Kişisel Verilerin Yurt Dışına Aktarılması Rehberi (KVKK Yayınları No: 48)</td><td>—</td><td>Yönetmeliğin uygulanmasına ilişkin Kurum açıklamaları.</td></tr>
+</table>
+
+<h3>3.3. İlgili diğer mevzuat</h3>
+<ul>
+  <li><strong>6502 sayılı Tüketicinin Korunması Hakkında Kanun</strong> ve <strong>Mesafeli Sözleşmeler Yönetmeliği</strong> (RG 27/11/2014, 29188) — ön bilgilendirme, cayma hakkı, haksız şart yasağı.</li>
+  <li><strong>6563 sayılı Elektronik Ticaretin Düzenlenmesi Hakkında Kanun</strong> ve <strong>Ticari İletişim ve Ticari Elektronik İletiler Hakkında Yönetmelik</strong> — ticari elektronik ileti için önceden onay ve <strong>İleti Yönetim Sistemi (İYS)</strong> kaydı.</li>
+  <li><strong>5651 sayılı İnternet Ortamında Yapılan Yayınların Düzenlenmesi ve Bu Yayınlar Yoluyla İşlenen Suçlarla Mücadele Edilmesi Hakkında Kanun</strong> — içerik/yer sağlayıcı yükümlülükleri ve trafik bilgisi saklama.</li>
+  <li><strong>5580 sayılı Özel Öğretim Kurumları Kanunu</strong> ve MEB Özel Öğretim Kurumları Yönetmeliği — kurs/atölye faaliyetinin kurum açma izni gerektirip gerektirmediğinin değerlendirilmesi. <span class="badge b-open">Aksiyon</span></li>
+  <li><strong>213 sayılı Vergi Usul Kanunu m.253</strong> (defter ve belgelerin 5 yıl saklanması) ve <strong>6102 sayılı Türk Ticaret Kanunu m.82</strong> (ticari defter ve belgelerin 10 yıl saklanması).</li>
+</ul>
+
+<!-- ══════════════════════════ 4 ══════════════════════════ -->
+<h2 class="pagebreak">4. Veri sorumlusunun kimliği</h2>
+
+<table>
+  <tr><th style="width:52mm">Unvan</th><td>Make Art Resim Atölyesi Turizm ve Ticaret Limited Şirketi</td></tr>
+  <tr><th>Kayıtlı merkez</th><td>Mahmutlar Mah., 226 Nolu Sk., Yazar Group Apt., Yazar Apt 2 No: 4/C, 07070 Alanya / Antalya</td></tr>
+  <tr><th>Atölye (fiilî işyeri)</th><td>Mahmutlar Mah., Sahil Caddesi 165E, 07070 Alanya / Antalya</td></tr>
+  <tr><th>Vergi dairesi / no</th><td>Alanya Vergi Dairesi — 6111825733</td></tr>
+  <tr><th>MERSİS no</th><td><span class="fill">&nbsp;</span> <span class="badge b-open">Aksiyon</span></td></tr>
+  <tr><th>Ticaret sicil no</th><td><span class="fill">&nbsp;</span> <span class="badge b-open">Aksiyon</span></td></tr>
+  <tr><th>Yetkili / şirket müdürü</th><td><span class="fill">&nbsp;</span> <span class="badge b-open">Aksiyon</span></td></tr>
+  <tr><th>Telefon</th><td>+90 551 674 55 15</td></tr>
+  <tr><th>E-posta</th><td>makeartstudio.tr@gmail.com</td></tr>
+  <tr><th>KEP adresi</th><td><span class="fill">&nbsp;</span> <span class="badge b-open">Aksiyon</span> — standart sözleşme bildirimi KEP üzerinden yapılabileceğinden edinilmesi önerilir</td></tr>
+  <tr><th>İnternet sitesi</th><td>https://makeartalanya.com</td></tr>
+  <tr><th>VERBİS kayıt durumu</th><td>Bkz. Bölüm 18</td></tr>
+  <tr><th>KVKK irtibat noktası</th><td><span class="fill">&nbsp;</span> (ad, soyad, unvan, e-posta) <span class="badge b-open">Aksiyon</span></td></tr>
+</table>
+
+<div class="note">
+  <p><strong>Unvan tutarsızlığı — çözülmesi gerekli.</strong> Şirketin basılı sözleşme örneğinde unvan "Make Art Resim Atölyesi <em>Ticaret</em> Limited Şirketi", web sitesinde ise "Make Art Resim Atölyesi <em>Turizm ve</em> Ticaret Limited Şirketi" olarak geçmektedir. İki kullanım aynı anda doğru olamaz. Bağlayıcı unvan, Türkiye Ticaret Sicili Gazetesi kaydından teyit edilmeli ve bu doküman dâhil tüm hukuki metinlerde tek biçimde kullanılmalıdır. Yanlış unvanla imzalanan standart sözleşme, Kuruma yapılacak bildirimde geçersizlik riski taşır. <span class="badge b-open">Aksiyon</span></p>
+</div>
+
+<!-- ══════════════════════════ 5 ══════════════════════════ -->
+<h2>5. İşlenen kişisel veri kategorileri</h2>
+
+<p>Aşağıdaki tablo, uygulamanın veri tabanı şeması ve form alanları üzerinden fiilen doğrulanmıştır.</p>
+
+<table>
+  <caption>Tablo 5.1 — Veri kategorileri</caption>
+  <tr><th style="width:34mm">Kategori</th><th>Veri türleri</th><th style="width:30mm">İlgili kişi grubu</th></tr>
+  <tr><td>Kimlik</td><td>Veli/vasi adı soyadı; yakınlık derecesi (anne / baba / vasi); <em>isteğe bağlı</em> T.C. kimlik numarası veya pasaport numarası; çocuğun adı soyadı, doğum tarihi, cinsiyeti</td><td>Veli/vasi, çocuk</td></tr>
+  <tr><td>İletişim</td><td>Telefon (WhatsApp numarası), e-posta adresi, açık adres, acil durumda aranacak kişi, çocuğu dersten almaya yetkili kişiler</td><td>Veli/vasi, üçüncü kişi</td></tr>
+  <tr><td>Müşteri işlem</td><td>Seçilen branş (resim / satranç / el sanatları / bireysel), paket, tercih edilen dil (tr/en/ru), serbest metin mesajı, kayıt durumu (yeni / iletişime geçildi / kayıtlı / arşiv)</td><td>Veli/vasi, çocuk</td></tr>
+  <tr><td>Ders ve devam</td><td>Ders oturumları, kayıt (enrollment) kayıtları, yoklama/devamsızlık kayıtları, bekleme listesi, abonelik dondurma kayıtları</td><td>Çocuk, öğrenci</td></tr>
+  <tr><td>Finans</td><td>Abonelik ve paket bilgileri, ödeme kayıtları, tutar ve tarih bilgileri</td><td>Veli/vasi</td></tr>
+  <tr><td>Hesap ve kimlik doğrulama</td><td>Supabase Auth üzerinde tutulan kullanıcı kimliği, telefon/e-posta, oturum ve doğrulama kayıtları, rol bilgisi (veli / eğitmen / yönetici)</td><td>Veli/vasi, çalışan</td></tr>
+  <tr><td>Mesajlaşma</td><td>Uygulama içi sohbet odaları, mesajlar, katılımcı ve okundu bilgileri; bağlantı kurulduysa Telegram sohbet kimliği ve bağlantı zamanı</td><td>Veli/vasi, çalışan</td></tr>
+  <tr><td>Rıza ve ispat kayıtları</td><td>Aydınlatma metni sürümü ve onay bilgisi; kullanım koşulları sürümü; KVKK rızası; sağlık rızası; medya rızası (web sitesi ve sosyal medya ayrı ayrı); rıza zamanı (timestamp); rıza sırasındaki IP adresi</td><td>Veli/vasi</td></tr>
+  <tr><td>İşlem güvenliği</td><td>Sunucu ve uygulama günlükleri, hata kayıtları, oturum çerezleri, hız sınırlama (rate limit) kayıtları, denetim izi (audit_log) kayıtları</td><td>Tüm ziyaretçiler</td></tr>
+  <tr><td>Görsel ve işitsel kayıt</td><td><em>Yalnızca ayrı açık rıza hâlinde</em>: fotoğraf, video, ses kaydı, yazılı görüş/alıntı</td><td>Veli/vasi, çocuk</td></tr>
+  <tr style="background:var(--ci-primary-soft)"><td><strong>Sağlık (özel nitelikli)</strong></td><td><em>Yalnızca ayrı açık rıza hâlinde ve isteğe bağlı</em>: çocuğa ait alerji ve sağlık notu (<code>child_health_notes</code>)</td><td>Çocuk</td></tr>
+</table>
+
+<div class="callout">
+  <span class="lbl">Veri minimizasyonu ilkesi — uygulamadaki karşılığı</span>
+  <p>T.C. kimlik/pasaport numarası ve açık adres alanları, kayıt talebi için <strong>zorunlu değildir</strong> ve boş bırakılabilir; bu alanlar yalnızca sözleşme veya fatura düzenlenmesi gerektiğinde anlam taşır. Sağlık notu alanı da isteğe bağlıdır ve girilmediği sürece hiçbir özel nitelikli veri işlenmez. Bu yapı, Kanunun 4 üncü maddesindeki "işlendikleri amaçla bağlantılı, sınırlı ve ölçülü olma" ilkesinin somut karşılığıdır ve korunmalıdır.</p>
+</div>
+
+<!-- ══════════════════════════ 6 ══════════════════════════ -->
+<h2>6. İşleme amaçları ve hukuki sebepler</h2>
+
+<p>Aydınlatma Tebliği m.5/1-(ğ) uyarınca, hukuki sebep ifadesinden Kanunun 5 ve 6 ncı maddelerindeki hangi işleme şartına dayanıldığı anlaşılmalıdır. Aşağıdaki eşleştirme bağlayıcıdır.</p>
+
+<table>
+  <caption>Tablo 6.1 — Amaç / hukuki sebep matrisi</caption>
+  <tr><th style="width:56mm">İşleme amacı</th><th style="width:40mm">Hukuki sebep</th><th>Açıklama</th></tr>
+  <tr><td>Kayıt/deneme dersi talebinin alınması ve yanıtlanması; sözleşme öncesi adımlar</td><td>KVKK m.5/2-(c)</td><td>Sözleşmenin kurulması veya ifasıyla doğrudan doğruya ilgili olması; ilgili kişinin talebi üzerine alınan sözleşme öncesi tedbir.</td></tr>
+  <tr><td>Ders programının yürütülmesi, yoklama, paket/abonelik ve bekleme listesi yönetimi</td><td>KVKK m.5/2-(c)</td><td>Kurulan hizmet sözleşmesinin ifası.</td></tr>
+  <tr><td>Faturalandırma, muhasebe, vergi ve ticari defter kayıtları</td><td>KVKK m.5/2-(ç)</td><td>Veri sorumlusunun hukuki yükümlülüğünü yerine getirmesi (VUK m.253, TTK m.82).</td></tr>
+  <tr><td>Aydınlatma ve rıza kayıtlarının ispat amacıyla tutulması</td><td>KVKK m.5/2-(ç) ve m.5/2-(e)</td><td>Hukuki yükümlülüğün ispatı ve bir hakkın tesisi/kullanılması/korunması.</td></tr>
+  <tr><td>Sistem güvenliği, kötüye kullanımın ve yetkisiz erişimin önlenmesi, günlük kayıtları</td><td>KVKK m.5/2-(f)</td><td>İlgili kişinin temel hak ve özgürlüklerine zarar vermemek kaydıyla veri sorumlusunun meşru menfaati. <strong>Meşru menfaat:</strong> velilere ve çocuklara ait kayıtların bulunduğu sistemin bütünlüğünün korunması, hesap ele geçirme ve otomatik saldırıların engellenmesi.</td></tr>
+  <tr><td>Uyuşmazlık hâlinde savunma hakkının kullanılması</td><td>KVKK m.5/2-(e)</td><td>Bir hakkın tesisi, kullanılması veya korunması için veri işlemenin zorunlu olması.</td></tr>
+  <tr style="background:var(--ci-primary-soft)"><td><strong>Çocuğa ait sağlık/alerji notunun işlenmesi</strong></td><td><strong>KVKK m.6 — açık rıza</strong></td><td>Ayrı, belirli, bilgilendirilmiş ve özgür iradeyle verilen açık rıza. Hizmetin şartı değildir; verilmemesi kayda, derse veya fiyata etki etmez.</td></tr>
+  <tr style="background:var(--ci-primary-soft)"><td><strong>Fotoğraf / video / ses / yazılı görüş yayımlanması</strong></td><td><strong>KVKK m.5/1 — açık rıza</strong></td><td>Web sitesinde yayım ile sosyal medyada yayım <strong>ayrı</strong> tercihlerdir; kutular önceden işaretli değildir.</td></tr>
+  <tr style="background:var(--ci-primary-soft)"><td><strong>Ticari elektronik ileti / pazarlama</strong></td><td><strong>KVKK m.5/1 açık rıza + 6563 s. Kanun onayı</strong></td><td>KVKK açık rızası ile ETK onayı ayrı hukuki kurumlardır; her ikisi de alınmalı ve İYS'ye kaydedilmelidir.</td></tr>
+  <tr style="background:var(--ci-primary-soft)"><td><strong>Zorunlu olmayan çerez / harici içerik (Google Haritalar)</strong></td><td><strong>Açık rıza</strong></td><td>Harici harita, kullanıcı izin vermeden yüklenmez.</td></tr>
+</table>
+
+<div class="note">
+  <p><strong>Aydınlatma ve açık rıza ayrımı.</strong> Aydınlatma Tebliği m.5/1-(e) uyarınca açık rızaya dayalı işlemede aydınlatma ile rızanın alınması <strong>ayrı ayrı</strong> yerine getirilmelidir; m.5/1-(f) uyarınca aydınlatma metni içinde "ilgili kişinin açık rıza vermesi" türü ifadelere yer verilemez. Bu nedenle Stüdyo'nun aydınlatma metni ile rıza metinleri iki ayrı belgedir ve kayıt formunda iki ayrı kutu olarak sunulur. Sözleşmenin imzalanması hiçbir şekilde açık rıza yerine geçmez.</p>
+</div>
+
+<!-- ══════════════════════════ 7 ══════════════════════════ -->
+<h2>7. Özel nitelikli kişisel veriler</h2>
+
+<p><strong>7.1.</strong> Stüdyo'nun işlediği tek özel nitelikli veri kategorisi, velinin isteğe bağlı olarak girdiği <strong>çocuğa ait sağlık/alerji notudur</strong>. Bu veri, çocuğun ders sırasında güvenliğinin sağlanması (örneğin boya maddesi alerjisi) amacıyla işlenir.</p>
+
+<p><strong>7.2.</strong> Hukuki sebep, velinin/vasinin ayrı ve açık rızasıdır. Alan boş bırakılabilir; boş bırakılması kayda, ders katılımına, fiyata veya hizmete hiçbir etki etmez. Rıza her zaman geriye dönük olarak değil, ileriye etkili biçimde geri çekilebilir; geri çekildiğinde alan silinir.</p>
+
+<p><strong>7.3.</strong> Kurul'un <strong>2018/10</strong> sayılı kararı uyarınca özel nitelikli veriler bakımından asgari şu <em>yeterli önlemler</em> uygulanır:</p>
+<ul>
+  <li>Özel nitelikli veri işleyen personel için ayrı yetkilendirme ve düzenli KVKK eğitimi; gizlilik taahhütnamesi imzalatılması.</li>
+  <li>Erişim yetkilerinin kapsam ve süresinin açıkça tanımlanması, periyodik olarak gözden geçirilmesi.</li>
+  <li>Verinin bulunduğu ortamın kriptografik yöntemlerle korunması; aktarımın uçtan uca şifreli kanal (TLS 1.2+) üzerinden yapılması.</li>
+  <li>Elektronik ortamda yapılan tüm erişimlerin loglanması.</li>
+  <li>Fiziksel ortamda tutulması hâlinde kilitli dolap ve giriş kontrolü.</li>
+</ul>
+
+<p><strong>7.4.</strong> Sağlık verisi; Telegram mesajlarına, e-posta bildirim metinlerine, genel bildirim şablonlarına, yapay zekâ asistanına ve kaynak kodu deposuna <strong>hiçbir hâlde</strong> dâhil edilmez. Bu kısıtlama, uygulamanın bildirim üretim katmanında teknik olarak da uygulanır.</p>
+
+<p><strong>7.5.</strong> Özel nitelikli veri işlenmesi, VERBİS kayıt yükümlülüğü değerlendirmesini doğrudan etkiler (bkz. Bölüm 18).</p>
+
+<!-- ══════════════════════════ 8 ══════════════════════════ -->
+<h2>8. Çocukların kişisel verileri</h2>
+
+<p><strong>8.1.</strong> Stüdyo'nun hizmeti ağırlıklı olarak çocuklara yöneliktir; bu nedenle işlenen verilerin önemli bir kısmı çocuklara aittir. 6698 sayılı Kanun, çocuk verileri için ayrı bir "dijital rıza yaşı" öngörmemiştir; bu boşlukta 4721 sayılı Türk Medenî Kanununun velayete ilişkin hükümleri ve çocuğun üstün yararı ilkesi esas alınır.</p>
+
+<p><strong>8.2.</strong> Buna göre:</p>
+<ul>
+  <li>Çocuğa ilişkin tüm kayıt işlemleri ve rızalar, <strong>velayet hakkı sahibi veli veya vasi</strong> tarafından verilir. Veli/vasi, çocuk adına işlem yapmaya yetkili olduğunu beyan ve taahhüt eder.</li>
+  <li>Fotoğraf, video, ses ve yazılı görüş kullanımına ilişkin rızada, <strong>çocuğun makul itirazı</strong> ayrıca gözetilir; çocuk fotoğraflanmak istemediğini ifade ederse veli rızası bulunsa dahi kayıt yapılmaz.</li>
+  <li>Ortak velayet hâlinde, uygulamada tek veli beyanı esas alınmakla birlikte, diğer velinin itirazının Stüdyo'ya ulaşması hâlinde ilgili işleme durdurulur.</li>
+  <li>Çocuğa ait veriler, pazarlama amacıyla veya çocuk profillemesi amacıyla <strong>hiçbir şekilde</strong> işlenmez.</li>
+  <li>Çocuğu dersten almaya yetkili kişilere ilişkin veriler, üçüncü kişilere ait kişisel veri niteliğindedir. Veli/vasi, bu kişileri bilgilendirmekle yükümlüdür; Stüdyo bu verileri yalnızca teslim kontrolü amacıyla kullanır.</li>
+</ul>
+
+<!-- ══════════════════════════ 9 ══════════════════════════ -->
+<h2 class="pagebreak">9. Yurt içi alıcı grupları</h2>
+
+<table>
+  <tr><th style="width:52mm">Alıcı</th><th>Aktarılan veri / amaç</th></tr>
+  <tr><td>Yetkili stüdyo personeli ve eğitmenler</td><td>Görev tanımıyla sınırlı olarak kayıt, ders, yoklama ve iletişim verileri. Rol bazlı erişim (yönetici / eğitmen) ve satır düzeyi güvenlik politikalarıyla sınırlandırılır.</td></tr>
+  <tr><td>Mali müşavir / muhasebeci</td><td>Fatura ve ödeme kayıtları; hukuki yükümlülüğün yerine getirilmesi amacıyla.</td></tr>
+  <tr><td>Avukat / hukuk danışmanı</td><td>Yalnızca uyuşmazlık hâlinde ve savunma hakkının kullanılması amacıyla, olayla sınırlı olarak.</td></tr>
+  <tr><td>Yetkili kamu kurum ve kuruluşları</td><td>Kanunen yetkili makamların usulüne uygun talebi üzerine, talep kapsamıyla sınırlı olarak (KVKK m.8/2-(a), m.5/2-(a) ve (ç)).</td></tr>
+  <tr><td>Sigorta şirketi</td><td>Kaza/yaralanma hâlinde ve yalnızca ilgili olay bakımından. <span class="badge b-part">Varsa</span></td></tr>
+</table>
+
+<!-- ══════════════════════════ 10 ══════════════════════════ -->
+<h2>10. Kişisel verilerin yurt dışına aktarılması</h2>
+
+<h3>10.1. Aktarımın varlığı ve niteliği</h3>
+
+<p><strong>10.1.1.</strong> Yönetmelik m.4/1-(e) uyarınca yurt dışına aktarım, kişisel verilerin yurt dışındaki bir veri sorumlusu veya veri işleyene <strong>iletilmesi ya da başka bir suretle erişilebilir hâle getirilmesidir</strong>. Verinin fiziken taşınması gerekmez; yurt dışındaki bir sunucuya kaydedilmesi, yurt dışından uzaktan erişilebilir olması veya bulut hizmetinde barındırılması aktarım sayılır.</p>
+
+<p><strong>10.1.2.</strong> Stüdyo'nun teknik mimarisi incelendiğinde, <strong>her kayıt talebi, her oturum açma, her ders kaydı ve her bildirim yurt dışına aktarım içerir</strong>. Bu aktarımlar tek seferlik değil, uygulamanın olağan işleyişinin ayrılmaz parçasıdır. Dolayısıyla Yönetmelik m.16/1 anlamında <strong>arızi değildir</strong>: düzenli, sürekli ve olağan faaliyet akışı içindedir.</p>
+
+<div class="callout">
+  <span class="lbl">Kritik hukuki sonuç</span>
+  <p>Aktarımlar arızi olmadığı için, <strong>Yönetmelik m.16/2-(a)'daki "ilgili kişinin açık rızası" istisnası bu aktarımlar için kullanılamaz</strong>. Açık rıza kutusu koymak, sürekli aktarım için uygun güvence yerine geçmez; aksine, hukuka aykırı aktarımı meşru gösterme girişimi olarak değerlendirilebilir. Bu aktarımların <strong>tamamı için Kanunun 9/4 maddesindeki uygun güvencelerden biri — pratikte Kurul'un ilan ettiği Standart Sözleşme-2 — sağlanmak ve Kuruma bildirilmek zorundadır.</strong></p>
+</div>
+
+<h3>10.2. Üç kademeli aktarım rejimi (Kanun m.9, Yönetmelik m.6)</h3>
+
+<table>
+  <tr><th style="width:12mm">Sıra</th><th style="width:44mm">Kademe</th><th>İçerik ve Stüdyo bakımından durum</th></tr>
+  <tr>
+    <td><strong>1</strong></td>
+    <td><strong>Yeterlilik kararı</strong><br>Kanun m.9/1<br>Yönetmelik m.6/1-(a), m.8</td>
+    <td>Kurul, bir ülke, ülke içindeki sektör veya uluslararası kuruluş hakkında yeterli koruma bulunduğuna karar verirse aktarım serbesttir. Karar en geç dört yılda bir yeniden değerlendirilir.<br><strong>Stüdyo bakımından:</strong> <span class="badge b-open">Kullanılamaz</span> — Kurum, bu konuda <em>henüz bir belirleme yapılmadığını</em> resmen duyurmuştur. <strong>İrlanda, Almanya ve Amerika Birleşik Devletleri dâhil hiçbir ülke hakkında yeterlilik kararı bulunmamaktadır.</strong> Avrupa Birliği'nin GDPR kapsamındaki yeterlilik kararları Türkiye bakımından sonuç doğurmaz.</td>
+  </tr>
+  <tr>
+    <td><strong>2</strong></td>
+    <td><strong>Uygun güvenceler</strong><br>Kanun m.9/4<br>Yönetmelik m.6/1-(b), m.10–15</td>
+    <td>Yeterlilik kararı yoksa, ilgili kişinin aktarımın yapılacağı ülkede de haklarını kullanma ve etkili kanun yollarına başvurma imkânı bulunmak kaydıyla dört seçenekten biri: <em>(a)</em> kamu kurumları arası anlaşma + Kurul izni; <em>(b)</em> Kurul onaylı bağlayıcı şirket kuralları; <em>(c)</em> <strong>Kurul'un ilan ettiği standart sözleşme + Kuruma bildirim</strong>; <em>(ç)</em> yazılı taahhütname + Kurul izni.<br><strong>Stüdyo bakımından:</strong> <span class="badge b-ok">Uygulanacak yol</span> — <strong>(c) Standart Sözleşme-2 (Veri Sorumlusundan Veri İşleyene)</strong>. Kurul izni gerektirmediği, önceden onay beklenmediği ve imzadan sonra beş iş günü içinde bildirimle yürürlüğe girdiği için tek uygulanabilir seçenektir. Şirket bir teşebbüs grubu içinde ortak ekonomik faaliyet yürütmediğinden bağlayıcı şirket kuralları; taraflar kamu kurumu olmadığından uluslararası anlaşma yolu uygulanabilir değildir. Taahhütname yolu Kurul izni beklemeyi gerektirdiğinden operasyonel olarak elverişsizdir.</td>
+  </tr>
+  <tr>
+    <td><strong>3</strong></td>
+    <td><strong>İstisnai hâller</strong><br>Kanun m.9/6<br>Yönetmelik m.16</td>
+    <td>Yeterlilik kararı yoksa <em>ve</em> uygun güvencelerden hiçbiri sağlanamıyorsa, <strong>yalnızca arızi olmak kaydıyla</strong>: muhtemel riskler hakkında bilgilendirme üzerine açık rıza; sözleşmenin ifası; ilgili kişi yararına sözleşme; üstün kamu yararı; bir hakkın tesisi/kullanılması/korunması; hayatî menfaat; kamuya açık sicilden aktarım.<br><strong>Stüdyo bakımından:</strong> <span class="badge b-part">Sınırlı</span> — Yalnızca gerçekten arızi aktarımlar için: velinin Telegram butonuna dokunması, velinin kendi tercihiyle yapay zekâ asistanına mesaj yazması, tek seferlik bir hukuki talebe cevap. Altyapı aktarımları için kullanılamaz.</td>
+  </tr>
+</table>
+
+<h3>10.3. Verinin fiziksel konumu</h3>
+
+<p>Kayıt formundan gönderilen bir verinin izlediği yol:</p>
+
+<table>
+  <tr><th style="width:8mm">#</th><th style="width:40mm">Aşama</th><th style="width:38mm">Bulunduğu ülke</th><th>Açıklama</th></tr>
+  <tr><td>1</td><td>Veli, <code>makeartalanya.com/kayit</code> formunu doldurur</td><td>Türkiye (kullanıcı cihazı)</td><td>Veri henüz kullanıcının tarayıcısındadır.</td></tr>
+  <tr><td>2</td><td>HTTPS isteği Cloudflare DNS/yönlendirme katmanından geçer</td><td>Küresel kenar ağı (ABD merkezli işletmeci)</td><td>Bağlantı meta verisi ve IP adresi kenar sunucuda işlenir.</td></tr>
+  <tr><td>3</td><td>İstek Vercel üzerindeki Next.js sunucu fonksiyonuna ulaşır</td><td>Vercel fonksiyon bölgesi</td><td>Form içeriği bellek içinde işlenir; çalışma zamanı günlükleri oluşur.</td></tr>
+  <tr><td>4</td><td>Kayıt Supabase PostgreSQL veritabanına yazılır</td><td><strong>İrlanda</strong> (AWS <code>eu-west-1</code>)</td><td><strong>Kalıcı depolama burasıdır.</strong> Proje referansı <code>vnldsyjkhofofellwuiq</code>. Yedekler de aynı bölgededir.</td></tr>
+  <tr><td>5</td><td>Onay e-postası gönderilir</td><td>Resend altyapısı (ABD merkezli) veya STRATO SMTP (Almanya)</td><td>Alıcı adı, e-posta adresi ve mesaj içeriği gönderim sağlayıcısında işlenir ve gönderim günlüğünde tutulur.</td></tr>
+  <tr><td>6</td><td>Yönetime Telegram bildirimi gönderilir</td><td>Telegram altyapısı (Türkiye dışı)</td><td>Yalnızca yapılandırılmışsa. Çocuğun adı ve sağlık notu bu metne <strong>dâhil edilmez</strong>.</td></tr>
+  <tr><td>7</td><td>Veli isteğe bağlı olarak Telegram bağlantısı kurar</td><td>Telegram altyapısı</td><td>Velinin butona dokunmasıyla — arızi ve tercihe bağlı aktarım.</td></tr>
+  <tr><td>8</td><td>Uygulamanın kaynak kodu deposu</td><td>GitHub (ABD)</td><td>Kişisel veri barındırılması <strong>amaçlanmaz</strong>; ancak yanlışlıkla veri içeren dosya/ekran görüntüsü yüklenmesi riski nedeniyle envantere alınmıştır.</td></tr>
+</table>
+
+<h3>10.4. Aktarıma ilişkin bilgilendirme yükümlülüğü</h3>
+
+<p>Aydınlatma Tebliği m.5/1-(ı) uyarınca, aydınlatma kapsamında kişisel verilerin <strong>aktarılma amacı ve aktarılacak alıcı grupları</strong> belirtilmelidir. Stüdyo'nun aydınlatma metni bu nedenle şu unsurları açıkça içerir:</p>
+<ul>
+  <li>verilerin Türkiye dışına aktarıldığı gerçeği ve bunun kaçınılmaz olduğu;</li>
+  <li>aktarımın yapıldığı ülkeler (İrlanda, Almanya, Amerika Birleşik Devletleri ve hizmet sağlayıcıların kenar ağ ülkeleri);</li>
+  <li>alıcı grupları (barındırma ve veritabanı hizmeti sağlayıcısı, uygulama barındırma sağlayıcısı, e-posta gönderim sağlayıcısı, alan adı/DNS sağlayıcısı, kaynak kodu deposu, isteğe bağlı mesajlaşma ve yapay zekâ sağlayıcıları);</li>
+  <li>aktarımın hukuki mekanizması (Kanun m.9/4-(c) uyarınca Kurul'un ilan ettiği standart sözleşme) ve bu mekanizmanın durumu;</li>
+  <li>ilgili kişinin standart sözleşmenin bir nüshasını ücretsiz talep edebileceği.</li>
+</ul>
+
+<!-- ══════════════════════════ 11 ══════════════════════════ -->
+<h2 class="pagebreak">11. Aktarım envanteri (hizmet sağlayıcı bazında)</h2>
+
+<p>Aşağıdaki tablo, Yönetmelik m.14 kapsamında imzalanacak standart sözleşmelerin dayanağını oluşturur. "Mekanizma durumu" sütunu, dokümanın yürürlük tarihindeki gerçek durumu gösterir ve tamamlandıkça güncellenir.</p>
+
+<table>
+  <caption>Tablo 11.1 — Yurt dışı veri alıcıları</caption>
+  <tr>
+    <th style="width:26mm">Veri alıcısı</th>
+    <th style="width:22mm">Ülke / bölge</th>
+    <th style="width:20mm">Sıfat</th>
+    <th>Aktarılan veri ve amaç</th>
+    <th style="width:22mm">Mekanizma</th>
+    <th style="width:16mm">Durum</th>
+  </tr>
+  <tr>
+    <td><strong>Supabase</strong><br><small>Supabase, Inc.</small></td>
+    <td>Veri merkezi: <strong>İrlanda</strong> (AWS eu-west-1)<br>Şirket merkezi: ABD</td>
+    <td>Veri işleyen</td>
+    <td>Veritabanının tamamı: kimlik, iletişim, çocuk verileri, ders/yoklama, ödeme, hesap ve kimlik doğrulama, mesajlaşma, rıza kayıtları, <strong>sağlık notu</strong>, dosya depolama (galeri/içerik), denetim izi. Amaç: barındırma, veritabanı, kimlik doğrulama, dosya depolama, gerçek zamanlı bildirim.</td>
+    <td>Standart Sözleşme-2</td>
+    <td><span class="badge b-open">Yapılacak</span></td>
+  </tr>
+  <tr>
+    <td><strong>Vercel</strong><br><small>Vercel, Inc.</small></td>
+    <td>ABD (merkez); fonksiyon bölgesi yapılandırmaya bağlı</td>
+    <td>Veri işleyen</td>
+    <td>Form ve API istekleri işlenirken bellek içinde bulunan tüm kişisel veriler; çalışma zamanı günlükleri; IP adresi. Amaç: uygulama barındırma ve sunucu tarafı çalıştırma.</td>
+    <td>Standart Sözleşme-2</td>
+    <td><span class="badge b-open">Yapılacak</span></td>
+  </tr>
+  <tr>
+    <td><strong>Resend</strong></td>
+    <td>ABD; AB bölgesi seçilebilir</td>
+    <td>Veri işleyen</td>
+    <td>Alıcı adı, e-posta adresi, e-posta konusu ve gövdesi, gönderim/teslim günlükleri. Amaç: işlemsel e-posta gönderimi.</td>
+    <td>Standart Sözleşme-2</td>
+    <td><span class="badge b-open">Yapılacak</span></td>
+  </tr>
+  <tr>
+    <td><strong>Cloudflare</strong><br><small>Cloudflare, Inc.</small></td>
+    <td>ABD (merkez); küresel kenar ağı</td>
+    <td>Veri işleyen</td>
+    <td>IP adresi, bağlantı meta verisi, güvenlik günlükleri; e-posta yönlendirme kullanılıyorsa gelen e-posta içeriği. Amaç: DNS, güvenlik ve e-posta yönlendirme.</td>
+    <td>Standart Sözleşme-2</td>
+    <td><span class="badge b-open">Yapılacak</span></td>
+  </tr>
+  <tr>
+    <td><strong>STRATO</strong></td>
+    <td><strong>Almanya</strong></td>
+    <td>Veri işleyen</td>
+    <td>Alan adı kaydı ve WHOIS irtibat verileri; SMTP yedek gönderim yolu kullanıldığında e-posta içeriği ve alıcı bilgileri. Amaç: alan adı ve e-posta altyapısı.</td>
+    <td>Standart Sözleşme-2</td>
+    <td><span class="badge b-open">Yapılacak</span></td>
+  </tr>
+  <tr>
+    <td><strong>GitHub</strong><br><small>GitHub, Inc.</small></td>
+    <td>ABD</td>
+    <td>Veri işleyen</td>
+    <td><strong>Amaçlanan: kişisel veri yok.</strong> Yalnızca kaynak kodu, veritabanı şeması ve yapılandırma. Envanterde bulunma sebebi: hata kaydı, ekran görüntüsü veya test verisi yoluyla kazara kişisel veri yüklenmesi riski.</td>
+    <td>Standart Sözleşme-2 <em>veya</em> teknik önlemle aktarımın tamamen kaldırılması</td>
+    <td><span class="badge b-open">Karar</span></td>
+  </tr>
+  <tr>
+    <td><strong>Telegram</strong></td>
+    <td>Türkiye dışı</td>
+    <td>Bağımsız veri sorumlusu</td>
+    <td>Yalnızca velinin Telegram butonuna dokunması hâlinde: ad, Telegram hesap kimliği, mesaj içeriği. <strong>Çocuğun adı ve sağlık notu dâhil edilmez.</strong></td>
+    <td>Yönetmelik m.16/2-(a) — arızi aktarım, riskler hakkında bilgilendirme üzerine açık rıza</td>
+    <td><span class="badge b-part">Rıza akışı</span></td>
+  </tr>
+  <tr>
+    <td><strong>Yapay zekâ sağlayıcısı</strong><br><small>Anthropic / OpenAI / OpenRouter — yapılandırmaya bağlı</small></td>
+    <td>ABD</td>
+    <td>Veri işleyen</td>
+    <td>Yalnızca ziyaretçinin sohbete yazmayı seçtiği mesaj metni. Kimlik, iletişim, adres ve sağlık verisi girilmemesi teknik olarak engellenmeye çalışılır; sohbet geçmişi Stüdyo veritabanına kaydedilmez.</td>
+    <td>Harici sağlayıcı etkinse: Standart Sözleşme-2 + sohbet öncesi sağlayıcı adı ve yurt dışı işleme bildirimi</td>
+    <td><span class="badge b-part">Bayrağa bağlı</span></td>
+  </tr>
+  <tr>
+    <td><strong>Google</strong><br><small>Google Haritalar gömülü içerik</small></td>
+    <td>ABD</td>
+    <td>Bağımsız veri sorumlusu</td>
+    <td>Yalnızca ziyaretçi haritayı yüklemeyi seçerse: IP adresi ve tarayıcı bilgileri.</td>
+    <td>Açık rızaya bağlı harici içerik; rıza verilmeden yüklenmez</td>
+    <td><span class="badge b-ok">Uygulandı</span></td>
+  </tr>
+</table>
+
+<div class="note">
+  <p><strong>Sıfat tespiti neden önemli?</strong> Supabase, Vercel, Resend, Cloudflare, STRATO ve GitHub, Stüdyo'nun talimatı doğrultusunda ve onun adına veri işledikleri için <strong>veri işleyen</strong> sıfatını haizdir; bu nedenle uygulanacak metin <strong>Standart Sözleşme-2 (Veri Sorumlusundan Veri İşleyene)</strong>'dir. Telegram ve Google ise kendi koşullarını uygulayan bağımsız veri sorumlularıdır; bunlara aktarım Standart Sözleşme-1 gerektirir ya da — Stüdyo'nun bu şirketlerle sözleşme müzakere gücü bulunmadığından — yalnızca gerçekten arızi kalması ve kullanıcı tercihine bırakılması suretiyle Yönetmelik m.16 kapsamında yürütülür.</p>
+</div>
+
+<!-- ══════════════════════════ 12 ══════════════════════════ -->
+<h2>12. Sonraki aktarımlar ve alt veri işleyenler</h2>
+
+<p><strong>12.1.</strong> Standart Sözleşme-2 m.7.8 uyarınca veri alıcısı, aktarılan kişisel verileri ancak veri aktaranın talimatıyla ve sınırlı hâllerde üçüncü bir tarafa aktarabilir. Bilinen zincir aktarımlar:</p>
+
+<table>
+  <tr><th style="width:34mm">Veri alıcısı</th><th style="width:40mm">Alt veri işleyen</th><th>Rol</th></tr>
+  <tr><td>Supabase</td><td>Amazon Web Services (AWS) — İrlanda</td><td>Fiziksel veri merkezi ve altyapı.</td></tr>
+  <tr><td>Vercel</td><td>AWS / bulut altyapı sağlayıcıları</td><td>Sunucusuz fonksiyon çalıştırma altyapısı.</td></tr>
+  <tr><td>Resend</td><td>Amazon SES ve benzeri gönderim altyapıları</td><td>E-posta teslimi.</td></tr>
+  <tr><td>Yapay zekâ sağlayıcısı</td><td>Model barındırma altyapısı</td><td>Model çalıştırma.</td></tr>
+</table>
+
+<p><strong>12.2.</strong> Standart Sözleşme-2 m.8'de <strong>2. Seçenek (Genel Yetkilendirme)</strong> tercih edilecektir: veri alıcısı, önceden onaylanmış listedeki alt veri işleyenlerle çalışabilir; listede değişiklik yapılmadan önce Stüdyo'ya yazılı bildirimde bulunur ve Stüdyo'ya itiraz için makul süre tanır. Yetkilendirilen alt veri işleyenler <strong>Ek III</strong>'te listelenir.</p>
+
+<p><strong>12.3.</strong> Sözleşme Kuruma bildirildikten sonra alt veri işleyenlerde veya sonraki aktarım alıcılarında değişiklik olması hâlinde <strong>Ek I ve Ek III güncellenir ve durum Kuruma bildirilir</strong> (Standart Sözleşme-2 m.7.8/(c) ve m.8).</p>
+
+<!-- ══════════════════════════ 13 ══════════════════════════ -->
+<h2>13. Aktarım mekanizması ve Kuruma bildirim</h2>
+
+<h3>13.1. Standart sözleşmenin bağlayıcı kuralları</h3>
+<ul>
+  <li>Standart sözleşme, <strong>üzerinde herhangi bir değişiklik yapılmaksızın</strong> kullanılmak zorundadır (Yönetmelik m.14/3). Yalnızca metinde açıkça "tarafların tercihine bağlı" veya "seçenek" olarak belirtilen hükümlerde tercih yapılabilir; ekler doldurulur. Madde ekleme, çıkarma veya değiştirme sözleşmeyi geçersiz kılar ve Kanunun 15 inci maddesi uyarınca Kurul incelemesine yol açar.</li>
+  <li>Sözleşme yabancı dilde de akdedilirse <strong>Türkçe metin esas alınır</strong> (Yönetmelik m.14/3). Yabancı dildeki her belgenin <strong>noter onaylı çevirisi</strong> bildirime eklenir (m.14/6).</li>
+  <li>Sözleşme, aktarımın tarafları veya temsile ve imzaya yetkili kişilerce imzalanır (m.14/4). İmza yetkisini tevsik eden belgeler bildirime eklenir.</li>
+  <li>Sözleşme, <strong>imzaların tamamlanmasından itibaren beş iş günü içinde</strong> fiziki olarak, KEP adresi üzerinden veya Kurul'un belirlediği diğer yöntemlerle Kuruma bildirilir (m.14/5). Bildirim yükümlüsü sözleşmede belirlenebilir; belirlenmemişse <strong>veri aktaran</strong> bildirir.</li>
+  <li>Sözleşmede değişiklik yapılması veya taraflardan birinin geçerli imzasının bulunmaması hâlinde Kurul inceleme başlatır (m.14/7).</li>
+</ul>
+
+<div class="callout">
+  <span class="lbl">Uygulamadaki en kritik risk</span>
+  <p>Hizmet sağlayıcıların çevrim içi olarak sunduğu kendi standart veri işleme sözleşmeleri (DPA'ler) ve Avrupa Birliği'nin Standart Sözleşme Hükümleri (EU SCC), <strong>KVKK m.9 bakımından uygun güvence sayılmaz</strong>. Bunlar GDPR uyum belgeleridir. KVKK bakımından geçerli olan yalnızca Kurul'un ilan ettiği Türkçe standart sözleşme metnidir ve bu metnin ıslak/elektronik imzayla imzalanıp Kuruma bildirilmesidir. Bu ayrımın gözden kaçırılması, aktarımın hukuki dayanaksız kalması sonucunu doğurur.</p>
+</div>
+
+<h3>13.2. Uygulama zorluğu ve alınacak tutum</h3>
+
+<p>Supabase, Vercel, Cloudflare ve GitHub gibi büyük ölçekli sağlayıcıların, tek tek müşterileriyle Türkçe metinli, imza yetki belgeli ve noter onaylı çeviri gerektiren bir sözleşme imzalamayı reddetmesi ya da süreci uzatması yaygın bir sonuçtur. Bu durumda Stüdyo'nun izleyeceği tutum sırasıyla şöyledir:</p>
+
+<ol>
+  <li><strong>Talep:</strong> Her sağlayıcıya, hazırlanmış Türkçe Standart Sözleşme-2 metni ve doldurulmuş ekleri resmî destek/hukuk kanalından gönderilir; imza talebi yazılı olarak kayda alınır.</li>
+  <li><strong>Belgeleme:</strong> Sağlayıcıdan gelen her yanıt (kabul, ret veya sessizlik) tarih ve içerikle birlikte saklanır. Bu yazışmalar, Kurul denetiminde <em>makul çaba</em> gösterildiğinin kanıtı olarak kullanılır (Standart Sözleşme-2 m.7 birinci cümle).</li>
+  <li><strong>Yerine geçme (mitigasyon):</strong> Sözleşme imzalanamayan hizmetler için sırasıyla şu adımlar değerlendirilir:
+    <ul>
+      <li>Hizmetin, sözleşme imzalamayı kabul eden eşdeğer bir sağlayıcıyla veya Türkiye'de yerleşik bir sağlayıcıyla değiştirilmesi;</li>
+      <li>İlgili hizmete kişisel veri akışının teknik olarak kesilmesi (örneğin GitHub'a hiçbir kişisel veri gitmemesini garanti eden gizli-tarama ve yükleme kısıtı);</li>
+      <li>Aktarılan veri kümesinin takma adlaştırma veya alan düzeyinde şifreleme ile kişisel veri olmaktan çıkarılması.</li>
+    </ul>
+  </li>
+  <li><strong>Kurula başvuru:</strong> Hiçbiri mümkün değilse, Yönetmelik m.15 kapsamında taahhütname yolu ile Kurul iznine başvurulması değerlendirilir.</li>
+</ol>
+
+<h3>13.3. Bildirim kaydı</h3>
+
+<table>
+  <tr><th style="width:34mm">Veri alıcısı</th><th style="width:24mm">İmza tarihi</th><th style="width:26mm">Kuruma bildirim tarihi</th><th style="width:24mm">Bildirim yöntemi</th><th>Evrak/kayıt no</th></tr>
+  <tr><td>Supabase</td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>Vercel</td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>Resend</td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>Cloudflare</td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>STRATO</td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>GitHub</td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>Yapay zekâ sağlayıcısı</td><td></td><td></td><td></td><td></td></tr>
+</table>
+
+<!-- ══════════════════════════ 14 ══════════════════════════ -->
+<h2 class="pagebreak">14. Teknik ve idari tedbirler</h2>
+
+<p>Kanunun 12 nci maddesi ve Standart Sözleşme-2 m.7.6 uyarınca alınan tedbirler. Bu bölüm, imzalanacak standart sözleşmelerin <strong>Ek II</strong> içeriğini oluşturur.</p>
+
+<h3>14.1. Teknik tedbirler</h3>
+<table>
+  <tr><th style="width:40mm">Tedbir</th><th>Uygulama</th></tr>
+  <tr><td>Aktarım güvenliği</td><td>Tüm trafik TLS 1.2 ve üzeri ile şifrelenir; HTTP istekleri HTTPS'e yönlendirilir; HSTS başlığı uygulanır.</td></tr>
+  <tr><td>Durağan veri şifrelemesi</td><td>Veritabanı ve yedekler sağlayıcı düzeyinde şifrelenir (AES-256).</td></tr>
+  <tr><td>Erişim kontrolü</td><td>PostgreSQL <em>Row Level Security</em> tüm tablolarda etkindir; politikalar <code>public.is_admin()</code> ve <code>public.is_admin_or_trainer()</code> güvenlik tanımlı fonksiyonları üzerinden çalışır. Veliler yalnızca kendi ve çocuklarının kaydını görebilir.</td></tr>
+  <tr><td>Servis anahtarı yönetimi</td><td>Servis rolü anahtarı yalnızca sunucu tarafında kullanılır, hiçbir hâlde tarayıcıya gönderilmez; ortam değişkenlerinde saklanır ve depoya işlenmez.</td></tr>
+  <tr><td>Kimlik doğrulama</td><td>Supabase Auth üzerinden telefon OTP, e-posta/parola ve sihirli bağlantı; yönetici oturumu HttpOnly çerez ile ve sınırlı ömürle tutulur.</td></tr>
+  <tr><td>Yetkilendirme kapısı</td><td>Uygulama düzeyinde merkezi kimlik/rol denetimi (<code>src/proxy.ts</code> ve <code>requireAdmin()</code>) ile korumalı rotalara erişim kısıtlanır.</td></tr>
+  <tr><td>Girdi doğrulama</td><td>Tüm gelen veriler sunucu tarafında Zod şemalarıyla doğrulanır; istemci verisine güvenilmez. Supabase istemcisi parametreli sorgu kullandığından SQL enjeksiyonu mümkün değildir.</td></tr>
+  <tr><td>Hız sınırlama</td><td>Genel API uç noktalarında istek sınırlaması uygulanır; kaba kuvvet ve otomatik kötüye kullanım engellenir. <span class="badge b-part">Ölçek arttığında kalıcı depolamalı çözüme geçilmelidir.</span></td></tr>
+  <tr><td>Güvenlik başlıkları</td><td>HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy ve çerçeveleme kısıtları uygulanır.</td></tr>
+  <tr><td>Günlükleme ve denetim izi</td><td>Yönetimsel işlemler <code>audit_log</code> tablosunda aktör, işlem ve zaman bilgisiyle kaydedilir.</td></tr>
+  <tr><td>Yedekleme</td><td>Sağlayıcı tarafında otomatik yedekleme; yedekler üretim verisiyle aynı bölgede (İrlanda) tutulur ve aynı korumaya tabidir.</td></tr>
+  <tr><td>Veri ayrıştırma</td><td>Sağlık notu ve çocuk adı, bildirim/mesajlaşma katmanına aktarılmaz; bildirim şablonları bu alanları içermez.</td></tr>
+  <tr><td>Üçüncü taraf içerik</td><td>Harici gömülü içerik (Google Haritalar) kullanıcı izni olmadan yüklenmez.</td></tr>
+</table>
+
+<h3>14.2. İdari tedbirler</h3>
+<table>
+  <tr><th style="width:40mm">Tedbir</th><th>Uygulama</th></tr>
+  <tr><td>Politika seti</td><td>Bu doküman; aydınlatma metni; açık rıza metinleri; saklama ve imha politikası; veri ihlali müdahale planı; çerez politikası.</td></tr>
+  <tr><td>Gizlilik taahhütnamesi</td><td>Tüm çalışan, eğitmen ve stajyerlerden, göreve başlamadan önce yazılı gizlilik ve veri işleme taahhütnamesi alınır (bkz. <code>MAS-KVKK-04</code>).</td></tr>
+  <tr><td>Yetki matrisi</td><td>Rol bazlı erişim; görevden ayrılma hâlinde erişimin aynı iş günü içinde kaldırılması.</td></tr>
+  <tr><td>Eğitim</td><td>Kişisel verilere düzenli erişimi olan personele yılda en az bir kez KVKK farkındalık eğitimi.</td></tr>
+  <tr><td>Tedarikçi yönetimi</td><td>Yeni bir hizmet sağlayıcı devreye alınmadan önce bu dokümanın Bölüm 11 envanteri güncellenir ve aktarım mekanizması tamamlanmadan üretime alınmaz.</td></tr>
+  <tr><td>Gözden geçirme</td><td>Yıllık uyum gözden geçirmesi; erişim yetkilerinin altı ayda bir denetimi.</td></tr>
+  <tr><td>Kayıt saklama</td><td>Rıza ve aydınlatma ispat kayıtları; imha kayıtları asgari üç yıl.</td></tr>
+</table>
+
+<h3>14.3. Özel nitelikli veriler için ilave tedbirler (Kurul kararı 2018/10)</h3>
+<p>Bölüm 7.3'te sayılan önlemler, standart sözleşmelerin Ek II bölümünde <strong>ayrıca ve açıkça</strong> belirtilir; zira Standart Sözleşme-2 m.7.7 ve Ek II notu, özel nitelikli veri aktarılması hâlinde bu veriler bakımından alınan tedbirlerin ayrı gösterilmesini zorunlu kılar.</p>
+
+<!-- ══════════════════════════ 15 ══════════════════════════ -->
+<h2>15. Saklama süreleri ve imha</h2>
+
+<table>
+  <caption>Tablo 15.1 — Saklama süreleri</caption>
+  <tr><th style="width:52mm">Veri / kayıt türü</th><th style="width:30mm">Saklama süresi</th><th>Dayanak</th></tr>
+  <tr><td>Sonuçlanmayan kayıt/rezervasyon talepleri</td><td>Azami 2 yıl</td><td>Amaçla sınırlılık; talebin takibi ve tekrar başvuru değerlendirmesi.</td></tr>
+  <tr><td>Sözleşme, kayıt ve tüketici işlemi kayıtları</td><td>İlişkinin sona ermesinden itibaren 10 yıl</td><td>TBK m.146 genel zamanaşımı; TTK m.82.</td></tr>
+  <tr><td>Fatura, ödeme ve muhasebe kayıtları</td><td>5 yıl (vergi) / 10 yıl (ticari defter)</td><td>VUK m.253; TTK m.82. Uzun olan uygulanır.</td></tr>
+  <tr><td>Aydınlatma ve açık rıza ispat kayıtları</td><td>Rızanın geri çekilmesinden veya ilişkinin sona ermesinden itibaren 3 yıl</td><td>İspat yükü veri sorumlusunda (Aydınlatma Tebliği m.5/1-(d)).</td></tr>
+  <tr><td>Medya (fotoğraf/video) rızası ve materyali</td><td>Rıza geri çekilene kadar; geri çekmeden itibaren <strong>10 iş günü</strong> içinde yayından kaldırma</td><td>Açık rızanın ileriye etkili geri alınabilirliği.</td></tr>
+  <tr><td>Çocuğa ait sağlık/alerji notu</td><td>Kayıt ilişkisi sona erdiğinde derhâl; rıza geri çekilirse derhâl</td><td>Özel nitelikli veride asgari saklama ilkesi.</td></tr>
+  <tr><td>Güvenlik ve sunucu günlükleri</td><td>Amaç için gerekli kısa süre; azami 12 ay</td><td>Meşru menfaat; 5651 s. Kanun kapsamındaki yükümlülükler saklıdır.</td></tr>
+  <tr><td>İmha kayıtları</td><td>Asgari 3 yıl</td><td>İmha Yönetmeliği.</td></tr>
+</table>
+
+<p><strong>15.2.</strong> Periyodik imha süresi <strong>6 ayı geçmeyecek</strong> şekilde belirlenir. Stüdyo, periyodik imhayı her yıl <strong>Haziran ve Aralık</strong> aylarında gerçekleştirir. Silme, yok etme ve anonim hâle getirme işlemleri kayıt altına alınır.</p>
+
+<p><strong>15.3.</strong> Silme talebi yerine getirildiğinde, verinin <strong>yedeklerden de</strong> imhası veya yedeklerin doğal döngüsünde imha edilmesi sağlanır; bu süre boyunca yedeklerdeki veriye erişim kapatılır. Yedekler İrlanda'da bulunduğundan, bu işlem veri alıcısıyla imzalanan standart sözleşmenin m.7.4 hükmü kapsamında yürütülür.</p>
+
+<!-- ══════════════════════════ 16 ══════════════════════════ -->
+<h2>16. İlgili kişinin hakları ve başvuru usulü</h2>
+
+<p><strong>16.1.</strong> Kanunun 11 inci maddesi uyarınca ilgili kişi; kişisel verisinin işlenip işlenmediğini öğrenme, işlenmişse bilgi talep etme, işlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme, <strong>yurt içinde veya yurt dışında aktarıldığı üçüncü kişileri bilme</strong>, eksik veya yanlış işlenmişse düzeltilmesini isteme, Kanunun 7 nci maddesindeki şartlar çerçevesinde silinmesini veya yok edilmesini isteme, düzeltme/silme işlemlerinin aktarım yapılan üçüncü kişilere bildirilmesini isteme, münhasıran otomatik sistemlerle analiz edilmesi suretiyle aleyhine bir sonucun ortaya çıkmasına itiraz etme ve kanuna aykırı işleme nedeniyle zarara uğraması hâlinde zararın giderilmesini talep etme haklarına sahiptir.</p>
+
+<p><strong>16.2.</strong> Başvuru, Veri Sorumlusuna Başvuru Usul ve Esasları Hakkında Tebliğ uyarınca <strong>yazılı olarak</strong> veya kayıtlı elektronik posta, güvenli elektronik imza, mobil imza ya da daha önce Stüdyo'ya bildirilmiş ve sistemde kayıtlı e-posta adresi üzerinden yapılır. Başvuruda ad-soyad, imza (yazılı başvuruda), T.C. kimlik numarası veya yabancılar için uyruk/pasaport numarası, tebligata esas adres, varsa e-posta ve telefon ile talep konusu yer alır.</p>
+
+<p><strong>16.3.</strong> Başvurular en kısa sürede ve <strong>en geç otuz gün</strong> içinde sonuçlandırılır. İşlem ayrıca bir maliyet gerektirmedikçe ücretsizdir; maliyet gerektirmesi hâlinde Kurulca belirlenen tarifedeki ücret alınabilir. Başvurunun Stüdyo'nun hatasından kaynaklanması hâlinde alınan ücret iade edilir.</p>
+
+<p><strong>16.4.</strong> Başvurunun reddedilmesi, verilen cevabın yetersiz bulunması veya süresinde cevap verilmemesi hâlinde ilgili kişi, cevabı öğrendiği tarihten itibaren <strong>otuz</strong> ve her hâlde başvuru tarihinden itibaren <strong>altmış gün</strong> içinde Kurula şikâyette bulunabilir. Kurula şikâyet yolu, veri sorumlusuna başvuru tüketilmeden kullanılamaz.</p>
+
+<p><strong>16.5.</strong> Yurt dışına aktarım bakımından ilgili kişi ayrıca, imzalanan standart sözleşmenin bir nüshasını <strong>ücretsiz</strong> talep edebilir. Stüdyo, ticari sır ve gizli bilgi korumasının gerektirdiği ölçüde ekler üzerinde çıkarma yapabilir; ancak içeriğin anlaşılamayacağı hâllerde anlamlı bir özet sunar ve talep üzerine çıkarma nedenlerini bildirir.</p>
+
+<p><strong>16.6.</strong> Başvuru kanalları: <strong>makeartstudio.tr@gmail.com</strong> veya kayıtlı merkez adresi. Başvuru formu: <code>MAS-KVKK-03</code>.</p>
+
+<!-- ══════════════════════════ 17 ══════════════════════════ -->
+<h2>17. Kişisel veri ihlali müdahale prosedürü</h2>
+
+<table>
+  <tr><th style="width:22mm">Aşama</th><th style="width:24mm">Süre</th><th>Yapılacak iş</th></tr>
+  <tr><td>Tespit</td><td>Derhâl</td><td>İhlalden haberdar olan her çalışan, gecikmeksizin KVKK irtibat noktasını bilgilendirir. Sağlayıcıdan gelen ihlal bildirimleri de bu kapsamdadır.</td></tr>
+  <tr><td>Sınırlama</td><td>0–4 saat</td><td>Etkilenen hesap/anahtarların iptali, erişimin kapatılması, açığın kapatılması; kanıtların korunması.</td></tr>
+  <tr><td>Değerlendirme</td><td>0–24 saat</td><td>Etkilenen veri kategorileri (kişisel / özel nitelikli ayrımıyla), ilgili kişi sayısı, muhtemel sonuçlar ve risk düzeyi belirlenir.</td></tr>
+  <tr><td><strong>Kurula bildirim</strong></td><td><strong>En geç 72 saat</strong></td><td>Kurul'un 24/1/2019 tarihli ve 2019/10 sayılı kararı uyarınca, ihlalin öğrenildiği andan itibaren en geç 72 saat içinde Kurumun "Veri İhlali Bildirim Formu" ile bildirim yapılır. Tüm bilgiler aynı anda sağlanamıyorsa aşamalı bildirim yapılır ve gecikmenin gerekçesi belirtilir.</td></tr>
+  <tr><td>İlgili kişilere bildirim</td><td>Makul en kısa süre</td><td>Doğrudan iletişim mümkünse doğrudan; değilse internet sitesinde ilan. Bildirimde asgari olarak: ihlalin ne zaman gerçekleştiği, hangi veri kategorilerinin etkilendiği (kişisel/özel nitelikli ayrımıyla), muhtemel sonuçlar, alınan ve alınacak tedbirler, bilgi alınabilecek irtibat noktası yer alır.</td></tr>
+  <tr><td>Belgeleme</td><td>Sürekli</td><td>İhlale ilişkin tüm olgular, etkiler ve alınan tedbirler kayıt altına alınır ve Kurul incelemesine hazır tutulur.</td></tr>
+  <tr><td>İyileştirme</td><td>30 gün</td><td>Kök neden analizi; teknik/idari tedbirlerin güncellenmesi; bu dokümanın revize edilmesi.</td></tr>
+</table>
+
+<p><strong>17.2.</strong> Veri alıcıları (yurt dışındaki veri işleyenler), Standart Sözleşme-2 m.7.6/(c) uyarınca ihlali <strong>gecikmeksizin</strong> Stüdyo'ya bildirmekle yükümlüdür. Kurula ve ilgili kişilere bildirim yükümlülüğü, veri sorumlusu sıfatıyla <strong>Stüdyo'ya aittir</strong>; veri işleyenin bildirimi bu yükümlülüğü ortadan kaldırmaz.</p>
+
+<!-- ══════════════════════════ 18 ══════════════════════════ -->
+<h2 class="pagebreak">18. VERBİS kayıt yükümlülüğü değerlendirmesi</h2>
+
+<p><strong>18.1.</strong> Kurul'un belirlediği istisna kriterleri uyarınca, yıllık çalışan sayısı <strong>50'den az</strong> <em>ve</em> yıllık mali bilanço toplamı <strong>100 milyon TL'den az</strong> olan veri sorumluları, <strong>ana faaliyet konusu özel nitelikli kişisel veri işlemek olmamak kaydıyla</strong> VERBİS'e kayıt yükümlülüğünden istisnadır. Kriterler kümülatiftir; ikisinin birlikte sağlanması gerekir.</p>
+
+<p><strong>18.2.</strong> Stüdyo'nun durumu:</p>
+<table>
+  <tr><th style="width:60mm">Kriter</th><th style="width:26mm">Değer</th><th>Sonuç</th></tr>
+  <tr><td>Yıllık çalışan sayısı</td><td><span class="fill">&nbsp;</span></td><td>50'den az ise istisna kriteri sağlanır. <span class="badge b-open">Aksiyon</span></td></tr>
+  <tr><td>Yıllık mali bilanço toplamı</td><td><span class="fill">&nbsp;</span></td><td>100 milyon TL'den az ise istisna kriteri sağlanır. <span class="badge b-open">Aksiyon</span></td></tr>
+  <tr><td>Ana faaliyet konusu özel nitelikli veri işlemek mi?</td><td><strong>Hayır</strong></td><td>Ana faaliyet sanat eğitimidir. Sağlık notu <em>arızi ve isteğe bağlı</em> bir alandır; ana faaliyet konusu değildir.</td></tr>
+</table>
+
+<p><strong>18.3.</strong> Değerlendirme: Stüdyo'nun ölçeği dikkate alındığında her iki eşiğin de altında kalması ve dolayısıyla <strong>VERBİS kayıt yükümlülüğünün bulunmaması kuvvetle muhtemeldir</strong>. Ancak bu sonuç, yukarıdaki iki sayısal değer resmî kayıtlardan (muhtasar ve prim hizmet beyannamesi ile kurumlar vergisi beyannamesi) teyit edilmeden kesinleştirilmemelidir.</p>
+
+<p><strong>18.4.</strong> VERBİS istisnası, diğer hiçbir KVKK yükümlülüğünü ortadan kaldırmaz: aydınlatma, veri güvenliği, ihlal bildirimi, ilgili kişi başvurularının karşılanması ve <strong>yurt dışına aktarımda standart sözleşme yapılması ve bildirilmesi</strong> yükümlülükleri her hâlde geçerlidir. Yalnızca standart sözleşme Ek I'inde istenen "VERBİS bilgileri" alanı, kayıt yükümlülüğü yoksa "kayıt yükümlülüğü bulunmamaktadır" şeklinde doldurulur.</p>
+
+<p><strong>18.5.</strong> Ölçek büyüdüğünde (çalışan sayısının 50'ye ulaşması veya bilanço eşiğinin aşılması) VERBİS kaydı zorunlu hâle gelir; bu durumda saklama ve imha politikasının ayrı bir belge olarak hazırlanması da zorunludur.</p>
+
+<!-- ══════════════════════════ 19 ══════════════════════════ -->
+<h2>19. İdari yaptırımlar</h2>
+
+<p>Kanunun 18 inci maddesindeki idari para cezaları, her takvim yılı başından geçerli olmak üzere yeniden değerleme oranıyla güncellenir. <strong>2026 yılı için uygulanan yeniden değerleme oranı %25,49</strong>'dur ve aşağıdaki tutarlar <strong>1 Ocak 2026 tarihinden itibaren işlenen ihlaller</strong> bakımından geçerlidir.</p>
+
+<table>
+  <caption>Tablo 19.1 — 2026 yılı KVKK idari para cezaları</caption>
+  <tr><th>Aykırılık</th><th style="width:26mm">Alt sınır</th><th style="width:26mm">Üst sınır</th></tr>
+  <tr><td>Aydınlatma yükümlülüğünün yerine getirilmemesi</td><td class="num">85.437 ₺</td><td class="num">1.709.200 ₺</td></tr>
+  <tr><td>Veri güvenliğine ilişkin yükümlülüklerin yerine getirilmemesi</td><td class="num">256.357 ₺</td><td class="num">17.092.242 ₺</td></tr>
+  <tr><td>Kurul tarafından verilen kararların yerine getirilmemesi</td><td class="num">427.263 ₺</td><td class="num">17.092.242 ₺</td></tr>
+  <tr><td>VERBİS'e kayıt ve bildirim yükümlülüğüne aykırılık</td><td class="num">341.809 ₺</td><td class="num">17.092.242 ₺</td></tr>
+  <tr style="background:var(--ci-primary-soft)"><td><strong>Yurt dışına aktarımda standart sözleşmenin Kuruma bildirilmemesi</strong> (Kanun m.9/5)</td><td class="num"><strong>90.308 ₺</strong></td><td class="num"><strong>1.806.377 ₺</strong></td></tr>
+</table>
+
+<p>Ayrıca kişisel verilerin hukuka aykırı olarak kaydedilmesi, verilmesi, yayılması veya ele geçirilmesi Türk Ceza Kanununun 135–140 ıncı maddeleri uyarınca <strong>hapis cezası</strong> gerektiren suç teşkil eder; idari para cezası bu sorumluluğu kaldırmaz. İlgili kişinin genel hükümlere göre maddi ve manevi tazminat talep etme hakkı da saklıdır.</p>
+
+<!-- ══════════════════════════ 20 ══════════════════════════ -->
+<h2>20. KVKK dışı mevzuat uyumu</h2>
+
+<h3>20.1. Tüketici mevzuatı (6502 s. Kanun ve Mesafeli Sözleşmeler Yönetmeliği)</h3>
+<ul>
+  <li>Çevrim içi kayıt, mesafeli sözleşme niteliğindedir; sözleşme kurulmadan önce <strong>ön bilgilendirme</strong> yapılmalı ve tüketicinin bunu teyit etmesi sağlanmalıdır.</li>
+  <li>Satıcı/sağlayıcının unvanı, açık adresi, telefonu, MERSİS numarası; hizmetin temel nitelikleri; toplam fiyat (vergiler dâhil); ödeme ve ifa şekli; <strong>cayma hakkı</strong>, süresi ve kullanım usulü; şikâyet ve itiraz için tüketici hakem heyeti/mahkeme bilgisi zorunlu bilgilerdir.</li>
+  <li>Sözleşmenin bir nüshasının tüketiciye verilmesi zorunludur; tek nüsha düzenleyip stüdyoda saklamak hukuka aykırıdır.</li>
+  <li>Peşin ödenmiş ve kullanılmamış ders haklarının <strong>tümüyle yanması</strong> yönündeki kayıtlar, tüketici sözleşmelerindeki haksız şart yasağı bakımından yüksek risklidir ve yeniden düzenlenmelidir. <span class="badge b-open">Aksiyon</span></li>
+</ul>
+
+<h3>20.2. Ticari elektronik ileti (6563 s. Kanun ve İYS)</h3>
+<ul>
+  <li>Tanıtım, kampanya ve duyuru içeren e-posta/SMS/WhatsApp mesajları <strong>ticari elektronik iletidir</strong> ve önceden onay gerektirir.</li>
+  <li>Onaylar <strong>İleti Yönetim Sistemi'ne (İYS)</strong> kaydedilmeli; ret hakkı her iletide ücretsiz ve kolay biçimde sunulmalı; ret talebi <strong>üç iş günü</strong> içinde uygulanmalıdır.</li>
+  <li>Kayıt onayı, ders hatırlatması, ödeme bildirimi gibi <strong>işlemsel</strong> iletiler ticari elektronik ileti değildir; bunlar sözleşmenin ifası kapsamındadır ve onay gerektirmez. Bu ayrımın bildirim şablonlarında korunması gerekir.</li>
+  <li>KVKK açık rızası ile ETK onayı ayrı hukuki kurumlardır; biri diğerinin yerine geçmez. <span class="badge b-open">Aksiyon: İYS kaydı</span></li>
+</ul>
+
+<h3>20.3. 5651 sayılı Kanun</h3>
+<p>Stüdyo, kendi internet sitesi bakımından <strong>içerik sağlayıcı</strong>; kullanıcıların içerik oluşturabildiği alanlar (mesajlaşma) bakımından ise <strong>yer sağlayıcı</strong> niteliği taşıyabilir. Bu kapsamda iletişim bilgilerinin sitede erişilebilir olması ve trafik bilgilerinin mevzuatın öngördüğü süre boyunca doğruluğu, bütünlüğü ve gizliliği sağlanarak saklanması gerekir.</p>
+
+<h3>20.4. 5580 sayılı Özel Öğretim Kurumları Kanunu</h3>
+<p>Çocuklara yönelik düzenli kurs/atölye faaliyeti, mevzuat kapsamında <strong>kurum açma izni</strong> gerektirebilir. Faaliyetin niteliği (düzenli eğitim programı mı, serbest atölye/etkinlik mi) belirleyicidir. Bu değerlendirme, ilgili il/ilçe millî eğitim müdürlüğü ile teyit edilmelidir; izin gerekiyorsa ayrıca öğrenci kayıt ve devam verilerinin işlenmesinde <strong>hukuki yükümlülük</strong> (KVKK m.5/2-(ç)) ek hukuki sebep olarak devreye girer. <span class="badge b-open">Aksiyon</span></p>
+
+<h3>20.5. AB Genel Veri Koruma Tüzüğü (GDPR) bakımından değerlendirme</h3>
+<p>Stüdyo Türkiye'de yerleşiktir ve hizmetini Türkiye'de sunar; ancak site üç dilde (Türkçe, İngilizce, Rusça) yayın yapmakta ve Alanya'da ikamet eden yabancı uyruklu ailelere hitap etmektedir. GDPR m.3/2 uyarınca, AB'de bulunan kişilere <em>hedeflenmiş</em> mal veya hizmet sunumu hâlinde GDPR uygulanabilir hâle gelir. Verinin İrlanda'da barındırılıyor olması tek başına GDPR'ı doğrudan uygulanabilir kılmaz; belirleyici olan hedefleme unsurudur. Bu risk düşük–orta düzeyde değerlendirilmekte olup, mevcut yapının KVKK'ya uyumlu hâle getirilmesi GDPR beklentilerinin büyük bölümünü de karşılamaktadır. <span class="badge b-part">İzlenecek</span></p>
+
+<!-- ══════════════════════════ 21 ══════════════════════════ -->
+<h2>21. Görev, yetki ve sorumluluklar</h2>
+
+<table>
+  <tr><th style="width:44mm">Rol</th><th>Sorumluluk</th></tr>
+  <tr><td>Şirket müdürü / yönetim organı</td><td>Bu dokümanın onaylanması, kaynak tahsisi, standart sözleşmelerin imzalanması, nihai hukuki sorumluluk.</td></tr>
+  <tr><td>KVKK irtibat noktası</td><td>İlgili kişi başvurularının karşılanması, ihlal bildirimlerinin yürütülmesi, envanterin güncel tutulması, Kurumla yazışma.</td></tr>
+  <tr><td>Teknik sorumlu / geliştirici</td><td>Teknik tedbirlerin uygulanması ve sürdürülmesi, erişim yönetimi, yeni hizmet sağlayıcıların uyum kontrolü, günlük ve yedek yönetimi.</td></tr>
+  <tr><td>Stüdyo personeli ve eğitmenler</td><td>Yalnızca görev kapsamındaki verilere erişim; gizlilik taahhüdüne uyum; ihlal şüphesinin derhâl bildirimi.</td></tr>
+  <tr><td>Mali müşavir</td><td>Bilanço ve çalışan sayısı verilerinin VERBİS değerlendirmesi için sağlanması.</td></tr>
+</table>
+
+<!-- ══════════════════════════ 22 ══════════════════════════ -->
+<h2>22. Yürürlük ve gözden geçirme</h2>
+<p><strong>22.1.</strong> Bu doküman, yönetim organının onayı ile yürürlüğe girer ve şirket içinde bağlayıcıdır.</p>
+<p><strong>22.2.</strong> Doküman yılda en az bir kez gözden geçirilir. Ayrıca; yeni bir hizmet sağlayıcının devreye alınması, aktarım ülkesinin değişmesi, yeni bir veri kategorisinin işlenmeye başlanması, Kurul'un yeterlilik kararı vermesi veya mevzuat değişikliği hâllerinde derhâl güncellenir.</p>
+<p><strong>22.3.</strong> Doküman ile web sitesinde yayımlanan aydınlatma metni arasında çelişki bulunması hâlinde, ilgili kişiler bakımından <strong>daha koruyucu olan</strong> metin uygulanır.</p>
+
+<div class="sigblock">
+  <div><strong>Hazırlayan</strong><br><br>Ad, Soyad: <span class="fill">&nbsp;</span><br>Unvan: <span class="fill">&nbsp;</span><br>Tarih / İmza: <span class="fill">&nbsp;</span></div>
+  <div><strong>Onaylayan (Veri sorumlusu adına)</strong><br><br>Ad, Soyad: <span class="fill">&nbsp;</span><br>Unvan: <span class="fill">&nbsp;</span><br>Tarih / İmza: <span class="fill">&nbsp;</span></div>
+</div>
+
+<!-- ══════════════════════════ EK-A ══════════════════════════ -->
+<h2 class="pagebreak">EK-A — Kişisel veri işleme envanteri</h2>
+
+<table style="font-size:8.2pt">
+  <tr>
+    <th style="width:24mm">Süreç</th>
+    <th style="width:20mm">İlgili kişi</th>
+    <th>Veri kategorileri</th>
+    <th style="width:22mm">Hukuki sebep</th>
+    <th style="width:24mm">Alıcılar</th>
+    <th style="width:18mm">Yurt dışı</th>
+    <th style="width:20mm">Saklama</th>
+  </tr>
+  <tr>
+    <td>Çevrim içi kayıt / deneme dersi talebi</td><td>Veli, çocuk</td>
+    <td>Kimlik, iletişim, çocuk bilgileri, branş/paket, mesaj, dil, rıza kayıtları, IP</td>
+    <td>m.5/2-(c), m.5/2-(ç)</td><td>Personel, Supabase, Vercel, Resend/STRATO</td><td>İrlanda, ABD, Almanya</td><td>2 yıl / 10 yıl</td>
+  </tr>
+  <tr>
+    <td>Sağlık notu</td><td>Çocuk</td><td>Alerji ve sağlık notu</td><td><strong>m.6 açık rıza</strong></td><td>Yetkili personel, Supabase</td><td>İrlanda</td><td>İlişki sonunda derhâl</td>
+  </tr>
+  <tr>
+    <td>Hesap ve oturum</td><td>Veli, personel</td><td>Kullanıcı kimliği, telefon/e-posta, oturum kayıtları, rol</td><td>m.5/2-(c), m.5/2-(f)</td><td>Supabase Auth, Vercel</td><td>İrlanda, ABD</td><td>Hesap süresince</td>
+  </tr>
+  <tr>
+    <td>Ders, yoklama, bekleme listesi</td><td>Çocuk, eğitmen</td><td>Oturum, katılım, devamsızlık, sıra bilgisi</td><td>m.5/2-(c)</td><td>Personel, Supabase</td><td>İrlanda</td><td>10 yıl</td>
+  </tr>
+  <tr>
+    <td>Ödeme ve faturalama</td><td>Veli</td><td>Paket, tutar, tarih, abonelik durumu</td><td>m.5/2-(ç)</td><td>Mali müşavir, Supabase</td><td>İrlanda</td><td>10 yıl</td>
+  </tr>
+  <tr>
+    <td>Bildirim ve mesajlaşma</td><td>Veli, personel</td><td>Bildirim metni, sohbet mesajları, okundu bilgisi, Telegram kimliği</td><td>m.5/2-(c); Telegram için açık rıza</td><td>Supabase, Resend, Telegram</td><td>İrlanda, ABD, Telegram altyapısı</td><td>İlişki + 2 yıl</td>
+  </tr>
+  <tr>
+    <td>Medya (fotoğraf/video/görüş)</td><td>Veli, çocuk</td><td>Görsel, işitsel kayıt, yazılı görüş</td><td><strong>Açık rıza</strong></td><td>Supabase Storage, sosyal medya (rıza varsa)</td><td>İrlanda; sosyal platform ülkesi</td><td>Rıza geri çekilene kadar</td>
+  </tr>
+  <tr>
+    <td>Yapay zekâ asistanı</td><td>Ziyaretçi</td><td>Yalnızca yazılan mesaj metni</td><td>Meşru menfaat / açık rıza (sağlayıcıya göre)</td><td>Yapay zekâ sağlayıcısı</td><td>ABD</td><td>Stüdyo tarafında saklanmaz</td>
+  </tr>
+  <tr>
+    <td>Site güvenliği</td><td>Tüm ziyaretçiler</td><td>IP, günlük kayıtları, hız sınırlama, denetim izi</td><td>m.5/2-(f)</td><td>Vercel, Cloudflare, Supabase</td><td>ABD, İrlanda</td><td>Azami 12 ay</td>
+  </tr>
+  <tr>
+    <td>Kaynak kodu yönetimi</td><td>—</td><td>Amaçlanan: kişisel veri yok</td><td>—</td><td>GitHub</td><td>ABD</td><td>—</td>
+  </tr>
+</table>
+
+<!-- ══════════════════════════ EK-B ══════════════════════════ -->
+<h2>EK-B — Yurt dışına aktarım kayıt tablosu</h2>
+
+<p>Bu tablo, Kurul denetiminde ilk istenecek belgedir ve her aktarım için ayrı ayrı doldurulur. Aşağıdaki alanlar Standart Sözleşme-2 Ek I ile birebir örtüşür.</p>
+
+<table>
+  <tr><th style="width:52mm">Alan</th><th>İçerik</th></tr>
+  <tr><td>Veri aktaran</td><td>Make Art Resim Atölyesi Turizm ve Ticaret Limited Şirketi — Alanya / Antalya, Türkiye</td></tr>
+  <tr><td>Veri alıcısı</td><td>[Hizmet sağlayıcı unvanı ve adresi]</td></tr>
+  <tr><td>Veri alıcısının sıfatı</td><td>Veri işleyen</td></tr>
+  <tr><td>Aktarımın yapıldığı ülke</td><td>[İrlanda / ABD / Almanya]</td></tr>
+  <tr><td>Yeterlilik kararı var mı?</td><td><strong>Hayır</strong> — Kurul henüz hiçbir ülke hakkında yeterlilik kararı vermemiştir</td></tr>
+  <tr><td>Kullanılan uygun güvence</td><td>Kanun m.9/4-(c) — Kurul'un ilan ettiği Standart Sözleşme-2</td></tr>
+  <tr><td>Aktarılan veri kategorileri</td><td>[Tablo 11.1'den ilgili satır]</td></tr>
+  <tr><td>Özel nitelikli veri aktarılıyor mu?</td><td>[Evet — sağlık / Hayır]</td></tr>
+  <tr><td>Aktarımın hukuki sebebi</td><td>KVKK m.5/2-(c), m.5/2-(ç), m.5/2-(f); sağlık verisi için m.6 açık rıza</td></tr>
+  <tr><td>Aktarım sıklığı</td><td><strong>Sürekli</strong> (uygulamanın olağan işleyişi)</td></tr>
+  <tr><td>Saklama süresi</td><td>[Tablo 15.1'den ilgili satır]</td></tr>
+  <tr><td>Alt veri işleyenler</td><td>[Ek III listesi]</td></tr>
+  <tr><td>VERBİS bilgisi</td><td>[Kayıt no / "Kayıt yükümlülüğü bulunmamaktadır"]</td></tr>
+  <tr><td>İmza ve bildirim tarihi</td><td>[Bölüm 13.3'ten]</td></tr>
+</table>
+
+<!-- ══════════════════════════ EK-C ══════════════════════════ -->
+<h2 class="pagebreak">EK-C — Standart Sözleşme-2 için hazırlanmış ek setleri</h2>
+
+<div class="callout">
+  <span class="lbl">Kullanım talimatı</span>
+  <p>Aşağıdaki metinler, <strong>Kurul'un yayımladığı Standart Sözleşme-2 (Veri Sorumlusundan Veri İşleyene) metnine hiçbir değişiklik yapılmaksızın</strong> eklenecek Ek I, Ek II ve Ek III içerikleridir. Sözleşme gövdesi Kurumun internet sitesinden indirilen resmî Türkçe metin olmalıdır; yalnızca <em>Madde 8'deki seçenek</em> (2. Seçenek — Genel Yetkilendirme), <em>Madde 10'daki isteğe bağlı fıkra</em> (dâhil edilmeyecek) ve <em>Madde 16'daki bildirim yükümlüsü</em> (Veri Aktaran) tercihleri yapılacaktır. Ekler doldurulur; gövde metnine dokunulmaz.</p>
+</div>
+
+<h3>EK-C.1 — Supabase (veritabanı, kimlik doğrulama ve dosya depolama)</h3>
+
+<h4>EK I — Aktarımın detayları</h4>
+<table>
+  <tr><th style="width:56mm">Veri aktaranın faaliyetleri</th><td>Alanya'da çocuklara resim, el sanatları ve satranç eğitimi veren stüdyonun kayıt, ders programı, devam takibi, ödeme ve veli iletişimi süreçlerinin yürütülmesi; bu amaçla web sitesi ve veli portalının işletilmesi.</td></tr>
+  <tr><th>Veri alıcısının faaliyetleri</th><td>Yönetilen PostgreSQL veritabanı, kimlik doğrulama, dosya depolama ve gerçek zamanlı bildirim hizmetinin sunulması; verilerin veri aktaranın talimatı doğrultusunda barındırılması ve yedeklenmesi.</td></tr>
+  <tr><th>İlgili kişi grupları</th><td>Veli/vasi, çocuk/öğrenci, acil durum irtibat kişisi, çocuğu almaya yetkili kişiler, eğitmen ve stüdyo personeli, web sitesi ziyaretçileri.</td></tr>
+  <tr><th>Aktarılan kişisel veri kategorileri</th><td>Kimlik (ad, soyad, doğum tarihi, cinsiyet, yakınlık derecesi, isteğe bağlı kimlik/pasaport no); iletişim (telefon, e-posta, adres, acil irtibat); müşteri işlem (branş, paket, mesaj, dil, kayıt durumu); ders ve devam kayıtları; finans (abonelik, ödeme); hesap ve kimlik doğrulama verileri; mesajlaşma içerikleri; rıza ve aydınlatma ispat kayıtları (sürüm, zaman damgası, IP); işlem güvenliği kayıtları; rıza hâlinde görsel ve işitsel kayıtlar.</td></tr>
+  <tr><th>Aktarılan özel nitelikli veri kategorileri</th><td><strong>Sağlık verisi</strong> — çocuğa ait, veli tarafından isteğe bağlı olarak girilen alerji ve sağlık notu.</td></tr>
+  <tr><th>Aktarımın hukuki sebebi</th><td>KVKK m.5/2-(c) sözleşmenin kurulması ve ifası; m.5/2-(ç) hukuki yükümlülük; m.5/2-(f) meşru menfaat (sistem güvenliği); sağlık verisi bakımından m.6 kapsamında veli/vasinin açık rızası. Aktarım güvencesi: Kanun m.9/4-(c) standart sözleşme.</td></tr>
+  <tr><th>Aktarım sıklığı</th><td><strong>Sürekli</strong> — hizmetin işleyişinin ayrılmaz parçası olarak, her işlemde.</td></tr>
+  <tr><th>İşleme faaliyetinin niteliği</th><td>Depolama, saklama, sorgulama, güncelleme, yedekleme, silme ve veri aktaranın talimatı doğrultusunda erişilebilir kılma.</td></tr>
+  <tr><th>Aktarımın ve devamındaki işlemenin amaçları</th><td>Kayıt ve ders süreçlerinin yürütülmesi, veli portalının çalıştırılması, kimlik doğrulama, dosya depolama, bildirim iletimi ve verilerin bütünlüğünün korunması.</td></tr>
+  <tr><th>Saklama süresi</th><td>Veri aktaranın saklama ve imha politikasında belirlenen süreler (Tablo 15.1). Hizmet sona erdiğinde veri aktaranın tercihine göre veriler yedekleriyle birlikte iade edilir veya tamamen yok edilir.</td></tr>
+  <tr><th>Alt veri işleyene aktarımda işleme konusu, niteliği ve süresi</th><td>Amazon Web Services — fiziksel veri merkezi ve altyapı hizmeti (İrlanda, <code>eu-west-1</code>); hizmet süresince.</td></tr>
+  <tr><th>Alıcılar veya alıcı grupları</th><td>Veri alıcısının yetkilendirilmiş teknik personeli ve Ek III'te sayılan alt veri işleyenler.</td></tr>
+  <tr><th>Veri aktaranın VERBİS bilgileri</th><td>[Kayıt no veya "Kayıt yükümlülüğü bulunmamaktadır" — bkz. Bölüm 18]</td></tr>
+</table>
+
+<h4>EK II — Teknik ve idari tedbirler</h4>
+<p>Bölüm 14.1 ve 14.2'de sayılan tedbirlerin tamamı; ayrıca veri alıcısı bakımından: durağan verinin AES-256 ile şifrelenmesi, aktarımın TLS 1.2+ ile korunması, veri merkezine fiziksel erişim kontrolü, personel için gizlilik yükümlülüğü, en az yetki ilkesi, erişim günlüklerinin tutulması, düzenli yedekleme ve geri yükleme testleri, güvenlik olaylarının izlenmesi ve bağımsız denetim raporlarının (SOC 2 / ISO 27001 vb.) veri aktarana sunulması.</p>
+<p><strong>Özel nitelikli kişisel veriler için ilave tedbirler:</strong> Sağlık notu alanına erişim, uygulama düzeyinde ayrı bir yetki grubuyla sınırlandırılır; bu alana yapılan her erişim ayrıca loglanır; alan bildirim, mesajlaşma, e-posta ve yapay zekâ katmanlarına hiçbir şekilde aktarılmaz; Kurul'un 2018/10 sayılı kararında öngörülen yeterli önlemler (personel eğitimi, gizlilik taahhüdü, yetki kapsam ve süresinin tanımlanması, kriptografik koruma, güvenli aktarım kanalı) uygulanır.</p>
+
+<h4>EK III — Alt veri işleyenler listesi</h4>
+<table>
+  <tr><th style="width:36mm">Adı</th><th style="width:32mm">Adres / ülke</th><th>İşleme faaliyetinin detayları</th></tr>
+  <tr><td>Amazon Web Services</td><td>İrlanda (<code>eu-west-1</code>)</td><td>Veri merkezi, hesaplama ve depolama altyapısı; verinin fiziksel olarak bulunduğu ortam.</td></tr>
+  <tr><td>[Sağlayıcının güncel alt veri işleyen listesinden tamamlanacak]</td><td></td><td></td></tr>
+</table>
+
+<h3>EK-C.2 — Vercel (uygulama barındırma)</h3>
+<table>
+  <tr><th style="width:56mm">Aktarılan veri kategorileri</th><td>İstek işlenirken bellekte bulunan tüm form ve API verileri (kimlik, iletişim, çocuk verileri, mesaj); IP adresi; çalışma zamanı günlükleri ve hata kayıtları. <strong>Kalıcı depolama yapılmaz.</strong></td></tr>
+  <tr><th>Özel nitelikli veri</th><td>Sağlık notu, kayıt işlemi sırasında istek gövdesinde geçici olarak bulunur. Bu nedenle özel nitelikli veri aktarımı <strong>vardır</strong> ve Ek II'de ilave tedbirler belirtilir.</td></tr>
+  <tr><th>Amaç</th><td>Next.js uygulamasının sunucu tarafında çalıştırılması, API uç noktalarının işletilmesi, statik içeriğin dağıtımı, zamanlanmış görevlerin yürütülmesi.</td></tr>
+  <tr><th>Aktarım sıklığı</th><td>Sürekli.</td></tr>
+  <tr><th>Saklama süresi</th><td>Çalışma zamanı günlükleri sağlayıcının varsayılan süresi kadar (azami 30 gün hedeflenir); uygulama verisi kalıcı olarak saklanmaz.</td></tr>
+  <tr><th>Ek tedbir</th><td><strong>Fonksiyon çalıştırma bölgesi bir Avrupa Birliği bölgesi olarak yapılandırılmalıdır</strong> (örn. Frankfurt veya Dublin). Aksi hâlde veri, İrlanda'daki veritabanına ulaşmadan önce ABD'de işlenmiş olur ve aktarım zinciri gereksiz yere uzar. <span class="badge b-open">Aksiyon</span></td></tr>
+</table>
+
+<h3>EK-C.3 — Resend (işlemsel e-posta)</h3>
+<table>
+  <tr><th style="width:56mm">Aktarılan veri kategorileri</th><td>Alıcı adı ve e-posta adresi, e-posta konusu ve gövdesi (kayıt onayı, ders bilgisi), gönderim ve teslim günlükleri, açılma/tıklama verisi (kullanılıyorsa).</td></tr>
+  <tr><th>Özel nitelikli veri</th><td><strong>Hayır.</strong> E-posta şablonlarına sağlık notu ve çocuğun tam adı dâhil edilmez.</td></tr>
+  <tr><th>Amaç</th><td>Kayıt onayı, hesap doğrulama, ders ve ödeme hatırlatması gibi işlemsel e-postaların iletilmesi.</td></tr>
+  <tr><th>Aktarım sıklığı</th><td>Sürekli (olay tetiklemeli).</td></tr>
+  <tr><th>Saklama süresi</th><td>Gönderim günlükleri sağlayıcı tarafında azami 30 gün.</td></tr>
+  <tr><th>Ek tedbir</th><td>Sağlayıcının <strong>AB bölgesi</strong> seçeneği mevcutsa etkinleştirilmelidir. SPF, DKIM ve DMARC kayıtları yapılandırılır. <span class="badge b-open">Aksiyon</span></td></tr>
+</table>
+
+<h3>EK-C.4 — Cloudflare (DNS, güvenlik, e-posta yönlendirme)</h3>
+<table>
+  <tr><th style="width:56mm">Aktarılan veri kategorileri</th><td>IP adresi, bağlantı meta verisi, TLS el sıkışma bilgileri, güvenlik/bot günlükleri; e-posta yönlendirme kullanılıyorsa gelen e-postaların gönderen, alıcı ve içerik bilgileri.</td></tr>
+  <tr><th>Özel nitelikli veri</th><td>Amaçlanmaz; ancak veli tarafından e-posta ile sağlık bilgisi gönderilmesi hâlinde yönlendirme kapsamında geçici olarak işlenebilir. Bu ihtimal Ek II'de belirtilir.</td></tr>
+  <tr><th>Amaç</th><td>Alan adı çözümleme, hizmet erişilebilirliği, kötüye kullanım ve saldırı önleme, e-posta yönlendirme.</td></tr>
+  <tr><th>Aktarım sıklığı</th><td>Sürekli.</td></tr>
+  <tr><th>Saklama süresi</th><td>Güvenlik günlükleri sağlayıcının varsayılan süresi kadar.</td></tr>
+</table>
+
+<h3>EK-C.5 — STRATO (alan adı ve yedek SMTP)</h3>
+<table>
+  <tr><th style="width:56mm">Aktarılan veri kategorileri</th><td>Alan adı sahibi/irtibat verileri; yedek SMTP yolu kullanıldığında gönderilen e-postaların alıcı, konu ve içerik bilgileri.</td></tr>
+  <tr><th>Ülke</th><td><strong>Almanya</strong> — Avrupa Birliği üyesi; ancak Türkiye bakımından yeterlilik kararı bulunmadığından standart sözleşme yine de zorunludur.</td></tr>
+  <tr><th>Amaç</th><td>Alan adı kaydı ve yönetimi; birincil e-posta sağlayıcısı devre dışı kaldığında yedek gönderim.</td></tr>
+  <tr><th>Aktarım sıklığı</th><td>Alan adı verisi sürekli; SMTP gönderimi yalnızca yedek yol devredeyse.</td></tr>
+</table>
+
+<h3>EK-C.6 — GitHub (kaynak kodu deposu)</h3>
+<table>
+  <tr><th style="width:56mm">Aktarılan veri kategorileri</th><td><strong>Amaçlanan: hiçbiri.</strong> Depoda yalnızca kaynak kodu, veritabanı şeması ve yapılandırma bulunur. Ortam değişkenleri ve gizli anahtarlar depoya işlenmez.</td></tr>
+  <tr><th>Risk</th><td>Hata ayıklama çıktısı, ekran görüntüsü, test verisi veya destek amaçlı yüklenen dosyalar yoluyla kazara kişisel veri yüklenmesi.</td></tr>
+  <tr><th>Karar</th><td>İki seçenekten biri uygulanır: <em>(a)</em> Standart Sözleşme-2 imzalanır; veya <em>(b)</em> deponun hiçbir kişisel veri içermediği teknik olarak güvence altına alınır — gizli tarama (secret scanning) ve gönderim koruması (push protection) etkinleştirilir, gerçek veriyle test yasaklanır, ekran görüntüsü yükleme yasağı yazılı kurala bağlanır. <strong>(b) tercih edilirse, GitHub bir kişisel veri alıcısı olmaktan çıkar ve envanterden düşülür.</strong> <span class="badge b-open">Karar</span></td></tr>
+</table>
+
+<h3>EK-C.7 — Yapay zekâ sağlayıcısı (etkinse)</h3>
+<table>
+  <tr><th style="width:56mm">Aktarılan veri kategorileri</th><td>Yalnızca ziyaretçinin sohbete yazdığı serbest metin ve asistanın ürettiği yanıt.</td></tr>
+  <tr><th>Uygulanan kısıtlar</th><td>Sohbet geçmişi Stüdyo veritabanına kaydedilmez; kimlik, telefon, e-posta, adres, bağlantı ve sağlık verisi girişi teknik olarak engellenmeye çalışılır; asistan yalnızca stüdyo hakkında genel bilgi verir, kayıt yapamaz, ödeme alamaz, sağlık/hukuk tavsiyesi veremez.</td></tr>
+  <tr><th>Şeffaflık</th><td>Harici bir sağlayıcı etkinse, ilk mesaj gönderilmeden önce sağlayıcının adı ve verinin yurt dışında işleneceği açıkça gösterilir ve ayrı tercih alınır.</td></tr>
+  <tr><th>Ek tedbir</th><td>Sağlayıcının, gönderilen verileri <strong>model eğitiminde kullanmayacağını</strong> taahhüt eden hesap/kurumsal ayarının etkinleştirilmesi. <span class="badge b-open">Aksiyon</span></td></tr>
+</table>
+
+<!-- ══════════════════════════ EK-D ══════════════════════════ -->
+<h2 class="pagebreak">EK-D — Uyum aksiyon planı</h2>
+
+<table>
+  <tr><th style="width:8mm">#</th><th>Aksiyon</th><th style="width:22mm">Öncelik</th><th style="width:24mm">Sorumlu</th><th style="width:20mm">Termin</th></tr>
+  <tr><td>1</td><td>Ticaret sicil kaydından şirket unvanının kesinleştirilmesi; MERSİS ve ticaret sicil numaralarının, şirket müdürü adının tüm hukuki metinlere işlenmesi</td><td><span class="badge b-open">Yüksek</span></td><td>Yönetim</td><td></td></tr>
+  <tr><td>2</td><td>KEP adresi edinilmesi (standart sözleşme bildirimi için)</td><td><span class="badge b-open">Yüksek</span></td><td>Yönetim</td><td></td></tr>
+  <tr><td>3</td><td>KVKK irtibat noktasının atanması ve iletişim bilgisinin sitede yayımlanması</td><td><span class="badge b-open">Yüksek</span></td><td>Yönetim</td><td></td></tr>
+  <tr><td>4</td><td>Supabase, Vercel, Resend, Cloudflare, STRATO için Standart Sözleşme-2'nin (Ek-C setleriyle) imzalanması ve <strong>5 iş günü içinde</strong> Kuruma bildirilmesi</td><td><span class="badge b-open">Kritik</span></td><td>Yönetim + teknik</td><td></td></tr>
+  <tr><td>5</td><td>Sağlayıcı yazışmalarının (talep, cevap, ret) dosyalanması — <em>makul çaba</em> kanıtı</td><td><span class="badge b-open">Kritik</span></td><td>Teknik</td><td></td></tr>
+  <tr><td>6</td><td>GitHub için karar: sözleşme mi, sıfır-kişisel-veri garantisi mi</td><td><span class="badge b-part">Orta</span></td><td>Teknik</td><td></td></tr>
+  <tr><td>7</td><td>Vercel fonksiyon bölgesinin AB bölgesine sabitlenmesi</td><td><span class="badge b-part">Orta</span></td><td>Teknik</td><td></td></tr>
+  <tr><td>8</td><td>Resend AB bölgesi seçeneğinin etkinleştirilmesi; SPF/DKIM/DMARC doğrulaması</td><td><span class="badge b-part">Orta</span></td><td>Teknik</td><td></td></tr>
+  <tr><td>9</td><td>Aydınlatma metninin yurt dışı aktarım bölümüyle güncellenmesi ve üç dilde yayımlanması</td><td><span class="badge b-open">Yüksek</span></td><td>Teknik</td><td></td></tr>
+  <tr><td>10</td><td>Açık rıza metinlerinin ayrı, önceden işaretsiz kutular hâlinde uygulanması ve sürümlenmesi</td><td><span class="badge b-open">Yüksek</span></td><td>Teknik</td><td></td></tr>
+  <tr><td>11</td><td>Çalışan/eğitmen gizlilik taahhütnamelerinin imzalatılması</td><td><span class="badge b-part">Orta</span></td><td>Yönetim</td><td></td></tr>
+  <tr><td>12</td><td>VERBİS eşiklerinin mali müşavirden teyidi ve sonucun bu dokümana işlenmesi</td><td><span class="badge b-part">Orta</span></td><td>Mali müşavir</td><td></td></tr>
+  <tr><td>13</td><td>Pazarlama iletisi gönderilecekse İYS kaydı ve onay altyapısının kurulması</td><td><span class="badge b-part">Orta</span></td><td>Yönetim</td><td></td></tr>
+  <tr><td>14</td><td>5580 sayılı Kanun kapsamında kurum açma izni gerekliliğinin millî eğitim müdürlüğünden teyidi</td><td><span class="badge b-part">Orta</span></td><td>Yönetim</td><td></td></tr>
+  <tr><td>15</td><td>Basılı sözleşmenin, web sitesindeki güncel metinle uyumlu hâle getirilmesi; iki nüsha düzenlenmesi; cayma hakkının eklenmesi</td><td><span class="badge b-open">Yüksek</span></td><td>Yönetim</td><td></td></tr>
+  <tr><td>16</td><td>Periyodik imha takviminin (Haziran / Aralık) kurulması ve ilk imha kaydının tutulması</td><td><span class="badge b-part">Orta</span></td><td>Teknik</td><td></td></tr>
+  <tr><td>17</td><td>Bu dokümanın Türkiye'de yerleşik veri koruma avukatınca onaylanması</td><td><span class="badge b-open">Kritik</span></td><td>Yönetim</td><td></td></tr>
+</table>
+
+<!-- ══════════════════════════ EK-E ══════════════════════════ -->
+<h2>EK-E — English executive summary</h2>
+
+<p><strong>Controller.</strong> Make Art Resim Atölyesi Turizm ve Ticaret Limited Şirketi, established in Alanya/Antalya, Türkiye, operates <code>makeartalanya.com</code> — a public website, a parent/student portal and an administrative dashboard for a children's art, crafts and chess studio.</p>
+
+<p><strong>The core issue.</strong> The controller is established in Türkiye and delivers its service physically in Alanya, but essentially none of its data infrastructure is located in Türkiye. The production database, file storage and backups are hosted in <strong>Ireland</strong> (AWS <code>eu-west-1</code>) through Supabase; the application runtime is on Vercel; transactional email runs through Resend with STRATO (Germany) as fallback; DNS and edge security run through Cloudflare; the source code repository is on GitHub. Under Article 4(1)(e) of the Turkish Transfer By-Law, making personal data <em>accessible</em> abroad is itself a transfer. Every registration, login, lesson record and notification therefore constitutes a cross-border transfer of personal data out of Türkiye.</p>
+
+<p><strong>Legal regime.</strong> Article 9 of Law No. 6698, as replaced by Law No. 7499 (in force 1 June 2024), and the By-Law on the Procedures and Principles for the Transfer of Personal Data Abroad (Official Gazette 10 July 2024, No. 32598) establish a three-tier regime: (1) an adequacy decision; (2) failing that, one of four appropriate safeguards; (3) failing that, and only for <em>incidental</em> transfers, one of seven derogations.</p>
+
+<p><strong>Two findings drive everything else.</strong> First, the Turkish Personal Data Protection Board <strong>has not issued an adequacy decision for any country</strong> — including Ireland, Germany and the United States. An EU adequacy decision has no effect in Türkiye. Second, the transfers here are continuous and inherent to normal operations, so they are <strong>not incidental</strong>; consequently the explicit-consent derogation in Article 16(2)(a) of the By-Law is <strong>not available</strong> for them. A consent checkbox cannot lawfully substitute for a safeguard.</p>
+
+<p><strong>Conclusion.</strong> The only practicable safeguard is Article 9(4)(c): the <strong>Standard Contract published by the Board</strong>. Because these providers act on the controller's instructions, the applicable text is <strong>Standard Contract 2 (Controller to Processor)</strong>. It must be used <em>without any amendment</em>; the Turkish text prevails; it must be signed by duly authorised signatories; and it must be notified to the Authority <strong>within five business days</strong> of signature. Notarised translations of any foreign-language documents and evidence of signing authority must accompany the notification. Failure to notify carries an administrative fine of <strong>₺90,308 to ₺1,806,377</strong> for 2026.</p>
+
+<p><strong>Important distinction.</strong> A provider's own online DPA, or the EU Standard Contractual Clauses, does <strong>not</strong> satisfy Article 9 of KVKK. Those are GDPR instruments. Only the Board's own Turkish standard contract, signed and notified, provides the safeguard.</p>
+
+<p><strong>Special-category data.</strong> The only special-category data processed is an optional health/allergy note about a child, entered by the parent. It is processed solely on separate explicit consent, is never included in email, Telegram, general notification templates, the AI assistant or the code repository, and is subject to the additional measures required by Board Decision 2018/10.</p>
+
+<p><strong>Children.</strong> Turkish law sets no separate digital age of consent. All consents concerning a child are given by the parent or legal guardian under the Turkish Civil Code, and the child's own reasonable objection to being photographed or recorded is respected regardless of parental consent.</p>
+
+<p><strong>Data subject rights.</strong> Article 11 rights, including the right to learn the third parties abroad to whom data has been transferred, are answered within thirty days. A data subject may also request a free copy of the executed standard contract, redacted only as far as trade secrets require and accompanied by a meaningful summary.</p>
+
+<p><strong>Breach.</strong> Board Decision 2019/10 requires notification to the Board within <strong>72 hours</strong> of becoming aware of a breach, and notification to affected data subjects within a reasonable period. Overseas processors must notify the controller without delay, but the statutory duty to notify the Board and data subjects remains the controller's.</p>
+
+<footer class="docfoot">
+  <strong>MAS-KVKK-01</strong> · Kişisel Verilerin Korunması, İşlenmesi ve Yurt Dışına Aktarılması Dokümanı · Sürüm 1.0 · 03.08.2026<br>
+  Make Art Resim Atölyesi Turizm ve Ticaret Limited Şirketi · Mahmutlar Mah., 226 Nolu Sk., Yazar Group Apt., Yazar Apt 2 No: 4/C, 07070 Alanya / Antalya · makeartstudio.tr@gmail.com · +90 551 674 55 15<br>
+  Bu doküman hukuki mütalaa değildir ve yürürlüğe konulmadan önce Türkiye'de yerleşik bir avukat tarafından onaylanmalıdır.
+</footer>
+
+</div>
+</body>
+</html>

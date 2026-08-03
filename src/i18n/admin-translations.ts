@@ -34,6 +34,7 @@ export const adminTranslations: Record<AdminLocale, {
     content: string;
     media: string;
     settings: string;
+    handbook: string;
     language: string;
   };
   viewSite: string;
@@ -76,6 +77,7 @@ export const adminTranslations: Record<AdminLocale, {
       content: "Content",
       media: "Media",
       settings: "Settings",
+      handbook: "Manual",
       language: "Language",
     },
     viewSite: "View Site",
@@ -116,6 +118,7 @@ export const adminTranslations: Record<AdminLocale, {
       content: "İçerik",
       media: "Medya",
       settings: "Ayarlar",
+      handbook: "El Kitabı",
       language: "Dil",
     },
     viewSite: "Siteyi Gör",
@@ -156,6 +159,7 @@ export const adminTranslations: Record<AdminLocale, {
       content: "Контент",
       media: "Медиа",
       settings: "Настройки",
+      handbook: "Руководство",
       language: "Язык",
     },
     viewSite: "Сайт",

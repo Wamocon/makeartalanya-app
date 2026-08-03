@@ -424,6 +424,7 @@ export default async function RulesPage() {
           </div>
 
           <div className="mt-8 flex flex-wrap gap-4 border-t border-[var(--border)] pt-5 text-sm">
+            <Link href="/handbook" className="text-[var(--pink-dark)] underline">Handbook</Link>
             <Link href="/privacy" className="text-[var(--pink-dark)] underline">KVKK</Link>
             <Link href="/terms" className="text-[var(--pink-dark)] underline">Terms</Link>
             <Link href="/cookies" className="text-[var(--pink-dark)] underline">Cookies</Link>

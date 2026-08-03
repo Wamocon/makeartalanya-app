@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check, Loader2, Send } from "lucide-react";
 import { packages, type Locale } from "@/i18n/translations";
+import { COMPANY } from "@/lib/legal";
 import { OrbitMark } from "@/components/sections/OrbitMark";
 import { PaintedBackdrop } from "@/components/sections/PaintedBackdrop";
 
@@ -65,9 +66,11 @@ const COPY: Record<Locale, {
     mediaRights: string;
   };
   submit: string; submitting: string;
+  requiredNote: string;
+  altTitle: string; altBody: string; altCta: string; altWhatsApp: string;
   successTitle: string; successMsg: string;
   telegramCta: string; telegramHint: string;
-  errGeneric: string; errNetwork: string;
+  errGeneric: string; errNetwork: string; errMissing: string;
 }> = {
   tr: {
     title: "Kayıt Formu",
@@ -108,12 +111,18 @@ const COPY: Record<Locale, {
     },
     submit: "Kaydı Gönder",
     submitting: "Gönderiliyor…",
+    requiredNote: "Yıldızlı (*) alanlar zorunludur. «isteğe bağlı» yazan alanları boş bırakabilirsiniz.",
+    altTitle: "Form yerine sohbet mi?",
+    altBody: "Kaydınızı Telegram'dan da tamamlayabilirsiniz. Botumuz soruları tek tek sorar, isteğe bağlı olanları atlayabilirsiniz. Form burada çalışmazsa bu yolu kullanın.",
+    altCta: "Telegram'dan kaydol",
+    altWhatsApp: "WhatsApp'tan yaz",
     telegramCta: "Telegram'da bildirim al",
     telegramHint: "Dokunun; kaydınızla ilgili güncellemeleri Telegram'dan gönderelim.",
     successTitle: "Teşekkürler!",
     successMsg: "Kaydınızı aldık. Stüdyo, gün, saat ve paket detayları için en kısa sürede WhatsApp'tan sizinle iletişime geçecek.",
     errGeneric: "Kayıt gönderilemedi. Lütfen alanları kontrol edip tekrar deneyin.",
     errNetwork: "Bağlantı hatası. Lütfen tekrar deneyin.",
+    errMissing: "Lütfen şu zorunlu alanları tamamlayın:",
   },
   en: {
     title: "Registration Form",
@@ -154,12 +163,18 @@ const COPY: Record<Locale, {
     },
     submit: "Submit registration",
     submitting: "Submitting…",
+    requiredNote: "Fields marked * are required. Anything labelled “optional” can be left blank.",
+    altTitle: "Prefer to chat?",
+    altBody: "You can complete your registration on Telegram instead. Our bot asks one question at a time and lets you skip the optional ones. Use it if this form doesn't work for you.",
+    altCta: "Register on Telegram",
+    altWhatsApp: "Message on WhatsApp",
     telegramCta: "Get updates on Telegram",
     telegramHint: "Tap to let us send you updates about this registration on Telegram.",
     successTitle: "Thank you!",
     successMsg: "We've received your registration. The studio will contact you shortly on WhatsApp to confirm days, times and package details.",
     errGeneric: "Registration failed. Please check the fields and try again.",
     errNetwork: "Network error. Please try again.",
+    errMissing: "Please complete these required fields:",
   },
   ru: {
     title: "Форма записи",
@@ -200,12 +215,18 @@ const COPY: Record<Locale, {
     },
     submit: "Отправить заявку",
     submitting: "Отправка…",
+    requiredNote: "Поля со звёздочкой (*) обязательны. Поля с пометкой «необязательно» можно оставить пустыми.",
+    altTitle: "Удобнее в чате?",
+    altBody: "Записаться можно и в Telegram. Бот задаёт вопросы по одному, необязательные разрешает пропустить. Воспользуйтесь этим, если форма не работает.",
+    altCta: "Записаться в Telegram",
+    altWhatsApp: "Написать в WhatsApp",
     telegramCta: "Получать обновления в Telegram",
     telegramHint: "Нажмите, чтобы мы присылали обновления по этой заявке в Telegram.",
     successTitle: "Спасибо!",
     successMsg: "Мы получили вашу заявку. Студия свяжется с вами в WhatsApp, чтобы подтвердить дни, время и детали пакета.",
     errGeneric: "Не удалось отправить. Проверьте поля и попробуйте снова.",
     errNetwork: "Ошибка сети. Попробуйте ещё раз.",
+    errMissing: "Пожалуйста, заполните обязательные поля:",
   },
 };
 
@@ -242,25 +263,41 @@ export function RegistrationForm() {
     window.dispatchEvent(new CustomEvent("localechange", { detail: l }));
   }
 
-  // Mirrors registrationSchema so the button disables instead of the server
-  // rejecting a filled-in form. The required set is the paper questionnaire's.
-  const canSubmit =
-    !loading &&
-    form.parentName.trim().length >= 2 &&
-    form.parentPhone.trim().length >= 7 &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.parentEmail.trim()) &&
-    form.childName.trim().length >= 2 &&
-    /^\d{4}-\d{2}-\d{2}$/.test(form.childBirthDate) &&
-    form.emergencyContact.trim().length >= 3 &&
-    form.authorizedPickup.trim().length >= 2 &&
-    !!form.branch &&
-    form.privacyNoticeAccepted &&
-    form.termsAccepted &&
-    (!form.childHealthNotes.trim() || form.consentHealth);
+  /**
+   * Mirrors registrationSchema, but returns the human labels of what is still
+   * missing rather than a bare boolean.
+   *
+   * A disabled submit button with no explanation is the worst of both worlds:
+   * the parent cannot submit and cannot see why. Naming the fields lets them
+   * fix it, and keeps "optional" on a label meaning genuinely optional.
+   */
+  function missingRequired(): string[] {
+    const missing: string[] = [];
+    if (form.parentName.trim().length < 2) missing.push(t.f.parentName);
+    if (!form.parentRelationship) missing.push(t.f.relationship);
+    if (form.parentPhone.trim().length < 7) missing.push(t.f.parentPhone);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.parentEmail.trim())) missing.push(t.f.parentEmail);
+    if (form.childName.trim().length < 2) missing.push(t.f.childName);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(form.childBirthDate)) missing.push(t.f.childBirthDate);
+    if (!form.childGender) missing.push(t.f.childGender);
+    if (form.emergencyContact.trim().length < 3) missing.push(t.f.emergencyContact);
+    if (form.authorizedPickup.trim().length < 2) missing.push(t.f.authorizedPickup);
+    if (!form.branch) missing.push(t.f.branch);
+    if (!form.packageId) missing.push(t.f.package);
+    if (!form.privacyNoticeAccepted) missing.push(t.consent.noticeLink);
+    if (!form.termsAccepted) missing.push(t.consent.termsLink);
+    // Only blocks when they actually typed health notes — the field itself
+    // stays optional, exactly as its label says.
+    if (form.childHealthNotes.trim() && !form.consentHealth) missing.push(t.f.childHealthNotes);
+    return missing;
+  }
+
+  const missing = missingRequired();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (loading || missing.length) return;
+
     setError(null);
     setLoading(true);
     try {
@@ -385,17 +422,51 @@ export function RegistrationForm() {
                   </div>
                 ))}
               </div>
+
+              {/* A parent whose form submission fails — bad connection, an old
+                  browser, a stubborn autofill — otherwise has no way through.
+                  The bot asks the same questions and writes the same record. */}
+              <div className="mt-8 max-w-lg rounded-3xl border border-[#229ED9]/25 bg-white/70 p-5 shadow-[0_14px_40px_rgba(61,31,95,0.08)] backdrop-blur-md">
+                <p className="flex items-center gap-2 text-sm font-bold text-[var(--foreground)]">
+                  <Send className="h-4 w-4 text-[#229ED9]" aria-hidden="true" />
+                  {t.altTitle}
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-[var(--foreground)]/65">{t.altBody}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <a
+                    href={`https://t.me/${COMPANY.telegramBot}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full bg-[#229ED9] px-4 py-2 text-xs font-semibold text-white transition-transform hover:-translate-y-0.5"
+                  >
+                    <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                    {t.altCta}
+                  </a>
+                  <a
+                    href={`https://wa.me/${COMPANY.phoneHref.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-full border border-[#25D366]/40 px-4 py-2 text-xs font-semibold text-[#128C4A] transition-colors hover:bg-[#25D366]/10"
+                  >
+                    {t.altWhatsApp}
+                  </a>
+                </div>
+              </div>
             </aside>
 
-            <form onSubmit={handleSubmit} className="space-y-6" aria-busy={loading}>
+            <form onSubmit={handleSubmit} className="space-y-6" aria-busy={loading} noValidate>
+              <p className="rounded-2xl border border-white/70 bg-white/60 px-5 py-3 text-xs leading-relaxed text-[var(--foreground)]/70 backdrop-blur-md">
+                {t.requiredNote}
+              </p>
+
               {/* Parent */}
               <Section title={t.sections.parent} index="01" tone="aqua">
                 <Field label={t.f.parentName} required>
                   <input required value={form.parentName} onChange={(e) => setForm({ ...form, parentName: e.target.value })} className={inputCls} placeholder="Ayşe Yılmaz" />
                 </Field>
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <Field label={t.f.relationship} hint={t.optional}>
-                    <select value={form.parentRelationship} onChange={(e) => setForm({ ...form, parentRelationship: e.target.value as Relationship })} className={inputCls}>
+                  <Field label={t.f.relationship} required>
+                    <select required value={form.parentRelationship} onChange={(e) => setForm({ ...form, parentRelationship: e.target.value as Relationship })} className={inputCls}>
                       <option value="">{t.selectPlaceholder}</option>
                       {(Object.keys(t.rel) as Relationship[]).map((k) => (
                         <option key={k} value={k}>{t.rel[k]}</option>
@@ -428,8 +499,8 @@ export function RegistrationForm() {
                   <Field label={t.f.childBirthDate} required>
                     <input required type="date" value={form.childBirthDate} onChange={(e) => setForm({ ...form, childBirthDate: e.target.value })} className={inputCls} />
                   </Field>
-                  <Field label={t.f.childGender} hint={t.optional}>
-                    <select value={form.childGender} onChange={(e) => setForm({ ...form, childGender: e.target.value as Gender })} className={inputCls}>
+                  <Field label={t.f.childGender} required>
+                    <select required value={form.childGender} onChange={(e) => setForm({ ...form, childGender: e.target.value as Gender })} className={inputCls}>
                       <option value="">{t.selectPlaceholder}</option>
                       {(Object.keys(t.gender) as Gender[]).map((k) => (
                         <option key={k} value={k}>{t.gender[k]}</option>
@@ -459,8 +530,8 @@ export function RegistrationForm() {
                       ))}
                     </select>
                   </Field>
-                  <Field label={t.f.package} hint={t.optional}>
-                    <select value={form.packageId} onChange={(e) => setForm({ ...form, packageId: e.target.value })} className={inputCls}>
+                  <Field label={t.f.package} required>
+                    <select required value={form.packageId} onChange={(e) => setForm({ ...form, packageId: e.target.value })} className={inputCls}>
                       <option value="">{t.selectPlaceholder}</option>
                       {packages.map((p) => (
                         <option key={p.id} value={p.id}>
@@ -526,9 +597,18 @@ export function RegistrationForm() {
                 </p>
               )}
 
+              {/* The button only enables once everything required is filled in.
+                  Listing what is still outstanding keeps that from turning into
+                  a greyed-out button with no explanation. */}
+              {missing.length > 0 && (
+                <p aria-live="polite" className="rounded-2xl border border-white/70 bg-white/60 px-5 py-3 text-xs leading-relaxed text-[var(--foreground)]/70 backdrop-blur-md">
+                  <span className="font-semibold">{t.errMissing}</span> {missing.join(", ")}
+                </p>
+              )}
+
               <button
                 type="submit"
-                disabled={!canSubmit}
+                disabled={loading || missing.length > 0}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(115deg,#ff3f76_0%,#ff8a24_42%,#7258d7_100%)] py-4 text-base font-bold text-white shadow-[0_18px_45px_rgba(197,48,104,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_55px_rgba(106,72,197,0.32)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
               >
                 {loading && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}

@@ -23,6 +23,8 @@ export const COMPANY = {
   phoneHref: "+905516745515",
   email: "makeartstudio.tr@gmail.com",
   instagram: "make_art.tr",
+  /** Bot that can take a registration in chat — see lib/telegram/flow.ts. */
+  telegramBot: process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME?.trim() || "makeartalanya_bot",
   website: "https://makeartalanya.com",
   lastUpdated: "03.08.2026",
 } as const;

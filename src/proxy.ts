@@ -66,10 +66,18 @@ async function routeRequest(req: NextRequest, pathname: string): Promise<NextRes
     pathname.startsWith("/schedule/") ||
     pathname === "/privacy" ||
     pathname === "/imprint" ||
+    pathname === "/terms" ||
+    pathname === "/rules" ||
+    pathname === "/cookies" ||
     pathname === "/kayit" ||
+    pathname === "/handbook" ||
     pathname.startsWith("/auth/") ||
     pathname.startsWith("/api/schedule/public") ||
-    pathname.startsWith("/api/cron/")
+    pathname.startsWith("/api/cron/") ||
+    // Telegram authenticates itself with a secret token the route checks. Going
+    // through the Supabase session refresh would add a pointless round trip to
+    // every single update, on a webhook Telegram retries for hours if it is slow.
+    pathname === "/api/telegram/webhook"
   ) {
     return NextResponse.next();
   }

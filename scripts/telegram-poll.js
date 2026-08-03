@@ -107,7 +107,9 @@ async function loop() {
   while (!stopping) {
     let data;
     try {
-      const res = await fetch(`${API}/getUpdates?timeout=25&offset=${offset}&allowed_updates=["message"]`);
+      const res = await fetch(
+        `${API}/getUpdates?timeout=25&offset=${offset}&allowed_updates=${encodeURIComponent('["message","callback_query"]')}`,
+      );
       data = await res.json();
     } catch (err) {
       if (!stopping) console.error("poll error:", err.message);
@@ -123,9 +125,12 @@ async function loop() {
 
     for (const update of data.result) {
       offset = update.update_id + 1;
-      const msg = update.message;
-      const who = msg?.from?.username ? `@${msg.from.username}` : msg?.from?.first_name || "?";
-      console.log(`← ${who} (chat ${msg?.chat?.id}): ${msg?.text ?? "<non-text>"}`);
+      const cb = update.callback_query;
+      const msg = update.message ?? cb?.message;
+      const from = update.message?.from ?? cb?.from;
+      const who = from?.username ? `@${from.username}` : from?.first_name || "?";
+      const what = cb ? `[button] ${cb.data}` : (msg?.text ?? "<non-text>");
+      console.log(`← ${who} (chat ${msg?.chat?.id}): ${what}`);
 
       try {
         const res = await fetch(TARGET, {

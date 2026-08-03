@@ -27,9 +27,17 @@ export interface Registration {
   status: "new" | "contacted" | "enrolled" | "archived";
   consent_kvkk: boolean;
   consent_liability: boolean;
+  /** Legacy mirror: true when either media channel was granted. */
   consent_media: boolean;
   consent_version: string;
   consented_at: string | null;
+  // Per-channel permissions. Staff must act on these individually — a parent who
+  // allowed the website but not social media has said two different things.
+  consent_health: boolean | null;
+  consent_media_website: boolean | null;
+  consent_media_social: boolean | null;
+  media_consent_version: string | null;
+  media_consented_at: string | null;
 }
 
 const STATUSES = ["new", "contacted", "enrolled", "archived"] as const;
@@ -335,15 +343,31 @@ export default function RegistrationsTable({
                       </div>
                     )}
 
-                    <div className="sm:col-span-2 flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 border-t border-[var(--border)]">
-                      <span className="inline-flex items-center gap-1.5 text-xs text-[var(--muted)]">
-                        <ShieldCheck className="w-3.5 h-3.5 text-[#6BBF7A]" />
-                        KVKK {r.consent_kvkk ? "✓" : "✗"} · Liability {r.consent_liability ? "✓" : "✗"} · Media {r.consent_media ? "✓" : "✗"}
-                      </span>
-                      <span className="text-xs text-[var(--muted)]">
+                    {/* Optional permissions the parent chose on the form. Each is
+                        a separate decision, so they are shown separately: a
+                        parent may allow the website but not social media, and
+                        staff need to honour exactly what was ticked. */}
+                    <div className="sm:col-span-2 pt-2 border-t border-[var(--border)]">
+                      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+                        Permissions given by the parent
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <ConsentPill granted label="KVKK notice read" value={r.consent_kvkk} />
+                        <ConsentPill granted label="Terms accepted" value={r.consent_liability} />
+                        <ConsentPill label="Photo/video on website" value={mediaChannel(r, "website")} />
+                        <ConsentPill label="Photo/video on social media" value={mediaChannel(r, "social")} />
+                        {r.child_health_notes && (
+                          <ConsentPill label="Health data consent" value={r.consent_health ?? false} />
+                        )}
+                      </div>
+                      <p className="mt-2 text-xs text-[var(--muted)]">
                         {r.consent_version}
+                        {r.media_consent_version && ` · media ${r.media_consent_version}`}
                         {r.consented_at && ` · ${new Date(r.consented_at).toLocaleString()}`}
-                      </span>
+                      </p>
+                    </div>
+
+                    <div className="sm:col-span-2 flex flex-wrap items-center gap-x-4 gap-y-2">
                       <button
                         onClick={() => remove(r.id, r.child_name)}
                         disabled={busy === r.id}
@@ -360,6 +384,39 @@ export default function RegistrationsTable({
         </div>
       )}
     </div>
+  );
+}
+
+/**
+ * Whether a specific media channel was permitted.
+ *
+ * Rows written before migration 0020 only have the merged `consent_media`
+ * flag, which cannot say which channel was meant. Falling back to it there is
+ * the honest best guess; a granular value always wins when present.
+ */
+function mediaChannel(r: Registration, channel: "website" | "social"): boolean {
+  const granular = channel === "website" ? r.consent_media_website : r.consent_media_social;
+  return granular ?? r.consent_media;
+}
+
+/**
+ * `granted` marks the two mandatory acknowledgements — a missing one is a red
+ * flag, not merely "not chosen". Optional permissions render a plain grey "no",
+ * because declining them is a perfectly normal answer.
+ */
+function ConsentPill({ label, value, granted }: { label: string; value: boolean; granted?: boolean }) {
+  const style = value
+    ? "bg-[#6BBF7A]/12 text-[#3F8F52] border-[#6BBF7A]/30"
+    : granted
+      ? "bg-[#E5686B]/10 text-[#C2484B] border-[#E5686B]/30"
+      : "bg-[var(--muted)]/8 text-[var(--muted)] border-[var(--border)]";
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${style}`}>
+      <ShieldCheck className="h-3 w-3 shrink-0" aria-hidden="true" />
+      {label}
+      <strong className="font-semibold">{value ? "yes" : "no"}</strong>
+    </span>
   );
 }
 

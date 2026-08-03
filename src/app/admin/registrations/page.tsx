@@ -26,7 +26,9 @@ export default async function AdminRegistrationsPage({
        child_name, child_birth_date, child_gender, child_health_notes, emergency_contact,
        authorized_pickup,
        branch, package_id, preferred_language, message, status,
-       consent_kvkk, consent_liability, consent_media, consent_version, consented_at`,
+       consent_kvkk, consent_liability, consent_media, consent_version, consented_at,
+       consent_health, consent_media_website, consent_media_social,
+       media_consent_version, media_consented_at`,
     )
     .order("created_at", { ascending: false })
     .limit(200);
