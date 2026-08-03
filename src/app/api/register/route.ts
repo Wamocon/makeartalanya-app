@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { registrationSchema } from "@/lib/schemas";
-import { notifyAdminNewBooking, telegramNotifyAdminNewBooking } from "@/lib/notifications";
+import {
+  notifyAdminNewBooking,
+  telegramNotifyAdminNewBooking,
+  sendRegistrationConfirmation,
+} from "@/lib/notifications";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { newLinkToken, botUsername } from "@/lib/telegram/parent-link";
 import {
@@ -199,6 +203,15 @@ export async function POST(req: Request) {
     Promise.allSettled([
       notifyAdminNewBooking(notificationData),
       telegramNotifyAdminNewBooking(notificationData),
+      // Confirmation to the parent. No-ops when they left the (optional) email
+      // field blank, so it never blocks a phone-only registration.
+      sendRegistrationConfirmation({
+        parentEmail: d.parentEmail?.trim() || "",
+        parentName: d.parentName.trim(),
+        childName: d.childName.trim(),
+        branch: d.branch,
+        language: d.preferredLanguage,
+      }),
     ]).catch(() => {
       /* silently ignore notification failures */
     });

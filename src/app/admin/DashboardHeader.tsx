@@ -13,11 +13,13 @@ type Props = {
   completedCount: number;
 };
 
+// Each card drills into the registrations list, pre-filtered to the status it
+// counts — the numbers were previously a dead end.
 const metrics = [
-  { key: "total", labelKey: "totalBookings", subKey: "allTime", color: "gray", icon: Users },
-  { key: "pending", labelKey: "pending", subKey: "ofTotal", color: "amber", icon: AlertCircle },
-  { key: "confirmed", labelKey: "confirmed", subKey: "completed", color: "emerald", icon: CheckCircle },
-  { key: "cancelled", labelKey: "cancelled", subKey: "cancelRate", color: "rose", icon: XCircle },
+  { key: "total", labelKey: "totalBookings", subKey: "allTime", color: "gray", icon: Users, href: "/admin/registrations" },
+  { key: "pending", labelKey: "pending", subKey: "ofTotal", color: "amber", icon: AlertCircle, href: "/admin/registrations?status=new" },
+  { key: "confirmed", labelKey: "confirmed", subKey: "completed", color: "emerald", icon: CheckCircle, href: "/admin/registrations?status=enrolled" },
+  { key: "cancelled", labelKey: "cancelled", subKey: "cancelRate", color: "rose", icon: XCircle, href: "/admin/registrations?status=archived" },
 ] as const;
 
 export default function DashboardHeader({
@@ -62,7 +64,7 @@ export default function DashboardHeader({
 
       {/* Key Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {metrics.map(({ key, labelKey, subKey, color, icon: Icon }) => {
+        {metrics.map(({ key, labelKey, subKey, color, icon: Icon, href }) => {
           const count = counts[key as keyof typeof counts];
           const percent = totalCount > 0 && key !== "total" ? Math.round((count / totalCount) * 100) : 0;
 
@@ -75,9 +77,11 @@ export default function DashboardHeader({
           const c = colorMap[color];
 
           return (
-            <div
+            <Link
               key={key}
-              className={`relative overflow-hidden ${c.bg} rounded-2xl border ${c.border} p-5 card-hover group`}
+              href={href}
+              aria-label={`${(t.metrics as Record<string, string>)[labelKey]}: ${count}`}
+              className={`relative block overflow-hidden ${c.bg} rounded-2xl border ${c.border} p-5 card-hover group transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--pink)] focus-visible:ring-offset-2`}
             >
               <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl ${c.gradient} rounded-full blur-2xl opacity-60`} />
               <div className="relative flex items-start justify-between">
@@ -97,7 +101,7 @@ export default function DashboardHeader({
                   <Icon className="w-5 h-5" />
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

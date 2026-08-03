@@ -61,12 +61,15 @@ function waLink(phone: string): string {
 
 export default function RegistrationsTable({
   registrations,
+  initialStatus = "all",
 }: {
   registrations: Registration[];
+  /** Pre-selected filter, set by the ?status= the dashboard cards link with. */
+  initialStatus?: string;
 }) {
   const [rows, setRows] = useState(registrations);
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>(initialStatus);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

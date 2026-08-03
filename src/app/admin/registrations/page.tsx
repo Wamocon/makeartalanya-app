@@ -4,8 +4,20 @@ import RegistrationsTable, { type Registration } from "./RegistrationsTable";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminRegistrationsPage() {
+const STATUSES = ["new", "contacted", "enrolled", "archived"] as const;
+
+export default async function AdminRegistrationsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
   const { admin } = await requireAdminPage();
+
+  // The dashboard cards link here with ?status=… so a number drills into the
+  // rows behind it.
+  const { status: requested } = await searchParams;
+  const initialStatus =
+    requested && (STATUSES as readonly string[]).includes(requested) ? requested : "all";
 
   const { data, error } = await admin
     .from("registrations")
@@ -58,7 +70,7 @@ export default async function AdminRegistrationsPage() {
           Error loading registrations: {error.message}
         </div>
       ) : (
-        <RegistrationsTable registrations={registrations} />
+        <RegistrationsTable registrations={registrations} initialStatus={initialStatus} />
       )}
     </div>
   );
