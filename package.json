@@ -26,7 +26,8 @@
     "email:status": "node scripts/email-setup.js status",
     "email:test": "node scripts/email-setup.js test",
     "test:report": "npx playwright show-report",
-    "test:update-snapshots": "npx playwright test --update-snapshots"
+    "test:update-snapshots": "npx playwright test --update-snapshots",
+    "record:walkthrough": "node scripts/record-walkthrough.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.18",
