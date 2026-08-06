@@ -4,11 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import type { GalleryPhoto } from "@/data/gallery";
+import type { GalleryItem, GalleryLocale } from "@/lib/gallery/types";
 
 interface LightboxProps {
-  photos: GalleryPhoto[];
+  photos: GalleryItem[];
   index: number | null;
+  locale: GalleryLocale;
   onClose: () => void;
   onIndexChange: (index: number) => void;
 }
@@ -16,7 +17,7 @@ interface LightboxProps {
 /** Below this drag distance a swipe is treated as a tap, not a navigation. */
 const SWIPE_THRESHOLD = 60;
 
-export function Lightbox({ photos, index, onClose, onIndexChange }: LightboxProps) {
+export function Lightbox({ photos, index, locale, onClose, onIndexChange }: LightboxProps) {
   const open = index !== null;
   const photo = open ? photos[index] : null;
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -60,11 +61,13 @@ export function Lightbox({ photos, index, onClose, onIndexChange }: LightboxProp
   }, [open, onClose, go]);
 
   // Warm the neighbours so arrow-key browsing doesn't flash a blank frame.
+  // Videos are skipped deliberately — prefetching a 40 MB clip that may never be
+  // opened is the opposite of the optimisation this is.
   useEffect(() => {
     if (index === null) return;
     for (const delta of [1, -1]) {
       const neighbour = photos[(index + delta + photos.length) % photos.length];
-      if (neighbour) {
+      if (neighbour && neighbour.kind === "photo") {
         const img = new window.Image();
         img.src = neighbour.src;
       }
@@ -120,13 +123,16 @@ export function Lightbox({ photos, index, onClose, onIndexChange }: LightboxProp
 
           <AnimatePresence initial={false} mode="popLayout" custom={direction}>
             <motion.div
-              key={photo.src}
+              key={photo.id}
               custom={direction}
               initial={{ opacity: 0, x: direction * 40, scale: 0.98 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: direction * -40, scale: 0.98 }}
               transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
-              drag="x"
+              /* Dragging is how you page between photos, but on a video that
+                 same gesture is how you scrub — so the video keeps its controls
+                 and gives up the swipe. */
+              drag={photo.kind === "photo" ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.15}
               onDragEnd={(_, info) => {
@@ -134,19 +140,46 @@ export function Lightbox({ photos, index, onClose, onIndexChange }: LightboxProp
                 else if (info.offset.x > SWIPE_THRESHOLD) go(-1);
               }}
               onClick={(e) => e.stopPropagation()}
-              className="relative flex max-h-[88vh] w-full max-w-5xl cursor-grab items-center justify-center px-4 active:cursor-grabbing"
+              className={`relative flex max-h-[88vh] w-full max-w-5xl flex-col items-center justify-center px-4 ${
+                photo.kind === "photo" ? "cursor-grab active:cursor-grabbing" : ""
+              }`}
             >
-              <Image
-                src={photo.src}
-                alt=""
-                width={photo.width}
-                height={photo.height}
-                placeholder="blur"
-                blurDataURL={photo.blur}
-                priority
-                className="max-h-[88vh] w-auto rounded-2xl object-contain shadow-[0_30px_120px_rgba(0,0,0,0.5)]"
-                sizes="(max-width: 1024px) 100vw, 1024px"
-              />
+              {photo.kind === "video" ? (
+                <video
+                  key={photo.id}
+                  src={photo.src}
+                  poster={photo.thumb}
+                  controls
+                  autoPlay
+                  playsInline
+                  /* Muted so autoplay is allowed at all — every browser blocks
+                     an unmuted autoplay, and a clip that silently refuses to
+                     start reads as a broken player. The controls are right
+                     there to turn sound on. */
+                  muted
+                  className="max-h-[88vh] w-auto rounded-2xl bg-black shadow-[0_30px_120px_rgba(0,0,0,0.5)]"
+                >
+                  Your browser cannot play this video.
+                </video>
+              ) : (
+                <Image
+                  src={photo.src}
+                  alt={photo.alt[locale] ?? photo.alt.en ?? ""}
+                  width={photo.width}
+                  height={photo.height}
+                  placeholder={photo.blur ? "blur" : "empty"}
+                  blurDataURL={photo.blur ?? undefined}
+                  priority
+                  className="max-h-[88vh] w-auto rounded-2xl object-contain shadow-[0_30px_120px_rgba(0,0,0,0.5)]"
+                  sizes="(max-width: 1024px) 100vw, 1024px"
+                />
+              )}
+
+              {(photo.caption[locale] ?? photo.caption.en) && (
+                <p className="mt-4 max-w-2xl text-center text-sm leading-relaxed text-white/75">
+                  {photo.caption[locale] ?? photo.caption.en}
+                </p>
+              )}
             </motion.div>
           </AnimatePresence>
         </motion.div>

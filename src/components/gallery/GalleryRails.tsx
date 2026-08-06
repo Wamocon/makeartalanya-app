@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { galleryCategories, galleryPhotos, type GalleryLocale } from "@/data/gallery";
 import { GalleryRail } from "./GalleryRail";
 import { Lightbox } from "./Lightbox";
+import type { GalleryItem, GalleryLocale } from "@/lib/gallery/types";
 
 /**
  * The gallery as a stack of full-bleed rails — one per category.
@@ -13,6 +13,11 @@ import { Lightbox } from "./Lightbox";
  * contact sheet no matter how good the photos are; giving each category its own
  * drifting filmstrip turns the category list into the structure of the section
  * rather than a filter bar bolted on top of it.
+ *
+ * Items arrive as props rather than being imported. That is what lets the admin
+ * preview render this exact component against an unsaved order — a preview built
+ * from a parallel mock is a preview of the mock, and drifts from the real thing
+ * the moment either changes.
  */
 
 const UI: Record<GalleryLocale, { photos: string; drag: string }> = {
@@ -21,7 +26,20 @@ const UI: Record<GalleryLocale, { photos: string; drag: string }> = {
   ru: { photos: "фото", drag: "Листайте" },
 };
 
-export function GalleryRails({ locale }: { locale: GalleryLocale }) {
+export interface GalleryRailsCategory {
+  slug: string;
+  label: Record<GalleryLocale, string>;
+}
+
+interface Props {
+  locale: GalleryLocale;
+  items: GalleryItem[];
+  categories: GalleryRailsCategory[];
+  /** Disables the autonomous drift — the admin preview is being read, not admired. */
+  staticRails?: boolean;
+}
+
+export function GalleryRails({ locale, items, categories, staticRails }: Props) {
   const t = UI[locale] ?? UI.en;
 
   // The lightbox needs the exact list the clicked rail was showing, so its
@@ -29,18 +47,21 @@ export function GalleryRails({ locale }: { locale: GalleryLocale }) {
   const [active, setActive] = useState<{ category: string; index: number } | null>(null);
 
   const byCategory = useMemo(() => {
-    const map = new Map<string, typeof galleryPhotos>();
-    for (const c of galleryCategories) {
-      map.set(c.slug, galleryPhotos.filter((p) => p.category === c.slug));
+    const map = new Map<string, GalleryItem[]>();
+    for (const c of categories) {
+      map.set(
+        c.slug,
+        items.filter((p) => p.category === c.slug),
+      );
     }
     return map;
-  }, []);
+  }, [items, categories]);
 
   const activePhotos = active ? (byCategory.get(active.category) ?? []) : [];
 
   return (
     <div className="mt-16 space-y-16 sm:space-y-20">
-      {galleryCategories.map((category, i) => {
+      {categories.map((category, i) => {
         const photos = byCategory.get(category.slug) ?? [];
         if (photos.length === 0) return null;
 
@@ -75,6 +96,7 @@ export function GalleryRails({ locale }: { locale: GalleryLocale }) {
             <GalleryRail
               photos={photos}
               reverse={i % 2 === 1}
+              staticRail={staticRails}
               onOpen={(index) => setActive({ category: category.slug, index })}
             />
           </motion.section>
@@ -84,6 +106,7 @@ export function GalleryRails({ locale }: { locale: GalleryLocale }) {
       <Lightbox
         photos={activePhotos}
         index={active?.index ?? null}
+        locale={locale}
         onClose={() => setActive(null)}
         onIndexChange={(index) => setActive((a) => (a ? { ...a, index } : a))}
       />

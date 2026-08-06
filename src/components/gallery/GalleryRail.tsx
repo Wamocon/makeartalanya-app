@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import type { GalleryPhoto } from "@/data/gallery";
+import { ArrowRight, Play } from "lucide-react";
+import type { GalleryItem } from "@/lib/gallery/types";
 
 /**
  * One full-bleed horizontal rail of photos.
@@ -31,14 +31,20 @@ const DRIFT_PX_PER_SECOND = 22;
 const HOVER_SPEED = 0.18;
 
 interface GalleryRailProps {
-  photos: GalleryPhoto[];
+  photos: GalleryItem[];
   /** Called with the index into `photos` (already de-duplicated). */
   onOpen: (index: number) => void;
   /** Rails alternate direction so the section doesn't read as one conveyor. */
   reverse?: boolean;
+  /**
+   * Holds the rail still. Used by the admin preview, where the point is to judge
+   * an order you just set — a rail that drifts away while you read it makes the
+   * one question the preview exists to answer harder to answer.
+   */
+  staticRail?: boolean;
 }
 
-export function GalleryRail({ photos, onOpen, reverse = false }: GalleryRailProps) {
+export function GalleryRail({ photos, onOpen, reverse = false, staticRail = false }: GalleryRailProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -57,7 +63,7 @@ export function GalleryRail({ photos, onOpen, reverse = false }: GalleryRailProp
 
   useEffect(() => {
     const el = scrollerRef.current;
-    if (!el || photos.length <= 2) return;
+    if (!el || photos.length <= 2 || staticRail) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
@@ -106,7 +112,7 @@ export function GalleryRail({ photos, onOpen, reverse = false }: GalleryRailProp
 
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [photos.length, reverse]);
+  }, [photos.length, reverse, staticRail]);
 
   // Drag-to-pan on desktop; touch devices already do this natively.
   const drag = useRef<{ startX: number; startScroll: number } | null>(null);
@@ -151,13 +157,13 @@ export function GalleryRail({ photos, onOpen, reverse = false }: GalleryRailProp
 
         return (
           <button
-            key={`${photo.src}-${i}`}
+            key={`${photo.id}-${i}`}
             onClick={() => {
               // A drag that ended on a tile shouldn't also open the lightbox.
               if (drag.current) return;
               onOpen(realIndex);
             }}
-            aria-label={`Open photo ${realIndex + 1} of ${photos.length}`}
+            aria-label={`Open ${photo.kind} ${realIndex + 1} of ${photos.length}`}
             tabIndex={i < photos.length ? 0 : -1}
             className="group relative h-[15rem] w-auto shrink-0 overflow-hidden rounded-[1.15rem] bg-[var(--pink-light)] outline-none transition-[transform,box-shadow] duration-500 hover:z-10 hover:shadow-[0_24px_60px_rgba(45,35,39,0.28)] focus-visible:ring-2 focus-visible:ring-[var(--pink)] focus-visible:ring-offset-2 sm:h-[19rem] lg:h-[23rem]"
             /*
@@ -170,22 +176,36 @@ export function GalleryRail({ photos, onOpen, reverse = false }: GalleryRailProp
           >
             <Image
               src={photo.thumb}
-              alt=""
+              alt={photo.alt.tr ?? photo.alt.en ?? photo.alt.ru ?? ""}
               fill
-              placeholder="blur"
-              blurDataURL={photo.blur}
+              placeholder={photo.blur ? "blur" : "empty"}
+              blurDataURL={photo.blur ?? undefined}
               loading="lazy"
               draggable={false}
               sizes="(max-width: 640px) 70vw, 30vw"
               className="select-none object-cover transition-transform duration-[1100ms] ease-out group-hover:scale-[1.07]"
             />
             <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-            <motion.span
-              aria-hidden
-              className="pointer-events-none absolute bottom-3 right-3 grid size-9 place-items-center rounded-full bg-white/20 text-white opacity-0 backdrop-blur-md transition-opacity duration-500 group-hover:opacity-100"
-            >
-              <ArrowRight className="size-4 -rotate-45" />
-            </motion.span>
+            {/* A video tile is an ordinary poster image until the lightbox opens.
+                Marking it is not decoration — without the cue there is no way to
+                tell that this one tile behaves differently when clicked. */}
+            {photo.kind === "video" ? (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-0 grid place-items-center"
+              >
+                <span className="grid size-14 place-items-center rounded-full bg-black/40 text-white backdrop-blur-md transition-transform duration-500 group-hover:scale-110">
+                  <Play className="ml-0.5 size-5 fill-current" />
+                </span>
+              </span>
+            ) : (
+              <motion.span
+                aria-hidden
+                className="pointer-events-none absolute bottom-3 right-3 grid size-9 place-items-center rounded-full bg-white/20 text-white opacity-0 backdrop-blur-md transition-opacity duration-500 group-hover:opacity-100"
+              >
+                <ArrowRight className="size-4 -rotate-45" />
+              </motion.span>
+            )}
           </button>
         );
       })}

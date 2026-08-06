@@ -41,7 +41,8 @@ Key project docs:
 | Auth | **Supabase Auth** via `@supabase/ssr` 0.10.3 | Phone OTP + email/password + magic links. Browser/server/middleware clients in `src/lib/supabase/`. |
 | Database | **Supabase PostgreSQL** | Migrations in `supabase/migrations/`. Row Level Security (RLS) is required. |
 | Realtime | **Supabase Realtime** | Currently enabled for the `notifications` table. |
-| Storage | **Supabase Storage** | Buckets: `gallery`, `instructor`, `content`. |
+| Storage | **Supabase Storage** | Buckets: `gallery` (50 MB, images + mp4/webm), `instructor`, `content`. Uploads go direct from the browser on signed URLs. |
+| Drag & drop | **dnd-kit** (`core` 6.3.1, `sortable` 10.0.0) | Gallery ordering in `/admin/media`. Chosen over native HTML5 DnD for keyboard sorting and screen-reader announcements. |
 | Notifications | **Nodemailer** (SMTP) + **Telegram Bot API** | `src/lib/notifications/`. |
 | E2E tests | **Playwright** 1.60 | Config in `playwright.config.ts`, tests in `e2e/tests/`. |
 | Package manager | **npm** | `package-lock.json` is present. |
@@ -229,7 +230,13 @@ Alternatively, run the migration SQL directly in the Supabase Dashboard SQL edit
 - `/api/booking` — public booking form submission, rate-limited, inserts into `bookings`, fires email/Telegram notifications.
 - `/api/enroll` — public enrollment endpoint (rate-limited in `proxy.ts`).
 - `/api/admin/*` — authenticated admin APIs (bookings, sessions, subscriptions, payments, settings, attendance, login/logout).
-- `/api/upload` — service-role upload/delete for Supabase Storage (`gallery` / `content` buckets).
+- `/api/gallery` — **public**, cached (`s-maxage=60`). The ordered gallery manifest. Read with the publishable key so RLS decides what is visible.
+- `/api/admin/gallery` — `GET` all items incl. hidden, `POST` record uploaded items, `PATCH` bulk show/hide/delete.
+- `/api/admin/gallery/[id]` — `PATCH` captions/alt/category/group/visibility, `DELETE` row + both storage objects.
+- `/api/admin/gallery/reorder` — rewrites one category's `position` to 1..n from a full ordered id list.
+- `/api/admin/gallery/upload-url` — issues a **pair** of signed direct-to-Storage upload URLs sharing one uuid stem (asset + thumbnail).
+- `/api/admin/instructor-photo` — `GET` current, `POST` signed URL, `PUT` commit + sweep older objects.
+- `/api/upload` — **unused legacy route.** Superseded by the signed-URL flow above; it streams file bodies through the function, which Vercel caps at ~4.5 MB. Retained only because `e2e/tests/api.spec.ts` asserts its auth. Do not build on it.
 - `/api/content` — load/save JSON content overrides from Supabase Storage.
 - `/api/seed` — seed helper (check the route for exact behavior).
 - `/api/notifications` — notification-related API.
@@ -317,7 +324,11 @@ Deployment checklist (from `SETUP.md`):
 4. **i18n is custom**, not `next-intl`. The source of truth is the `lang` cookie; `src/i18n/server.ts` reads it server-side and the landing page reads URL/localStorage client-side.
 5. **Schedule page uses ISR** (`export const revalidate = 60` in `src/app/schedule/page.tsx`). If you mutate schedule data, you may need explicit `revalidatePath` / `revalidateTag` until a realtime hook is added.
 6. **Realtime** is enabled only for `notifications`. Client components like `RealtimeNotifications` subscribe to Supabase Realtime channels.
-7. **Storage buckets** must exist before upload/content features work. Migration `0003_storage_buckets.sql` creates `gallery` and `instructor`; `content` is used by `/api/content` and the landing-page overrides.
+7. **Storage buckets** must exist before upload/content features work. Migration `0003_storage_buckets.sql` creates `gallery` and `instructor`; `content` is used by `/api/content` and the landing-page overrides. `0024` widens `gallery` to 50 MB and allows `video/mp4` + `video/webm`.
+9. **The gallery is database-driven** (`gallery_items`, migration `0024`), managed at `/admin/media`. Two things to know before touching it:
+   - **The pixels live in two places.** Rows with `storage_path = NULL` are the bundled archive under `public/gallery/`, served by the Vercel CDN and built by `scripts/build-gallery.mjs`. Rows with a `storage_path` were uploaded through the admin and live in Supabase Storage. Everything downstream treats them identically — that is deliberate, and it is why all 160 legacy photos are reorderable. Run `node scripts/import-gallery.mjs` (idempotent) if the manifest and the table drift.
+   - **Uploads never pass through a route handler.** The browser downscales to WebP on a canvas (mirroring `build-gallery.mjs`: 1800px / 720px / 16px blur), then `PUT`s straight to Storage on a signed URL. Anything that routes file bytes through Next will break on Vercel's ~4.5 MB request-body cap. HEIC is rejected client-side with a fix-it message — neither browsers nor sharp can decode it.
+10. **`media-src` is in the CSP** (`next.config.ts`). Without it `<video>` falls back to `default-src 'self'` and every Storage-hosted clip is blocked.
 8. **Package versions matter** — `zod` is v4 in `package.json`, Tailwind is v4, React is 19, Next.js is 16. Do not downgrade or mix versions without checking compatibility.
 
 ---

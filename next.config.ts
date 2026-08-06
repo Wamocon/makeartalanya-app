@@ -6,6 +6,10 @@ const contentSecurityPolicy = [
   `script-src 'self' 'unsafe-inline'${isDevelopment ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co",
+  // Without an explicit media-src, <video> falls back to default-src 'self' and
+  // every gallery clip served from Supabase Storage is blocked. blob: covers the
+  // admin's local preview of a file that has not been uploaded yet.
+  "media-src 'self' blob: https://*.supabase.co",
   "font-src 'self' data:",
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
   "frame-src https://maps.google.com https://www.google.com",

@@ -27,13 +27,19 @@
     "email:test": "node scripts/email-setup.js test",
     "test:report": "npx playwright show-report",
     "test:update-snapshots": "npx playwright test --update-snapshots",
-    "record:walkthrough": "node scripts/record-walkthrough.mjs"
+    "record:walkthrough": "node scripts/record-walkthrough.mjs",
+    "db:apply": "node scripts/db-apply.mjs",
+    "gallery:build": "node scripts/build-gallery.mjs",
+    "gallery:import": "node scripts/import-gallery.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.18",
     "@ai-sdk/openai": "^4.0.17",
     "@ai-sdk/openai-compatible": "^3.0.14",
     "@ai-sdk/react": "^4.0.37",
+    "@dnd-kit/core": "6.3.1",
+    "@dnd-kit/sortable": "10.0.0",
+    "@dnd-kit/utilities": "3.2.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "@supabase/ssr": "^0.10.3",
@@ -61,6 +67,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "pg": "^8.16.3",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
