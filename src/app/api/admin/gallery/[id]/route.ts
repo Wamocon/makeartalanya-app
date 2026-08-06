@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { updateItemSchema } from "@/lib/gallery/schemas";
+import { categoryExists } from "@/lib/gallery/categories-server";
 import {
   GALLERY_ROW_COLUMNS,
   isValidGroup,
@@ -61,6 +62,13 @@ export async function PATCH(req: Request, { params }: Ctx) {
 
   const nextCategory = patch.category ?? current.category;
   const nextGroup = patch.group !== undefined ? patch.group : current.group;
+
+  if (patch.category !== undefined && !(await categoryExists(admin, patch.category))) {
+    return NextResponse.json(
+      { ok: false, error: "That category no longer exists." },
+      { status: 400 },
+    );
+  }
 
   if (!isValidGroup(nextCategory, nextGroup)) {
     return NextResponse.json(

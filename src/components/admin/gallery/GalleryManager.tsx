@@ -21,14 +21,20 @@ import {
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 import Image from "next/image";
-import { Eye, EyeOff, Trash2, MonitorPlay, X, FolderInput } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Trash2,
+  MonitorPlay,
+  X,
+  FolderInput,
+  Plus,
+  Settings2,
+  EyeOff as EyeOffIcon,
+} from "lucide-react";
 import { useAdminLocale } from "@/components/admin/AdminLocaleProvider";
 import { galleryAdminCopy } from "@/i18n/gallery-admin";
-import {
-  GALLERY_CATEGORIES,
-  type GalleryItem,
-  type GalleryLocale,
-} from "@/lib/gallery/types";
+import type { GalleryItem, GalleryCategory, GalleryLocale } from "@/lib/gallery/types";
 import { uploadOne } from "@/lib/gallery/upload-client";
 import { SortableTile } from "./SortableTile";
 import { UploadZone, type UploadTask } from "./UploadZone";
@@ -36,17 +42,26 @@ import { EditDrawer } from "./EditDrawer";
 import { ConfirmDialog, Toast, type ToastState } from "./GalleryDialogs";
 import { LivePreview } from "./LivePreview";
 import { InstructorPhoto } from "./InstructorPhoto";
+import { CategoryDialog, type CategoryDialogMode } from "./CategoryDialog";
 
 /** Three at a time: enough to hide network latency, few enough that canvas encoding stays responsive. */
 const UPLOAD_CONCURRENCY = 3;
 
-export function GalleryManager({ initialItems }: { initialItems: GalleryItem[] }) {
+export function GalleryManager({
+  initialItems,
+  initialCategories,
+}: {
+  initialItems: GalleryItem[];
+  initialCategories: GalleryCategory[];
+}) {
   const { locale } = useAdminLocale();
   const copy = galleryAdminCopy[locale];
   const gLocale = locale as GalleryLocale;
 
   const [items, setItems] = useState<GalleryItem[]>(initialItems);
-  const [category, setCategory] = useState(GALLERY_CATEGORIES[0]?.slug ?? "lessons");
+  const [allCategories, setAllCategories] = useState<GalleryCategory[]>(initialCategories);
+  const [categoryDialog, setCategoryDialog] = useState<CategoryDialogMode | null>(null);
+  const [category, setCategory] = useState(initialCategories[0]?.slug ?? "");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [editing, setEditing] = useState<GalleryItem | null>(null);
   const [previewing, setPreviewing] = useState(false);
@@ -313,16 +328,86 @@ export function GalleryManager({ initialItems }: { initialItems: GalleryItem[] }
   );
 
   function labelOf(slug: string) {
-    const def = GALLERY_CATEGORIES.find((c) => c.slug === slug);
+    const def = allCategories.find((c) => c.slug === slug);
     return def?.label[gLocale] ?? def?.label.en ?? slug;
   }
 
+  // ── Categories ───────────────────────────────────────────────────────
+
+  /** Counts live on the items, so they are recomputed rather than trusted from the server. */
+  const categoriesWithCounts = useMemo(
+    () => allCategories.map((c) => ({ ...c, count: counts.get(c.slug) ?? 0 })),
+    [allCategories, counts],
+  );
+
+  async function createCategory(label: Record<GalleryLocale, string>) {
+    const res = await fetch("/api/admin/gallery/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ label }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not create the category.");
+
+    const created = json.category as GalleryCategory;
+    setAllCategories((c) => [...c, created]);
+    // Land the admin in the category they just made — they created it to put
+    // something in it, and hunting for the new tab is a pointless extra step.
+    setCategory(created.slug);
+    setSelected(new Set());
+    setToast({ message: copy.categoryCreated, tone: "info" });
+  }
+
+  async function renameCategory(
+    slug: string,
+    label: Record<GalleryLocale, string>,
+    visible: boolean,
+  ) {
+    const res = await fetch(`/api/admin/gallery/categories/${slug}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ label, visible }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not rename.");
+
+    setAllCategories((c) =>
+      c.map((x) => (x.slug === slug ? { ...x, ...(json.category as GalleryCategory) } : x)),
+    );
+    setToast({ message: copy.categoryRenamed, tone: "info" });
+  }
+
+  async function deleteCategory(slug: string, moveTo: string | null) {
+    const res = await fetch(`/api/admin/gallery/categories/${slug}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ moveTo }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok || !json.ok) throw new Error(json.error ?? "Could not delete.");
+
+    // The photos were relocated server-side rather than removed; reflect that
+    // locally so the destination's count is right without a full reload.
+    if (moveTo) {
+      setItems((all) =>
+        all.map((i) => (i.category === slug ? { ...i, category: moveTo, group: null } : i)),
+      );
+    }
+    const remaining = allCategories.filter((c) => c.slug !== slug);
+    setAllCategories(remaining);
+    if (category === slug) setCategory(moveTo ?? remaining[0]?.slug ?? "");
+    setSelected(new Set());
+    setToast({ message: copy.categoryDeleted, tone: "info" });
+  }
+
   const draggedItem = dragId ? visibleItems.find((i) => i.id === dragId) : null;
+  const activeCategory = categoriesWithCounts.find((c) => c.slug === category) ?? null;
 
   if (previewing) {
     return (
       <LivePreview
         items={items}
+        categories={allCategories}
         locale={gLocale}
         copy={copy}
         onClose={() => setPreviewing(false)}
@@ -347,35 +432,67 @@ export function GalleryManager({ initialItems }: { initialItems: GalleryItem[] }
         </button>
       </header>
 
-      {/* Category tabs */}
-      <div role="tablist" aria-label={copy.category} className="flex flex-wrap gap-1.5">
-        {GALLERY_CATEGORIES.map((c) => {
-          const active = c.slug === category;
-          return (
-            <button
-              key={c.slug}
-              role="tab"
-              aria-selected={active}
-              onClick={() => {
-                setCategory(c.slug);
-                setSelected(new Set());
-              }}
-              className={`flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pink-dark)] ${
-                active
-                  ? "border-[var(--pink-dark)] bg-[var(--pink-light)] text-[var(--pink-dark)]"
-                  : "border-[var(--border)] bg-white text-[var(--muted)] hover:border-[var(--pink)] hover:text-[var(--foreground)]"
-              }`}
-            >
-              {c.label[gLocale] ?? c.label.en}
-              <span className="font-mono text-[10px] opacity-70">{counts.get(c.slug) ?? 0}</span>
-            </button>
-          );
-        })}
+      {/* Category tabs. Each rail on the website is one tab here — that mapping
+          is the thing the screen has to teach, so the row of tabs is the first
+          control and the count sits on the tab itself. */}
+      <div className="flex flex-wrap items-center gap-1.5">
+        <div role="tablist" aria-label={copy.category} className="flex flex-wrap gap-1.5">
+          {categoriesWithCounts.map((c) => {
+            const active = c.slug === category;
+            return (
+              <button
+                key={c.slug}
+                role="tab"
+                aria-selected={active}
+                onClick={() => {
+                  setCategory(c.slug);
+                  setSelected(new Set());
+                }}
+                className={`flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pink-dark)] ${
+                  active
+                    ? "border-[var(--pink-dark)] bg-[var(--pink-light)] text-[var(--pink-dark)]"
+                    : "border-[var(--border)] bg-white text-[var(--muted)] hover:border-[var(--pink)] hover:text-[var(--foreground)]"
+                }`}
+              >
+                {!c.visible && (
+                  <EyeOffIcon
+                    className="size-3 opacity-60"
+                    aria-label={copy.categoryHidden}
+                  />
+                )}
+                {c.label[gLocale] ?? c.label.en}
+                <span className="font-mono text-[10px] opacity-70">{c.count}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {activeCategory && (
+          <button
+            type="button"
+            onClick={() => setCategoryDialog({ kind: "edit", category: activeCategory })}
+            aria-label={`${copy.categorySettings} — ${activeCategory.label[gLocale] ?? activeCategory.label.en}`}
+            title={copy.categorySettings}
+            className="rounded-xl border border-[var(--border)] bg-white p-2 text-[var(--muted)] transition-colors hover:border-[var(--pink)] hover:text-[var(--pink-dark)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pink-dark)]"
+          >
+            <Settings2 className="size-3.5" />
+          </button>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setCategoryDialog({ kind: "create" })}
+          className="flex items-center gap-1.5 rounded-xl border border-dashed border-[var(--pink)] bg-white px-3 py-2 text-xs font-semibold text-[var(--pink-dark)] transition-colors hover:bg-[var(--pink-light)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pink-dark)]"
+        >
+          <Plus className="size-3.5" />
+          {copy.newCategory}
+        </button>
       </div>
 
       <UploadZone
         copy={copy}
         tasks={tasks}
+        targetLabel={activeCategory ? (activeCategory.label[gLocale] ?? activeCategory.label.en) : "—"}
         onFiles={handleFiles}
         onDismissTask={(id) => setTasks((t) => t.filter((x) => x.id !== id))}
       />
@@ -400,7 +517,7 @@ export function GalleryManager({ initialItems }: { initialItems: GalleryItem[] }
                 className="bg-transparent text-xs focus:outline-none"
               >
                 <option value="">{copy.moveTo}…</option>
-                {GALLERY_CATEGORIES.filter((c) => c.slug !== category).map((c) => (
+                {allCategories.filter((c) => c.slug !== category).map((c) => (
                   <option key={c.slug} value={c.slug}>
                     {c.label[gLocale] ?? c.label.en}
                   </option>
@@ -451,6 +568,22 @@ export function GalleryManager({ initialItems }: { initialItems: GalleryItem[] }
         <div className="rounded-2xl border border-dashed border-[var(--border)] bg-white/60 p-12 text-center">
           <p className="text-sm font-semibold text-[var(--foreground)]">{copy.empty}</p>
           <p className="mt-1 text-xs text-[var(--muted)]">{copy.emptyHint}</p>
+          {/* A brand-new category lands here, and the dropzone has scrolled well
+              off the top by then. Point back at it rather than leaving the admin
+              on a dead end. */}
+          <button
+            type="button"
+            onClick={() =>
+              document
+                .querySelector<HTMLElement>('input[type="file"]')
+                ?.closest("div")
+                ?.scrollIntoView({ behavior: "smooth", block: "center" })
+            }
+            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[var(--pink-dark)] px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--pink-dark)]"
+          >
+            <Plus className="size-3.5" />
+            {copy.emptyUploadCta}
+          </button>
         </div>
       ) : (
         <DndContext
@@ -505,8 +638,19 @@ export function GalleryManager({ initialItems }: { initialItems: GalleryItem[] }
         item={editing}
         copy={copy}
         locale={locale}
+        categories={allCategories}
         onClose={() => setEditing(null)}
         onSave={saveEdit}
+      />
+
+      <CategoryDialog
+        mode={categoryDialog}
+        copy={copy}
+        categories={categoriesWithCounts}
+        onClose={() => setCategoryDialog(null)}
+        onCreate={createCategory}
+        onRename={renameCategory}
+        onDelete={deleteCategory}
       />
 
       <ConfirmDialog

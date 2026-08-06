@@ -62,6 +62,25 @@ export interface GalleryAdminCopy {
   errorLoad: string;
   reload: string;
   unsaved: string;
+  // Category management
+  addingTo: string;
+  newCategory: string;
+  newCategoryTitle: string;
+  renameCategory: string;
+  categoryNameHint: string;
+  categoryCreated: string;
+  categoryRenamed: string;
+  deleteCategory: string;
+  deleteCategoryEmpty: string;
+  deleteCategoryFull: string;
+  moveItemsTo: string;
+  categoryDeleted: string;
+  categorySettings: string;
+  categoryHidden: string;
+  categoryHiddenNote: string;
+  create: string;
+  emptyUploadCta: string;
+  lastCategory: string;
 }
 
 export const galleryAdminCopy: Record<AdminLocale, GalleryAdminCopy> = {
@@ -120,6 +139,24 @@ export const galleryAdminCopy: Record<AdminLocale, GalleryAdminCopy> = {
     errorLoad: "The gallery could not be loaded.",
     reload: "Reload",
     unsaved: "Saving your order…",
+    addingTo: "New uploads go to",
+    newCategory: "New category",
+    newCategoryTitle: "Create a category",
+    renameCategory: "Rename category",
+    categoryNameHint: "This is the heading visitors see above the row. All three languages are required.",
+    categoryCreated: "Category created",
+    categoryRenamed: "Category renamed",
+    deleteCategory: "Delete category",
+    deleteCategoryEmpty: "Delete this category? It is empty, so nothing else changes.",
+    deleteCategoryFull: "This category still has photos. Choose where to move them — they will be kept, not deleted.",
+    moveItemsTo: "Move its photos to",
+    categoryDeleted: "Category deleted",
+    categorySettings: "Category settings",
+    categoryHidden: "Hidden from the website",
+    categoryHiddenNote: "The whole row disappears from the site. Photos are kept.",
+    create: "Create",
+    emptyUploadCta: "Add the first photo or video",
+    lastCategory: "This is the only category — create another before deleting this one.",
   },
   tr: {
     title: "Galeri",
@@ -176,6 +213,24 @@ export const galleryAdminCopy: Record<AdminLocale, GalleryAdminCopy> = {
     errorLoad: "Galeri yüklenemedi.",
     reload: "Yenile",
     unsaved: "Sıralamanız kaydediliyor…",
+    addingTo: "Yeni yüklemeler şuraya eklenir",
+    newCategory: "Yeni kategori",
+    newCategoryTitle: "Kategori oluştur",
+    renameCategory: "Kategoriyi yeniden adlandır",
+    categoryNameHint: "Bu, ziyaretçilerin satırın üstünde gördüğü başlıktır. Üç dil de gereklidir.",
+    categoryCreated: "Kategori oluşturuldu",
+    categoryRenamed: "Kategori yeniden adlandırıldı",
+    deleteCategory: "Kategoriyi sil",
+    deleteCategoryEmpty: "Bu kategori silinsin mi? Boş olduğu için başka bir şey değişmez.",
+    deleteCategoryFull: "Bu kategoride hâlâ fotoğraf var. Nereye taşınacağını seçin — silinmezler, korunurlar.",
+    moveItemsTo: "Fotoğraflarını şuraya taşı",
+    categoryDeleted: "Kategori silindi",
+    categorySettings: "Kategori ayarları",
+    categoryHidden: "Siteden gizli",
+    categoryHiddenNote: "Satırın tamamı siteden kaybolur. Fotoğraflar korunur.",
+    create: "Oluştur",
+    emptyUploadCta: "İlk fotoğrafı veya videoyu ekleyin",
+    lastCategory: "Bu tek kategori — silmeden önce başka bir tane oluşturun.",
   },
   ru: {
     title: "Галерея",
@@ -232,5 +287,23 @@ export const galleryAdminCopy: Record<AdminLocale, GalleryAdminCopy> = {
     errorLoad: "Не удалось загрузить галерею.",
     reload: "Обновить",
     unsaved: "Сохраняем порядок…",
+    addingTo: "Новые загрузки попадут в",
+    newCategory: "Новая категория",
+    newCategoryTitle: "Создать категорию",
+    renameCategory: "Переименовать категорию",
+    categoryNameHint: "Это заголовок над рядом, который видят посетители. Нужны все три языка.",
+    categoryCreated: "Категория создана",
+    categoryRenamed: "Категория переименована",
+    deleteCategory: "Удалить категорию",
+    deleteCategoryEmpty: "Удалить эту категорию? Она пуста, больше ничего не изменится.",
+    deleteCategoryFull: "В этой категории ещё есть фото. Выберите, куда их перенести — они сохранятся, а не удалятся.",
+    moveItemsTo: "Перенести фото в",
+    categoryDeleted: "Категория удалена",
+    categorySettings: "Настройки категории",
+    categoryHidden: "Скрыто с сайта",
+    categoryHiddenNote: "Весь ряд исчезнет с сайта. Фото сохранятся.",
+    create: "Создать",
+    emptyUploadCta: "Добавьте первое фото или видео",
+    lastCategory: "Это единственная категория — создайте другую, прежде чем удалять эту.",
   },
 };

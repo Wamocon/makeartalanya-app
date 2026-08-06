@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { X, ExternalLink, Loader2 } from "lucide-react";
-import type { GalleryItem, GalleryLocale } from "@/lib/gallery/types";
-import { GALLERY_CATEGORIES, categoryDef } from "@/lib/gallery/types";
+import type { GalleryItem, GalleryCategory, GalleryLocale } from "@/lib/gallery/types";
+import { categoryDef } from "@/lib/gallery/types";
 import type { GalleryAdminCopy } from "@/i18n/gallery-admin";
 import type { AdminLocale } from "@/i18n/admin-translations";
 
@@ -12,6 +12,7 @@ interface Props {
   item: GalleryItem | null;
   copy: GalleryAdminCopy;
   locale: AdminLocale;
+  categories: GalleryCategory[];
   onClose: () => void;
   onSave: (id: string, patch: Record<string, unknown>) => Promise<void>;
 }
@@ -29,7 +30,7 @@ function cleanLocaleMap(map: Partial<Record<GalleryLocale, string>>) {
   return out;
 }
 
-export function EditDrawer({ item, copy, locale, onClose, onSave }: Props) {
+export function EditDrawer({ item, copy, locale, categories, onClose, onSave }: Props) {
   const [caption, setCaption] = useState<Partial<Record<GalleryLocale, string>>>({});
   const [alt, setAlt] = useState<Partial<Record<GalleryLocale, string>>>({});
   const [category, setCategory] = useState("");
@@ -220,7 +221,7 @@ export function EditDrawer({ item, copy, locale, onClose, onSave }: Props) {
               }}
               className="w-full rounded-xl border border-[var(--border)] bg-white px-3 py-2.5 text-sm focus:border-[var(--pink-dark)] focus:outline-none"
             >
-              {GALLERY_CATEGORIES.map((c) => (
+              {categories.map((c) => (
                 <option key={c.slug} value={c.slug}>
                   {c.label[locale as GalleryLocale] ?? c.label.en}
                 </option>

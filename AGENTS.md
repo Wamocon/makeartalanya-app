@@ -235,6 +235,9 @@ Alternatively, run the migration SQL directly in the Supabase Dashboard SQL edit
 - `/api/admin/gallery/[id]` — `PATCH` captions/alt/category/group/visibility, `DELETE` row + both storage objects.
 - `/api/admin/gallery/reorder` — rewrites one category's `position` to 1..n from a full ordered id list.
 - `/api/admin/gallery/upload-url` — issues a **pair** of signed direct-to-Storage upload URLs sharing one uuid stem (asset + thumbnail).
+- `/api/admin/gallery/categories` — `GET` with counts, `POST` create (slug derived from the label, then immutable).
+- `/api/admin/gallery/categories/[slug]` — `PATCH` label/visibility, `DELETE` with optional `moveTo` to relocate contents.
+- `/api/admin/gallery/categories/reorder` — rewrites rail order from a full ordered slug list.
 - `/api/admin/instructor-photo` — `GET` current, `POST` signed URL, `PUT` commit + sweep older objects.
 - `/api/upload` — **unused legacy route.** Superseded by the signed-URL flow above; it streams file bodies through the function, which Vercel caps at ~4.5 MB. Retained only because `e2e/tests/api.spec.ts` asserts its auth. Do not build on it.
 - `/api/content` — load/save JSON content overrides from Supabase Storage.
@@ -329,6 +332,10 @@ Deployment checklist (from `SETUP.md`):
    - **The pixels live in two places.** Rows with `storage_path = NULL` are the bundled archive under `public/gallery/`, served by the Vercel CDN and built by `scripts/build-gallery.mjs`. Rows with a `storage_path` were uploaded through the admin and live in Supabase Storage. Everything downstream treats them identically — that is deliberate, and it is why all 160 legacy photos are reorderable. Run `node scripts/import-gallery.mjs` (idempotent) if the manifest and the table drift.
    - **Uploads never pass through a route handler.** The browser downscales to WebP on a canvas (mirroring `build-gallery.mjs`: 1800px / 720px / 16px blur), then `PUT`s straight to Storage on a signed URL. Anything that routes file bytes through Next will break on Vercel's ~4.5 MB request-body cap. HEIC is rejected client-side with a fix-it message — neither browsers nor sharp can decode it.
 10. **`media-src` is in the CSP** (`next.config.ts`). Without it `<video>` falls back to `default-src 'self'` and every Storage-hosted clip is blocked.
+11. **Categories are rows, not code** (`gallery_categories`, migration `0027`). Two invariants worth not breaking:
+    - **The slug is immutable.** It is derived once from the label (transliterating Turkish and Cyrillic — see `slugify`) and becomes a storage key prefix and a public identifier. The *label* is what gets renamed.
+    - **`gallery_items.category` is a real FK with `ON DELETE RESTRICT`.** Deleting a non-empty category is refused with a 409; the admin passes `moveTo` to relocate its contents first. Never change this to `CASCADE` — it turns one click into forty deleted photos.
+    All three locale labels are required, enforced by a `CHECK` constraint *and* by the admin form, because a missing Russian heading is a broken page for a third of this studio's families.
 8. **Package versions matter** — `zod` is v4 in `package.json`, Tailwind is v4, React is 19, Next.js is 16. Do not downgrade or mix versions without checking compatibility.
 
 ---

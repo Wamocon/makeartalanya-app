@@ -42,6 +42,71 @@ export interface GalleryCategoryDef {
   groups: { slug: string; label: Record<GalleryLocale, string> }[];
 }
 
+/** A category as stored in gallery_categories — the editable, admin-owned form. */
+export interface GalleryCategory {
+  slug: string;
+  label: Record<GalleryLocale, string>;
+  position: number;
+  visible: boolean;
+  /** Filled in by whoever counts; not a column. */
+  count?: number;
+}
+
+export interface GalleryCategoryRow {
+  slug: string;
+  label: unknown;
+  position: number;
+  visible: boolean;
+}
+
+export const GALLERY_CATEGORY_COLUMNS = "slug,label,position,visible";
+
+/**
+ * A rail heading must exist in all three languages — the table enforces it — but
+ * a row written before that constraint, or by hand, should degrade to something
+ * readable rather than rendering "undefined" on the landing page.
+ */
+export function rowToCategory(row: GalleryCategoryRow): GalleryCategory {
+  const raw = (row.label ?? {}) as Record<string, unknown>;
+  const pick = (l: GalleryLocale) => (typeof raw[l] === "string" ? (raw[l] as string) : "");
+  const en = pick("en") || row.slug;
+  return {
+    slug: row.slug,
+    label: { tr: pick("tr") || en, en, ru: pick("ru") || en },
+    position: row.position,
+    visible: row.visible,
+  };
+}
+
+/**
+ * Turns a label into a URL-safe slug.
+ *
+ * Transliterates the Turkish and Cyrillic the studio actually types, because
+ * stripping non-ASCII instead would turn "Мастер-классы" into "" and
+ * "Sanat Kampı" into "sanat-kamp". Both are silent data loss in a value that
+ * becomes a permanent public identifier.
+ */
+const TRANSLITERATE: Record<string, string> = {
+  ı: "i", İ: "i", ş: "s", Ş: "s", ğ: "g", Ğ: "g", ü: "u", Ü: "u", ö: "o", Ö: "o", ç: "c", Ç: "c",
+  а: "a", б: "b", в: "v", г: "g", д: "d", е: "e", ё: "e", ж: "zh", з: "z", и: "i", й: "i",
+  к: "k", л: "l", м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u", ф: "f",
+  х: "h", ц: "ts", ч: "ch", ш: "sh", щ: "sch", ъ: "", ы: "y", ь: "", э: "e", ю: "yu", я: "ya",
+};
+
+export function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .split("")
+    .map((ch) => TRANSLITERATE[ch] ?? ch)
+    .join("")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "") // strip combining marks left by NFD
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40)
+    .replace(/-+$/g, "");
+}
+
 /**
  * Category and group slugs stay code-defined rather than becoming rows.
  *

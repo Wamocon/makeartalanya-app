@@ -6,7 +6,7 @@ import { GalleryRails, type GalleryRailsCategory } from "@/components/gallery/Ga
 import { SectionHeading } from "@/components/sections/SectionHeading";
 import { PaintedBackdrop } from "@/components/sections/PaintedBackdrop";
 import { translations } from "@/i18n/translations";
-import { GALLERY_CATEGORIES, type GalleryItem, type GalleryLocale } from "@/lib/gallery/types";
+import type { GalleryItem, GalleryCategory, GalleryLocale } from "@/lib/gallery/types";
 import type { GalleryAdminCopy } from "@/i18n/gallery-admin";
 
 /**
@@ -26,11 +26,13 @@ import type { GalleryAdminCopy } from "@/i18n/gallery-admin";
  */
 export function LivePreview({
   items,
+  categories: allCategories,
   locale,
   copy,
   onClose,
 }: {
   items: GalleryItem[];
+  categories: GalleryCategory[];
   locale: GalleryLocale;
   copy: GalleryAdminCopy;
   onClose: () => void;
@@ -54,15 +56,15 @@ export function LivePreview({
     [items],
   );
 
-  // Same rule the public API applies: a category with nothing visible in it does
-  // not get a heading and an empty rail.
+  // Same rules the public API applies: a hidden category never renders, and a
+  // category with nothing visible in it does not get a heading and an empty rail.
   const categories: GalleryRailsCategory[] = useMemo(
     () =>
-      GALLERY_CATEGORIES.filter((c) => shown.some((i) => i.category === c.slug)).map((c) => ({
-        slug: c.slug,
-        label: c.label,
-      })),
-    [shown],
+      allCategories
+        .filter((c) => c.visible && shown.some((i) => i.category === c.slug))
+        .sort((a, b) => a.position - b.position)
+        .map((c) => ({ slug: c.slug, label: c.label })),
+    [shown, allCategories],
   );
 
   const t = translations[locale] ?? translations.en;

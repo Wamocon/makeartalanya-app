@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createItemsSchema, bulkSchema } from "@/lib/gallery/schemas";
+import { missingCategories } from "@/lib/gallery/categories-server";
 import {
   GALLERY_ROW_COLUMNS,
   rowToItem,
@@ -68,6 +69,15 @@ export async function POST(req: Request) {
   // per category costs one query and means an upload never silently displaces
   // whatever the admin last arranged by hand.
   const categories = [...new Set(parsed.data.items.map((i) => i.category))];
+
+  const unknown = await missingCategories(admin, categories);
+  if (unknown.length) {
+    return NextResponse.json(
+      { ok: false, error: `Unknown category: ${unknown.join(", ")}` },
+      { status: 400 },
+    );
+  }
+
   const { data: tops, error: topErr } = await admin
     .from("gallery_items")
     .select("category,position")

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CATEGORY_SLUGS, isValidGroup } from "./types";
+import { isValidGroup } from "./types";
 
 /**
  * Everything the admin gallery routes accept.
@@ -9,7 +9,55 @@ import { CATEGORY_SLUGS, isValidGroup } from "./types";
  * bypasses RLS entirely.
  */
 
-const categorySchema = z.enum(CATEGORY_SLUGS as [string, ...string[]]);
+/**
+ * Categories live in the database now, so this can only check the shape — that
+ * the slug is a slug, and in particular that it cannot carry a path separator
+ * into a storage key. Whether the category *exists* is checked against
+ * gallery_categories in the route, and ultimately by a foreign key that no
+ * amount of malformed input gets past.
+ */
+const categorySchema = z
+  .string()
+  .min(1)
+  .max(40)
+  .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Invalid category.");
+
+export const localeLabelSchema = z
+  .object({
+    tr: z.string().trim().min(1).max(60),
+    en: z.string().trim().min(1).max(60),
+    ru: z.string().trim().min(1).max(60),
+  })
+  .strict();
+
+export const createCategorySchema = z
+  .object({
+    label: localeLabelSchema,
+    /** Optional: derived from the English label when absent. */
+    slug: categorySchema.optional(),
+  })
+  .strict();
+
+export const updateCategorySchema = z
+  .object({
+    label: localeLabelSchema.optional(),
+    visible: z.boolean().optional(),
+  })
+  .strict()
+  .refine((v) => Object.keys(v).length > 0, { message: "Nothing to update." });
+
+export const reorderCategoriesSchema = z
+  .object({ slugs: z.array(categorySchema).min(1).max(60) })
+  .strict();
+
+/**
+ * Deleting a category can move its contents somewhere else first. Without that,
+ * the only way to remove a rail is to empty it by hand, which for forty photos
+ * is forty confirmations.
+ */
+export const deleteCategorySchema = z
+  .object({ moveTo: categorySchema.nullable().default(null) })
+  .strict();
 
 const localeTextSchema = z
   .object({

@@ -29,11 +29,14 @@ const ACCEPT = [...ACCEPTED_IMAGE_TYPES, ...ACCEPTED_VIDEO_TYPES].join(",");
 export function UploadZone({
   copy,
   tasks,
+  targetLabel,
   onFiles,
   onDismissTask,
 }: {
   copy: GalleryAdminCopy;
   tasks: UploadTask[];
+  /** Name of the category these files will land in. */
+  targetLabel: string;
   onFiles: (files: File[]) => void;
   onDismissTask: (id: string) => void;
 }) {
@@ -105,7 +108,21 @@ export function UploadZone({
             {dragging ? copy.dropHere : copy.upload}
           </span>
         </button>
-        <p className="mx-auto mt-1 max-w-md text-[11px] leading-snug text-[var(--muted)]">
+
+        {/*
+          Naming the destination is the whole point of this line. The dropzone
+          sits above a grid that is already filtered to one category, so it looked
+          obvious in development and read as "upload to the gallery, somewhere"
+          to the person actually using it.
+        */}
+        <p className="mt-1.5 text-xs text-[var(--muted)]">
+          {copy.addingTo}{" "}
+          <span className="rounded-md bg-[var(--pink-light)] px-1.5 py-0.5 font-semibold text-[var(--pink-dark)]">
+            {targetLabel}
+          </span>
+        </p>
+
+        <p className="mx-auto mt-2 max-w-md text-[11px] leading-snug text-[var(--muted)]">
           {copy.uploadHint}
         </p>
       </div>

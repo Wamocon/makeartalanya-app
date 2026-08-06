@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import {
   GALLERY_ROW_COLUMNS,
-  GALLERY_CATEGORIES,
+  GALLERY_CATEGORY_COLUMNS,
   rowToItem,
+  rowToCategory,
   type GalleryItemRow,
+  type GalleryCategoryRow,
 } from "@/lib/gallery/types";
 
 /**
@@ -36,30 +38,37 @@ export async function GET() {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  const { data, error } = await supabase
-    .from("gallery_items")
-    .select(GALLERY_ROW_COLUMNS)
-    .eq("visible", true)
-    .order("category", { ascending: true })
-    .order("position", { ascending: true });
+  const [itemsRes, categoriesRes] = await Promise.all([
+    supabase
+      .from("gallery_items")
+      .select(GALLERY_ROW_COLUMNS)
+      .eq("visible", true)
+      .order("position", { ascending: true }),
+    supabase
+      .from("gallery_categories")
+      .select(GALLERY_CATEGORY_COLUMNS)
+      .eq("visible", true)
+      .order("position", { ascending: true }),
+  ]);
 
+  const error = itemsRes.error ?? categoriesRes.error;
   if (error) {
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   }
 
-  const items = (data as GalleryItemRow[]).map(rowToItem);
+  const items = (itemsRes.data as GalleryItemRow[]).map(rowToItem);
 
-  // Categories come from code, but only the ones that actually have something to
-  // show are returned — an empty rail with a heading and "0 photos" reads as a
-  // broken page rather than an empty one.
-  const categories = GALLERY_CATEGORIES.filter((c) =>
-    items.some((i) => i.category === c.slug),
-  ).map((c) => ({
-    slug: c.slug,
-    label: c.label,
-    groups: c.groups,
-    count: items.filter((i) => i.category === c.slug).length,
-  }));
+  // Only categories that actually have something visible in them are returned —
+  // an empty rail with a heading and "0 photos" reads as a broken page rather
+  // than an empty one. The order is the admin's, from the category table.
+  const categories = (categoriesRes.data as GalleryCategoryRow[])
+    .map(rowToCategory)
+    .filter((c) => items.some((i) => i.category === c.slug))
+    .map((c) => ({
+      slug: c.slug,
+      label: c.label,
+      count: items.filter((i) => i.category === c.slug).length,
+    }));
 
   return NextResponse.json(
     { ok: true, items, categories },

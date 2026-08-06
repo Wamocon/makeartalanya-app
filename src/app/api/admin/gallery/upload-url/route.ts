@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth-guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { uploadUrlSchema, UPLOAD_MIME_TYPES } from "@/lib/gallery/schemas";
+import { categoryExists } from "@/lib/gallery/categories-server";
 
 /**
  * Hands the browser a short-lived URL it can upload straight to Storage with.
@@ -53,6 +54,13 @@ export async function POST(req: Request) {
   }
 
   const { category, contentType } = parsed.data;
+
+  // The category becomes the storage key prefix, so an unknown one would scatter
+  // objects under a folder no category ever reads back.
+  if (!(await categoryExists(admin, category))) {
+    return NextResponse.json({ ok: false, error: "That category no longer exists." }, { status: 400 });
+  }
+
   const kind = (UPLOAD_MIME_TYPES.video as readonly string[]).includes(contentType)
     ? "video"
     : "photo";

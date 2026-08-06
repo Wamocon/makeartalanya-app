@@ -57,6 +57,19 @@ test.describe("Gallery API - GET /api/gallery is public", () => {
     }
   });
 
+  test("every rail has a heading in all three languages", async ({ request }) => {
+    const body = await (await request.get(`${BASE_URL}/api/gallery`)).json();
+
+    for (const category of body.categories) {
+      // A blank heading in one locale is a broken page for that third of the
+      // audience, and the only place it can be caught is here and at the CHECK
+      // constraint on gallery_categories.
+      for (const locale of ["tr", "en", "ru"]) {
+        expect(category.label?.[locale], `${category.slug} is missing ${locale}`).toBeTruthy();
+      }
+    }
+  });
+
   test("category counts match the items actually returned", async ({ request }) => {
     const body = await (await request.get(`${BASE_URL}/api/gallery`)).json();
 
@@ -98,6 +111,31 @@ test.describe("Gallery API - admin routes reject anonymous callers", () => {
         r.post(`${BASE_URL}/api/admin/gallery/upload-url`, {
           data: { category: "lessons", contentType: "image/webp" },
         }),
+    },
+    { name: "category list", run: (r) => r.get(`${BASE_URL}/api/admin/gallery/categories`) },
+    {
+      name: "category create",
+      run: (r) =>
+        r.post(`${BASE_URL}/api/admin/gallery/categories`, {
+          data: { label: { tr: "x", en: "x", ru: "x" } },
+        }),
+    },
+    {
+      name: "category rename",
+      run: (r) =>
+        r.patch(`${BASE_URL}/api/admin/gallery/categories/lessons`, {
+          data: { label: { tr: "x", en: "x", ru: "x" } },
+        }),
+    },
+    {
+      name: "category delete",
+      run: (r) =>
+        r.delete(`${BASE_URL}/api/admin/gallery/categories/lessons`, { data: { moveTo: "camp" } }),
+    },
+    {
+      name: "category reorder",
+      run: (r) =>
+        r.post(`${BASE_URL}/api/admin/gallery/categories/reorder`, { data: { slugs: ["camp"] } }),
     },
     { name: "instructor photo read", run: (r) => r.get(`${BASE_URL}/api/admin/instructor-photo`) },
     {
